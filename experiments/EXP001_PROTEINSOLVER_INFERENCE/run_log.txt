@@ -1,0 +1,52 @@
+===========================================================================
+EXP001: ORIGINAL PROTEINSOLVER INFERENCE & REPRODUCIBILITY TEST
+===========================================================================
+Execution Device : cuda (NVIDIA GeForce RTX 3050 6GB Laptop GPU)
+PyTorch Version  : 2.6.0+cu124
+PyG Version      : 2.8.0.post1
+CUDA Available   : True
+
+[Phase 1] Loading official pretrained ProteinSolver checkpoint from:
+  D:\Projects\Protein Design\external\proteinsolver-original\data\e53-s1952148-d93703104.state
+  Model loaded successfully. Total parameters: 567,060
+
+---------------------------------------------------------------------------
+Processing Target: 1n5uA03 (Paper demo CATH domain (92 AA))
+PDB Path: D:\Projects\Protein Design\experiments\EXP001_PROTEINSOLVER_INFERENCE\input\1n5uA03.pdb
+  Residue Count (Nodes) : 92
+  Directed Edges (<12A) : 3494
+  Average Degree        : 37.98
+  Native Sequence       : KFGERAFKAWAVARLSQRFPKAEFAEVSKLVTDLTKVHTECCHGDLLECADDRADLAKYICENQDSISSKLKECCEKPLLEKSHCIAEVEND
+  Native Log-Prob Score : -1.9436 (Diagnostic)
+  Native Perplexity     : 6.9839 (Diagnostic)
+
+  [Sampling Config: map_greedy] Strategy=map, Temp=1.0, RandPos=False
+    Designed Sequence : MAGLDAFLAEAVARLSARFPGASAAELARLTALETLTRLCCAAGDAASCAACRARLAAYVCANQALLTADLAACCALPAAAIAACLAAVRRR
+    Sequence Recovery : 41.30% (38/92)
+    Mean Confidence   : 0.4234
+    Inference Time    : 1.783 s
+
+  [Sampling Config: multinomial_T0.1] Strategy=multinomial, Temp=0.1, RandPos=False
+    Designed Sequence : MAGLAAHLAEAVARLAERFPGASAAELARLTALETLVALCCAAGDAAACAACRAALAARICADQARLTADLAACCALPAAAVAACLAAVRRR
+    Sequence Recovery : 39.13% (36/92)
+    Mean Confidence   : 0.9715
+    Inference Time    : 1.802 s
+
+  [Sampling Config: multinomial_T0.5] Strategy=multinomial, Temp=0.5, RandPos=False
+    Designed Sequence : QTGIAAFLAEAIARLAERFPNASAEELAELTALETLTALCCAANDSAGCTACRAALAGRVCSNHGTLTPDLAACCAVPADAVDACLAAVRRR
+    Sequence Recovery : 33.70% (31/92)
+    Mean Confidence   : 0.5812
+    Inference Time    : 1.812 s
+
+  [Sampling Config: multinomial_T1.0] Strategy=multinomial, Temp=1.0, RandPos=False
+    Designed Sequence : MEGLQTFWEQEKQYLAERFPRASTKEIKQLTEIYTKVVESCKNCDMNTCTKERSNFAGYICSDQECLTNNLKHCCKVPTNAVAECLSILNPQ
+    Sequence Recovery : 29.35% (27/92)
+    Mean Confidence   : 0.2980
+    Inference Time    : 1.989 s
+
+  [Determinism Test] Running identical configurations twice with seed=42...
+    Mode 'map_greedy': Run 1 == Run 2 -> True
+
+===========================================================================
+EXP001 INFERENCE COMPLETED IN 12.43 SECONDS
+===========================================================================

@@ -1,0 +1,15 @@
+{
+  "experiment_id": "EXP_NNN_NAME",
+  "date": "YYYY-MM-DD",
+  "description": "",
+  "target_pdb": "",
+  "target_chain": "",
+  "checkpoint_path": "",
+  "model": "",
+  "seed": 42,
+  "sampling_strategy": "map",
+  "temperature": 1.0,
+  "mask_fraction": 1.0,
+  "device": "cpu",
+  "notes": ""
+}

@@ -1,0 +1,18 @@
+OS: Windows (AMD64)
+Python Version: 3.11.9 (tags/v3.11.9:de54cf5)
+PyTorch Version: 2.6.0+cu124
+CUDA Available: True
+CUDA Version: 12.4
+GPU Device: NVIDIA GeForce RTX 3050 6GB Laptop GPU
+PyG (torch-geometric) Version: 2.8.0.post1
+torch-scatter Version: 2.1.2+pt26cu124
+BioPython Version: 1.88
+ProteinSolver Git Commit: 69ef0965a3fc3bf191804035b539720a06e58ba6
+Checkpoint File: external/proteinsolver-original/data/e53-s1952148-d93703104.state
+Execution Environment: environment/proteinsolver-original/Scripts/python.exe
+Compatibility Shims Applied:
+  - torch_geometric.utils.scatter_ fallback from proteinsolver/utils/scatter.py via torch_scatter.scatter
+  - fcntl dummy module (POSIX file-locking unsupported on Windows)
+  - kmtools dummy module (isolates unsupported 2017 kmbio C-extension)
+  - State dict key mapping: graph_conv_0 -> graph_conv_1, graph_conv.0..2 -> graph_conv_2..4
+  - Caller-side PyG Batch wrapper: Batch.from_data_list([data]) (resolves PyG 2.x Data.batch=None)

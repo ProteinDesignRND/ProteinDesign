@@ -1,0 +1,17 @@
+{
+  "experiment_id": "EXP000_PROTEINSOLVER_SMOKETEST",
+  "task": "Original ProteinSolver Model Instantiation & Forward Pass Smoke Test",
+  "date": "2026-09-24",
+  "target_pdb": "experiments/EXP000_PROTEINSOLVER_SMOKETEST/input/1n5uA03.pdb",
+  "checkpoint_path": "external/proteinsolver-original/data/e53-s1952148-d93703104.state",
+  "model_architecture": {
+    "family": "Residual Graph Neural Network (EdgeConv)",
+    "x_input_size": 21,
+    "adj_input_size": 2,
+    "hidden_size": 128,
+    "output_size": 20,
+    "num_blocks": 4,
+    "r_cutoff_angstroms": 12.0
+  },
+  "random_seed": 42
+}

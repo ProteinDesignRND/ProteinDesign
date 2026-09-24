@@ -12,7 +12,7 @@ This document specifies all training corpora, independent validation resources, 
   - **Training:** 1,029 superfamilies.
   - **Validation:** 172 superfamilies.
   - **Test:** 172 superfamilies.
-- **Evidentiary Note on Schema:** The on-disk dataset was distributed as compressed HDF5/PyTorch Geometric files. The literal schema (tensor keys, index dtypes) is specific to the `ostrokach/proteinsolver` codebase and must not be invented.
+- **Evidentiary Note on Schema:** Source inspection of `proteinsolver/datasets/protein.py` conclusively confirms that the on-disk serialization format is Apache Parquet (`.snappy.parquet`) with table columns `['sequence', 'residue_idx_1_corrected', 'residue_idx_2_corrected', 'distances']`, normalized into a 2D edge attribute tensor via continuous linear scalers $((d - 6) / 12, (j - i) / 68.1319)$. See `research/proteinsolver_data_schema.md`.
 - **Usage in This Project:** We do **not** re-download the 72M training pairs. We leverage the pretrained weights produced from this corpus.
 
 ---

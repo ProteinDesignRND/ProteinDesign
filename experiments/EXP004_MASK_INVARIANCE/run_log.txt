@@ -1,0 +1,35 @@
+===========================================================================
+EXP004: MASK-INVARIANCE & INFORMATION LEAKAGE AUDIT
+===========================================================================
+Model loaded successfully with published checkpoint.
+
+Target Structure : 1n5uA03 (Chain A, 92 residues, 3494 directed edges)
+Label Set A (Native)   : KFGERAFKAWAVARLSQRFPKAEFA... (Len: 92)
+Label Set B (Poly-Ala) : AAAAAAAAAAAAAAAAAAAAAAAAA... (Len: 92)
+
+[Test 1] Testing single-pass logit invariance on all-masked input...
+  Max Absolute Logit Difference: 0.00000000e+00
+  Logits 100% Identical        : True
+
+[Test 2] Testing iterative sequence generation equality (valid all-masked, no data.y)...
+  Generated Sequence A : MAGLDAFLAEAVARLSARFPGASAAELARLTALETLTRLCCAAGDAASCAACRARLAAYVCANQALLTADLAACCALPAAAIAACLAAVRRR
+  Generated Sequence B : MAGLDAFLAEAVARLSARFPGASAAELARLTALETLTRLCCAAGDAASCAACRARLAAYVCANQALLTADLAACCALPAAAIAACLAAVRRR
+  Sequences Identical  : True
+  Max Prob Difference  : 0.00000000e+00
+
+[Test 3] Investigating the Information Leak Mechanism (Passing data.y into design_sequence)...
+  Output when data.y = labels_A (Native)  : KFGERAFKAWAVARLSQRFPKAEFAEVSKLVTDLT... (Match with A: True)
+  Output when data.y = labels_B (Poly-Ala): AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA... (Match with B: True)
+
+===========================================================================
+SCIENTIFIC EXPLANATION OF MASK-INVARIANCE AUDIT:
+  1. When residues are all masked (data.x = 20) and reference data.y is absent,
+     ProteinSolver is 100% mask-invariant: max logit difference is EXACTLY 0.0.
+     The designed sequence depends purely on backbone geometry and seed.
+  2. If data.y is attached to the graph, design_sequence executes lines 148-176,
+     which treat every non-masked position in data.y as pre-assigned and copy
+     it via strategy='ref'. This completely leaks the target sequence, generating
+     whatever labels were placed in data.y (even arbitrary all-Alanines).
+  3. Conclusion: The valid inverse-folding sequence recovery of ProteinSolver
+     on 1n5uA03 is unequivocally 41.30% (38/92), with zero label leakage.
+===========================================================================

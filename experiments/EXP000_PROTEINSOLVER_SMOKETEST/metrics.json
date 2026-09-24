@@ -1,0 +1,18 @@
+{
+  "experiment_id": "EXP000_PROTEINSOLVER_SMOKETEST",
+  "date": "2026-09-24",
+  "original_implementation": "PASS",
+  "checkpoint_loading": "PASS",
+  "forward_pass": "PASS",
+  "design_sequence": "PASS",
+  "compatibility_shim": "YES",
+  "cuda_execution": "PASS",
+  "model_parameters": 567060,
+  "test_target": "1n5uA03",
+  "sequence_length": 92,
+  "num_edges": 3494,
+  "valid_all_masked_recovery": 41.3,
+  "designed_sequence": "MAGLDAFLAEAVARLSARFPGASAAELARLTALETLTRLCCAAGDAASCAACRARLAAYVCANQALLTADLAACCALPAAAIAACLAAVRRR",
+  "inference_runtime_seconds": 1.8252,
+  "total_test_duration_seconds": 7.6933
+}

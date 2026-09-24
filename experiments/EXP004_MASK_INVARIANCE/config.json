@@ -1,0 +1,9 @@
+{
+  "experiment_id": "EXP004_MASK_INVARIANCE",
+  "task": "ProteinSolver Mask-Invariance & Information Leakage Audit",
+  "date": "2026-09-24",
+  "target_pdb": "experiments/EXP000_PROTEINSOLVER_SMOKETEST/input/1n5uA03.pdb",
+  "checkpoint_path": "external/proteinsolver-original/data/e53-s1952148-d93703104.state",
+  "labels_A": "KFGERAFKAWAVARLSQRFPKAEFAEVSKLVTDLTKVHTECCHGDLLECADDRADLAKYICENQDSISSKLKECCEKPLLEKSHCIAEVEND",
+  "labels_B": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+}

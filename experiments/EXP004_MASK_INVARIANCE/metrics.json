@@ -1,0 +1,14 @@
+{
+  "experiment_id": "EXP004_MASK_INVARIANCE",
+  "date": "2026-09-24",
+  "max_absolute_logit_difference": 0.0,
+  "logits_identical": true,
+  "sequence_output_equality": true,
+  "designed_sequence_under_mask": "MAGLDAFLAEAVARLSARFPGASAAELARLTALETLTRLCCAAGDAASCAACRARLAAYVCANQALLTADLAACCALPAAAIAACLAAVRRR",
+  "leak_detected_when_data_y_present": true,
+  "leak_proof_native_reproduced": true,
+  "leak_proof_polyalanine_reproduced": true,
+  "valid_recovery_pct": 41.3,
+  "matches": 38,
+  "total_residues": 92
+}

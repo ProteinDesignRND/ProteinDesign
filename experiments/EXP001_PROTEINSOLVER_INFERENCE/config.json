@@ -1,0 +1,50 @@
+{
+  "experiment_id": "EXP001_PROTEINSOLVER_INFERENCE",
+  "task": "ProteinSolver Real Inference & Determinism Reproducibility Test",
+  "date": "2026-09-24",
+  "targets": [
+    {
+      "name": "1UBQ",
+      "pdb_path": "experiments/EXP001_PROTEINSOLVER_INFERENCE/input/1UBQ.pdb",
+      "chain": "A",
+      "description": "Human Ubiquitin crystal structure (76 AA)"
+    },
+    {
+      "name": "1n5uA03",
+      "pdb_path": "experiments/EXP001_PROTEINSOLVER_INFERENCE/input/1n5uA03.pdb",
+      "chain": "A",
+      "description": "Paper demo CATH domain (92 AA)"
+    }
+  ],
+  "checkpoint_path": "external/proteinsolver-original/data/e53-s1952148-d93703104.state",
+  "sampling_configurations": [
+    {
+      "name": "map_greedy",
+      "strategy": "map",
+      "temperature": 1.0,
+      "random_position": false
+    },
+    {
+      "name": "multinomial_T0.1",
+      "strategy": "multinomial",
+      "temperature": 0.1,
+      "random_position": false
+    },
+    {
+      "name": "multinomial_T0.5",
+      "strategy": "multinomial",
+      "temperature": 0.5,
+      "random_position": false
+    },
+    {
+      "name": "multinomial_T1.0",
+      "strategy": "multinomial",
+      "temperature": 1.0,
+      "random_position": false
+    }
+  ],
+  "reproducibility_test": {
+    "num_runs": 2,
+    "seed": 42
+  }
+}

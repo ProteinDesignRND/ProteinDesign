@@ -1,0 +1,43 @@
+======================================================================
+EXP000: ORIGINAL PROTEINSOLVER IMPLEMENTATION SMOKE TEST
+======================================================================
+Execution Device : cuda (NVIDIA GeForce RTX 3050 6GB Laptop GPU)
+
+[Step 1] Checking direct import of original proteinsolver without shims...
+  Direct import failed as expected (ModuleNotFoundError: No module named 'kmbio').
+  Reason: proteinsolver/__init__.py imports kmtools, requiring legacy kmbio and fcntl.
+
+[Step 2] Applying documented runtime compatibility shims...
+  Applied shims: torch_geometric.utils.scatter_, fcntl, kmtools isolation.
+
+[Step 3] Instantiating original ProteinNet architecture...
+  Model instantiated successfully. Parameters: 567,060
+
+[Step 4] Loading checkpoint from: external/proteinsolver-original/data/e53-s1952148-d93703104.state...
+  Missing keys: 0, Unexpected keys: 0
+  Checkpoint loading pass: True
+
+[Step 5] Running forward pass on tiny graph...
+  CPU Forward pass output shape: [10, 20] (Expected: [10, 20])
+  CUDA Forward pass output shape: [10, 20] - SUCCESS
+
+[Step 6] Testing original design_sequence on synthetic graph...
+  Synthetic design_sequence result: tokens=[18, 2, 8, 12, 3] - SUCCESS
+
+[Step 7] Testing real PDB graph pipeline on 1n5uA03.pdb...
+  Target 1n5uA03 length         : 92 residues
+  Graph directed edges (<12A)   : 3494
+  Valid all-masked recovery     : 41.30% (38/92)
+  Inference runtime (CPU)       : 1.8252 s
+  Designed sequence (MAP)       : MAGLDAFLAEAVARLSARFPGASAAELARLTALETLTRLCCAAGDAASCAACRARLAAYVCANQALLTADLAACCALPAAAIAACLAAVRRR
+
+======================================================================
+EXPLICIT SMOKE TEST VERIFICATION RESULTS:
+  Original implementation: PASS
+  Checkpoint loading: PASS
+  Forward pass: PASS
+  design_sequence: PASS
+  Compatibility shim: YES
+  CUDA: PASS
+======================================================================
+EXP000 completed in 7.693 seconds.

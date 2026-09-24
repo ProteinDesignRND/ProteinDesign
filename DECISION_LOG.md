@@ -43,3 +43,37 @@ This document chronologically logs all major architectural, methodological, and 
 - **Alternatives Considered:** Retraining on a miniature toy subset.
 - **Rationale:** The scientific question is about the *information content* and *scoring properties* of the trained model, which is best evaluated using the authors' published, canonical weights.
 - **Consequences:** Massive reduction in compute overhead; enables focused execution of controlled inference experiments.
+
+---
+
+## [DEC-005] Resolution of PyG 2.x and Python 3.11 Compatibility without Modifying Historical Source
+- **Date:** 2026-09-24
+- **Decision:** Preserve the original historical source in `external/proteinsolver-original` 100% untouched; resolve all modern PyG 2.x, PyTorch 2.6, and Python 3.11 incompatibilities via external caller-side wrappers and minimal runtime shims.
+- **Context:** Modern environments lack legacy `kmbio` (Python 3.5/3.6 only), Windows lacks `fcntl`, PyG 2.x sets `Data.batch = None` causing `batch.max()` crashes in `design_sequence`, and PyG 2.x removed `torch_geometric.utils.scatter_`.
+- **Alternatives Considered:** Permanently editing/patching historical repository source files.
+- **Rationale:** Modifying historical source risks introducing undocumented divergence from original publication benchmarks. Wrapping input graphs with `Batch.from_data_list([data])` and providing an external scatter shim cleanly satisfies all runtime contracts.
+- **Consequences:** Verifiable execution of original `ProteinNet` and original `design_sequence` with clean provenance.
+
+---
+
+## [DEC-006] Strict Separation of Native Sequence Diagnostic Likelihood from Valid Inverse-Folding Recovery
+- **Date:** 2026-09-24
+- **Decision:** Formally classify any experiment supplying the native sequence to `design_sequence` as *diagnostic scoring / likelihood evaluation*, strictly reserving the term *native sequence recovery* for experiments where all residues are masked (`data.x = 20`, `data.y = None`).
+- **Context:** In `protein_design.py`, supplying `data.y` triggers a reference-guided mode (`strategy="ref"`) that copies native residues site-by-site, creating an apparent 100% recovery that is actually an information leak artifact.
+- **Alternatives Considered:** Reporting both numbers as "recovery" under different modes.
+- **Rationale:** Scientific integrity requires completely rejecting leaked metrics. True inverse-folding recovery for 1n5uA03 is 41.30% (38/92).
+- **Consequences:** Prevents false claims of near-perfect recovery and establishes a credible, reproducible E0 baseline.
+
+---
+
+## [DEC-007] E0 Scientific Hardening & Equivalence Claim Calibration
+- **Date:** 2026-09-24
+- **Decision:** Adopt the formal equivalence claim "FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION", classify the 41.30% result as a "single-target all-masked inverse-folding integration result", mark target 1n5uA03 training set membership as "not verifiable from accessible metadata", and record milestone status as `E0-RUNTIME: COMPLETE` and `E0-SCIENTIFIC-HARDENING: COMPLETE`.
+- **Context:** Following the runtime verification of ProteinSolver, a scientific hardening pass verified:
+  1. Strict checkpoint loading under `strict=True` with 0 missing and 0 unexpected keys (567,060 params).
+  2. Mask-invariance (EXP004) showing max absolute logit difference of 0.00000000e+00.
+  3. Feature pipeline numerical identity (`max diff: 0.0`) between original repo and cleanroom extractor.
+  4. Investigation of target provenance in author notebooks, which evaluated `"1.10.246.10" in cath_ids` as False, but cannot be independently verified without the full 72M training corpus.
+- **Alternatives Considered:** Asserting "100% mathematical fidelity" or claiming 41.30% as benchmark generalization.
+- **Rationale:** Demarcating exact empirical boundaries avoids overclaiming and ensures strict fidelity to the scientific method.
+- **Consequences:** Robust, audited foundation for subsequent Phase 2 comparison with ProteinMPNN.

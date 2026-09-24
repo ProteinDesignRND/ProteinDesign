@@ -1,0 +1,44 @@
+{
+  "1n5uA03": {
+    "num_residues": 92,
+    "num_edges": 3494,
+    "native_sequence": "KFGERAFKAWAVARLSQRFPKAEFAEVSKLVTDLTKVHTECCHGDLLECADDRADLAKYICENQDSISSKLKECCEKPLLEKSHCIAEVEND",
+    "native_log_prob_score": -1.9436,
+    "native_perplexity": 6.9839,
+    "sampling_results": {
+      "map_greedy": {
+        "designed_sequence": "MAGLDAFLAEAVARLSARFPGASAAELARLTALETLTRLCCAAGDAASCAACRARLAAYVCANQALLTADLAACCALPAAAIAACLAAVRRR",
+        "recovery_pct": 41.3,
+        "matches": 38,
+        "total_residues": 92,
+        "mean_confidence": 0.4234,
+        "inference_time_seconds": 1.7831
+      },
+      "multinomial_T0.1": {
+        "designed_sequence": "MAGLAAHLAEAVARLAERFPGASAAELARLTALETLVALCCAAGDAAACAACRAALAARICADQARLTADLAACCALPAAAVAACLAAVRRR",
+        "recovery_pct": 39.13,
+        "matches": 36,
+        "total_residues": 92,
+        "mean_confidence": 0.9715,
+        "inference_time_seconds": 1.8024
+      },
+      "multinomial_T0.5": {
+        "designed_sequence": "QTGIAAFLAEAIARLAERFPNASAEELAELTALETLTALCCAANDSAGCTACRAALAGRVCSNHGTLTPDLAACCAVPADAVDACLAAVRRR",
+        "recovery_pct": 33.7,
+        "matches": 31,
+        "total_residues": 92,
+        "mean_confidence": 0.5812,
+        "inference_time_seconds": 1.8123
+      },
+      "multinomial_T1.0": {
+        "designed_sequence": "MEGLQTFWEQEKQYLAERFPRASTKEIKQLTEIYTKVVESCKNCDMNTCTKERSNFAGYICSDQECLTNNLKHCCKVPTNAVAECLSILNPQ",
+        "recovery_pct": 29.35,
+        "matches": 27,
+        "total_residues": 92,
+        "mean_confidence": 0.298,
+        "inference_time_seconds": 1.9889
+      }
+    },
+    "determinism_map_greedy": true
+  }
+}

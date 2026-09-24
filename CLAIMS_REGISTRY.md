@@ -19,21 +19,34 @@ This registry tracks the formal status of all scientific claims, architectural a
 | **V-08** | ProTherm and Rocklin-related datasets are independent validation resources, not interchangeable with the main training corpus. | Strokach et al., *Cell Systems* (2020); Rocklin et al., *Science* (2017). | 2026-09-24 |
 | **V-09** | ProteinMPNN uses an autoregressive message-passing neural network with random decoding order, conditioning on 3D backbone coordinates (N, CA, C, O) via invariant geometric features. | Dauparas et al., *Science* (2022), DOI: 10.1126/science.add2187. | 2026-09-24 |
 | **V-10** | ProteinMPNN achieves approximately 51–52% native sequence recovery on standard CATH 4.2 test benchmarks, outperforming standalone ProteinSolver (~32–35%). | Dauparas et al. (2022); ProteinInvBench (Gao et al., 2023). | 2026-09-24 |
+| **V-11** | ProteinSolver dataset storage is Apache Parquet (`.snappy.parquet`) with table columns `['sequence', 'residue_idx_1_corrected', 'residue_idx_2_corrected', 'distances']`, normalized via linear scaling $((d-6)/12, (j-i)/68.1319)$, not HDF5. | Verified in `proteinsolver/datasets/protein.py` (lines 188–246). | 2026-09-24 |
+| **V-12** | Original historical `ProteinNet` instantiates (567,060 params), executes forward passes on CUDA, and loads published checkpoint `e53-s1952148-d93703104.state` under `strict=True` with 0 missing and 0 unexpected keys after layer prefix normalization (`graph_conv_0` $\to$ `graph_conv_1`, `graph_conv.0..2` $\to$ `graph_conv_2..4`). | Empirically verified in `test_original_execution.py` and `reports/PROTEINSOLVER_PROVENANCE_MANIFEST.md`. | 2026-09-24 |
+| **V-13** | On target structure 1n5uA03 (92 AA), valid all-masked inverse-folding sequence recovery using the original repository's CSP unmasking algorithm yields 41.30% (38/92 matches) in 1.77s. This is classified as a *single-target all-masked inverse-folding integration result*, not general benchmark accuracy. | Empirically verified in `test_original_execution.py`, EXP000, and EXP001. | 2026-09-24 |
+| **V-14** | ProteinSolver is 100% mask-invariant on all-masked inputs (`data.x = 20`, `data.y = None`): max absolute logit difference is 0.00000000e+00 between different underlying label sets. Passing `data.y` causes `protein_design.py` to copy reference labels via `strategy="ref"`, producing an informational leak. | Empirically verified in `experiments/EXP004_MASK_INVARIANCE/`. | 2026-09-24 |
+| **V-15** | On the tested target 1n5uA03, feature pipeline tensors (`x`, `edge_index`, `edge_attr`, `batch`) extracted via the original repo pipeline (`ProteinData` $\to$ `row_to_data` $\to$ `transform_edge_attr` $\to$ `Batch`) are numerically identical (`max diff: 0.0`) to the cleanroom extractor `extract_protein_graph`. General equivalence across all structures: NOT VERIFIED. | Empirically verified in feature pipeline audit. | 2026-09-24 |
 
 ---
 
-## 2. SUPPORTED BUT NEEDS PRIMARY-SOURCE / CODE CHECK (`[SUPPORTED-NEEDS-CHECK]`)
+## 2. SUPPORTED BUT NOT FULLY VERIFIABLE (`[NOT VERIFIABLE]`)
+
+| ID | Statement | Context / Evidence Base | Status |
+|---|---|---|---|
+| **NV-01** | Target structure 1n5uA03 training set membership in the full 72M Gene3D corpus. | Author verified `"1.10.246.10" in cath_ids` evaluated to `False` in `notebooks/16_protein_analysis_experimental.ipynb`. However, because the full 72M training Parquet corpus is stored on an external cluster and not bundled in git, exact training membership cannot be independently verified from accessible metadata without downloading the corpus. | **NOT VERIFIABLE FROM ACCESSIBLE METADATA** |
+
+---
+
+## 3. SUPPORTED BUT NEEDS PRIMARY-SOURCE / CODE CHECK (`[SUPPORTED-NEEDS-CHECK]`)
 *Claims widely cited or asserted in recent preprints/papers that require direct verification in our codebase or against specific dataset files.*
 
 | ID | Claim Statement | Cited In | Required Action |
 |---|---|---|---|
-| **S-01** | The exact on-disk HDF5 / PyTorch Geometric schema used by Strokach et al. stores adjacency lists as sparse COO tensors with explicit binned distance features. | Mentioned in `ostrokach/proteinsolver` README and demo notebooks. | Inspect raw model checkpoint and dataset loaders in `proteinsolver` package. |
+| **S-01** | *(RESOLVED & MOVED TO V-11)* Dataset schema verified as Apache Parquet. | `proteinsolver/datasets/protein.py` | Complete (2026-09-24). |
 | **S-02** | PiFold achieves 51.66% sequence recovery on CATH 4.2 in a single forward pass (non-autoregressive). | Gao et al., *ICLR* (2023). | Verify benchmark evaluation code and test split alignment. |
 | **S-03** | Combining ProteinMPNN with language model logits (IgLM) via simple inference-time logit addition improves native sequence recovery in CDR loops. | Shuai et al., *bioRxiv* (2023). | Check whether this logit combination generalizes to non-antibody globular proteins. |
 
 ---
 
-## 3. INFERENCES (`[INFERENCE]`)
+## 4. INFERENCES (`[INFERENCE]`)
 *Logical deductions derived from verified properties, pending direct experimental demonstration.*
 
 | ID | Inference Statement | Underlying Verified Facts | Status |
@@ -44,7 +57,7 @@ This registry tracks the formal status of all scientific claims, architectural a
 
 ---
 
-## 4. OPEN HYPOTHESES (`[HYPOTHESIS]`)
+## 5. OPEN HYPOTHESES (`[HYPOTHESIS]`)
 *Core research questions that form the provisional investigation.*
 
 | ID | Hypothesis Statement | Test / Validation Mechanism | Current Status |
@@ -55,7 +68,7 @@ This registry tracks the formal status of all scientific claims, architectural a
 
 ---
 
-## 5. REJECTED CLAIMS (`[REJECTED]`)
+## 6. REJECTED CLAIMS (`[REJECTED]`)
 *Ideas, claims, or hypotheses explicitly disproven or ruled out by literature audit or empirical test.*
 
 | ID | Rejected Statement | Reason for Rejection | Date Rejected |
