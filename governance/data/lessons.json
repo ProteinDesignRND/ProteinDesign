@@ -1,0 +1,239 @@
+[
+  {
+    "id": "L-001",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Native sequence visibility produces false 100% recovery",
+    "what_happened": "First ProteinSolver run showed 100% sequence recovery. Investigation revealed data.y contained the native sequence, and protein_design.py copied it position-by-position via strategy='ref'.",
+    "lesson": "A native-sequence-visible run is NOT valid all-masked inverse-folding recovery. Always distinguish diagnostic scoring (natives visible) from true recovery (all residues masked).",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Any experiment reporting sequence recovery metrics",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Demonstrated on 1n5uA03 via EXP004 mask invariance test",
+    "governance_lifecycle": "ACTIVE",
+    "source": "EXP004_MASK_INVARIANCE",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.603849",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP004_MASK_INVARIANCE"
+    ],
+    "related_files": [],
+    "related_claims": [
+      "V-14"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "inference",
+        "design"
+      ]
+    },
+    "keywords": [
+      "recovery",
+      "leakage",
+      "mask",
+      "native",
+      "diagnostic",
+      "data.y",
+      "information-leak"
+    ]
+  },
+  {
+    "id": "L-002",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "PyG Data vs Batch interface mismatch crashes design_sequence",
+    "what_happened": "ProteinSolver's design_sequence expected data.batch attribute (from PyG Batch). In PyG 2.x, plain Data objects have data.batch=None, causing 'NoneType has no attribute max' crash.",
+    "lesson": "Always use Batch.from_data_list([data]) before calling functions that expect batch-level attributes. Check interface contracts before passing data between components.",
+    "type": "BUG_ENVIRONMENT",
+    "scope": "proteinsolver",
+    "trigger": "Using PyG Data objects with functions expecting Batch",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Observed and fixed during ProteinSolver integration",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Phase 1 integration",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.609837",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [
+      "V-12"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "model_family": "proteinsolver",
+      "framework": "pytorch-geometric"
+    },
+    "keywords": [
+      "batch",
+      "data",
+      "pyg",
+      "crash",
+      "interface",
+      "proteinsolver"
+    ]
+  },
+  {
+    "id": "L-003",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Modern runtime != historical runtime equivalence",
+    "what_happened": "Initial reports described ProteinSolver execution as 'reproduced'. Hardening review identified this overclaimed historical numerical equivalence that was never tested.",
+    "lesson": "Use 'FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION'. Never claim historical runtime equivalence without actually comparing outputs against the original Python 3.6 / PyG 1.3 / Linux stack.",
+    "type": "DATA_PROVENANCE",
+    "scope": "project-wide",
+    "trigger": "Any claim about reproduction fidelity",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Hardening pass identified multiple instances across project docs",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Scientific hardening pass",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.631368",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [
+      "V-12",
+      "V-13"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "reproduction",
+      "equivalence",
+      "historical",
+      "fidelity",
+      "compatibility"
+    ]
+  },
+  {
+    "id": "L-004",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Single-target result is not a benchmark",
+    "what_happened": "41.30% recovery on 1n5uA03 (one 92-AA CATH domain) was at risk of being described as benchmark performance.",
+    "lesson": "A single-target result is a 'single-target all-masked inverse-folding integration result'. It is NOT benchmark accuracy, generalization performance, or representative of average behavior across folds.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Reporting evaluation results from fewer than a representative benchmark set",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "1n5uA03 result established in EXP000/EXP001",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Scientific hardening pass",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.655378",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP000_PROTEINSOLVER_SMOKETEST",
+      "EXP001_PROTEINSOLVER_INFERENCE"
+    ],
+    "related_files": [],
+    "related_claims": [
+      "V-13"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "benchmark",
+      "single-target",
+      "generalization",
+      "1n5uA03"
+    ]
+  },
+  {
+    "id": "L-005",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Training set membership is not verifiable from accessible metadata",
+    "what_happened": "Author's notebook checked '1.10.246.10' in cath_ids (False), but the full 72M training Parquet corpus is on an external cluster, not in git.",
+    "lesson": "Do not call 1n5uA03 'guaranteed held-out' or 'unseen'. Classify as 'NOT VERIFIABLE FROM ACCESSIBLE METADATA' unless full training data is directly queried.",
+    "type": "DATA_PROVENANCE",
+    "scope": "proteinsolver",
+    "trigger": "Any claim about training/test membership of a structure",
+    "evidence_status": "NOT_VERIFIABLE",
+    "evidence_scope": "Author's notebook check is suggestive but not definitive",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Provenance audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.674530",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [
+      "NV-01"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "model_family": "proteinsolver",
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "training",
+      "membership",
+      "held-out",
+      "contamination",
+      "1n5uA03",
+      "provenance"
+    ]
+  },
+  {
+    "id": "L-006",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Historical source repository must remain preserved and clean",
+    "what_happened": "All six compatibility issues (fcntl, kmtools, scatter_, Batch, key mapping, CPU placement) were resolved without modifying external/proteinsolver-original/.",
+    "lesson": "Never commit changes to external/proteinsolver-original/. All compatibility work belongs in external wrappers. Check git -C external/proteinsolver-original status before every project commit.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Any modification near external/ or compatibility shims",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Verified clean at commit 69ef0965",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Phase 1 integration",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.694023",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "external/proteinsolver-original/"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "development",
+        "commit"
+      ]
+    },
+    "keywords": [
+      "historical",
+      "source",
+      "preservation",
+      "external",
+      "clean"
+    ]
+  }
+]

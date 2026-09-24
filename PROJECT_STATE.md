@@ -59,6 +59,10 @@
     - Feature pipeline verified numerically identical on tested target 1n5uA03 (`max diff: 0.0`).
     - 41.30% result reclassified as single-target all-masked inverse-folding integration result.
     - Historical equivalence claim formulated as: FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION.
+- [x] **Milestone 2.5: Governance Foundation**
+  - `GOVERNANCE: IMPLEMENTED`: Lesson/Rule/Event architecture with 6 lessons, 8 rules, event log, and deterministic preflight.
+  - `GOVERNANCE: TESTED`: 83/83 tests pass covering schema validity, lifecycle, retrieval, applicability, conflict detection, AI boundaries, and all 6 ProteinSolver regression cases.
+  - `GOVERNANCE: DOCUMENTED`: Architecture doc, updated report index, team onboarding, AI agent rules.
 - [ ] **Milestone 3: ProteinMPNN Integration & Baseline Verification (Phase 2)**
   - Integrate official ProteinMPNN repository.
   - Execute sanity checks and baseline recovery on shared benchmark structures.

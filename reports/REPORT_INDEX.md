@@ -37,9 +37,21 @@
 | :--- | :--- | :--- | :--- |
 | `research/paper_vs_implementation.md` | `research/` | `reports/paper_vs_implementation.md` | Earlier version of the audit. Contains useful code-level detail but uses some overclaiming language that was corrected in the reports/ version. Preserved as historical reference. |
 
+## Governance
+
+| Document | Path | Purpose |
+| :--- | :--- | :--- |
+| **Architecture** | `governance/ARCHITECTURE.md` | Governance system design: Lesson/Rule/Event schemas, preflight, constraints |
+| **Lessons** | `governance/data/lessons.json` | All project lessons (6 seeded from Phase 1 failures) |
+| **Rules** | `governance/data/rules.json` | All governance rules (8 core rules) |
+| **Events** | `governance/data/events.jsonl` | Append-only audit trail |
+| **Tests** | `tests/test_governance.py` | Comprehensive test suite (83 tests) |
+| **Closure Report** | `reports/GOVERNANCE_FOUNDATION_CLOSURE_REPORT.md` | Final governance foundation closure |
+
 ## Live Progress
 
 | Document | Path | Purpose |
 | :--- | :--- | :--- |
 | **Live Progress** | `reports/AG_LIVE_PROGRESS.md` | Human-readable progress tracker |
 | **Run State JSON** | `reports/AG_RUN_STATE.json` | Machine-readable progress state |
+

@@ -1,0 +1,245 @@
+[
+  {
+    "id": "R-001",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Require all-masked setup for valid inverse-folding recovery claims",
+    "description": "Any experiment claiming sequence recovery must verify that all residues were masked (data.x=20, data.y=None). Native-visible results are diagnostic scoring only.",
+    "source_lesson": "L-001",
+    "scope": "project-wide",
+    "applicability_conditions": {
+      "pipeline_stage": [
+        "evaluation",
+        "inference",
+        "design"
+      ]
+    },
+    "priority": "MUST",
+    "enforcement_level": "AUTOMATED",
+    "check_pointer": "tests/test_governance.py::test_native_visible_not_valid_recovery",
+    "owner": "project-lead",
+    "override_policy": "Requires project lead written approval with justification",
+    "supersedes": "",
+    "review_trigger": "New model integration or new evaluation protocol",
+    "governance_lifecycle": "ACTIVE",
+    "created_at": "2026-09-24T23:48:56.695023",
+    "last_reviewed": "",
+    "keywords": [
+      "recovery",
+      "mask",
+      "leakage",
+      "evaluation"
+    ]
+  },
+  {
+    "id": "R-002",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Use Batch.from_data_list for ProteinSolver design_sequence",
+    "description": "Always wrap PyG Data objects with Batch.from_data_list([data]) before calling design_sequence or other batch-expecting functions.",
+    "source_lesson": "L-002",
+    "scope": "proteinsolver",
+    "applicability_conditions": {
+      "model_family": "proteinsolver",
+      "framework": "pytorch-geometric"
+    },
+    "priority": "MUST",
+    "enforcement_level": "AUTOMATED",
+    "check_pointer": "tests/test_governance.py::test_batch_interface_requirement",
+    "owner": "project-lead",
+    "override_policy": "Only if alternative batching mechanism is verified equivalent",
+    "supersedes": "",
+    "review_trigger": "PyG version upgrade or ProteinSolver wrapper refactor",
+    "governance_lifecycle": "ACTIVE",
+    "created_at": "2026-09-24T23:48:56.711822",
+    "last_reviewed": "",
+    "keywords": [
+      "batch",
+      "data",
+      "pyg",
+      "interface",
+      "proteinsolver"
+    ]
+  },
+  {
+    "id": "R-003",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Use correct reproduction wording",
+    "description": "Never claim 'historical equivalence' or '100% mathematical fidelity'. Use 'FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION' unless historical-stack numerical comparison is performed.",
+    "source_lesson": "L-003",
+    "scope": "project-wide",
+    "applicability_conditions": {
+      "pipeline_stage": [
+        "reporting",
+        "evaluation"
+      ]
+    },
+    "priority": "MUST",
+    "enforcement_level": "MANUAL",
+    "check_pointer": "tests/test_governance.py::test_reproduction_wording",
+    "owner": "project-lead",
+    "override_policy": "Only with evidence from historical-stack comparison",
+    "supersedes": "",
+    "review_trigger": "If historical environment becomes available for comparison",
+    "governance_lifecycle": "ACTIVE",
+    "created_at": "2026-09-24T23:48:56.727600",
+    "last_reviewed": "",
+    "keywords": [
+      "reproduction",
+      "equivalence",
+      "wording",
+      "fidelity"
+    ]
+  },
+  {
+    "id": "R-004",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Single-target results cannot be described as benchmarks",
+    "description": "Results from fewer targets than a representative benchmark set must be classified as integration results, not benchmark accuracy or generalization performance.",
+    "source_lesson": "L-004",
+    "scope": "project-wide",
+    "applicability_conditions": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "priority": "MUST",
+    "enforcement_level": "MANUAL",
+    "check_pointer": "tests/test_governance.py::test_single_target_not_benchmark",
+    "owner": "project-lead",
+    "override_policy": "Only when full benchmark set is evaluated",
+    "supersedes": "",
+    "review_trigger": "Multi-target evaluation begins",
+    "governance_lifecycle": "ACTIVE",
+    "created_at": "2026-09-24T23:48:56.747735",
+    "last_reviewed": "",
+    "keywords": [
+      "benchmark",
+      "single-target",
+      "generalization"
+    ]
+  },
+  {
+    "id": "R-005",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Do not claim training membership without direct verification",
+    "description": "Never describe a structure as 'held-out', 'unseen', or 'guaranteed not in training' unless training data is directly queried. Use 'NOT VERIFIABLE FROM ACCESSIBLE METADATA'.",
+    "source_lesson": "L-005",
+    "scope": "project-wide",
+    "applicability_conditions": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "priority": "MUST",
+    "enforcement_level": "MANUAL",
+    "check_pointer": "tests/test_governance.py::test_training_membership_uncertainty",
+    "owner": "project-lead",
+    "override_policy": "Only with direct training data query results",
+    "supersedes": "",
+    "review_trigger": "Training data becomes accessible",
+    "governance_lifecycle": "ACTIVE",
+    "created_at": "2026-09-24T23:48:56.753827",
+    "last_reviewed": "",
+    "keywords": [
+      "training",
+      "membership",
+      "held-out",
+      "contamination"
+    ]
+  },
+  {
+    "id": "R-006",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Historical source must remain unmodified",
+    "description": "external/proteinsolver-original/ must have zero modifications. Verify with git status before every commit. All compatibility work goes in external wrappers.",
+    "source_lesson": "L-006",
+    "scope": "project-wide",
+    "applicability_conditions": {
+      "pipeline_stage": [
+        "development",
+        "commit"
+      ]
+    },
+    "priority": "MUST",
+    "enforcement_level": "AUTOMATED",
+    "check_pointer": "tests/test_governance.py::test_historical_source_clean",
+    "owner": "project-lead",
+    "override_policy": "Never. If source needs modification, fork into a new directory.",
+    "supersedes": "",
+    "review_trigger": "Any commit touching external/",
+    "governance_lifecycle": "ACTIVE",
+    "created_at": "2026-09-24T23:48:56.770808",
+    "last_reviewed": "",
+    "keywords": [
+      "historical",
+      "source",
+      "preservation",
+      "external"
+    ]
+  },
+  {
+    "id": "R-007",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Distinguish evidence scope from application scope",
+    "description": "A claim verified on one target/condition must not be applied to broader contexts without explicit EXTRAPOLATION_REVIEW_REQUIRED flag.",
+    "source_lesson": "L-004",
+    "scope": "project-wide",
+    "applicability_conditions": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "priority": "SHOULD",
+    "enforcement_level": "MANUAL",
+    "check_pointer": "",
+    "owner": "project-lead",
+    "override_policy": "Explicit documentation of extrapolation rationale",
+    "supersedes": "",
+    "review_trigger": "Any claim applied outside its demonstrated scope",
+    "governance_lifecycle": "ACTIVE",
+    "created_at": "2026-09-24T23:48:56.788826",
+    "last_reviewed": "",
+    "keywords": [
+      "scope",
+      "extrapolation",
+      "evidence",
+      "claim"
+    ]
+  },
+  {
+    "id": "R-008",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "AI agents cannot self-promote lessons or override governance",
+    "description": "Agents may propose lessons and identify conflicts but cannot promote lessons to rules, change governance status, broaden scope, or resolve contradictory evidence autonomously.",
+    "source_lesson": "",
+    "scope": "project-wide",
+    "applicability_conditions": {},
+    "priority": "MUST",
+    "enforcement_level": "AUTOMATED",
+    "check_pointer": "tests/test_governance.py::test_ai_cannot_self_promote",
+    "owner": "project-lead",
+    "override_policy": "Never. This is a structural constraint.",
+    "supersedes": "",
+    "review_trigger": "Any governance system modification",
+    "governance_lifecycle": "ACTIVE",
+    "created_at": "2026-09-24T23:48:56.805907",
+    "last_reviewed": "",
+    "keywords": [
+      "ai",
+      "agent",
+      "promotion",
+      "governance",
+      "boundary"
+    ]
+  }
+]

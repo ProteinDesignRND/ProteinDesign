@@ -82,6 +82,12 @@ Protein Design/
 │   ├── EXP001_PROTEINSOLVER_INFERENCE/
 │   └── EXP004_MASK_INVARIANCE/
 ├── reports/                       # Analysis reports and audit documents
+├── governance/                    # Lesson/Rule/Event governance system
+│   ├── ARCHITECTURE.md           # How the governance system works
+│   ├── data/                     # Lessons, rules, events (JSON)
+│   └── preflight.py              # Run preflight checks
+├── tests/
+│   └── test_governance.py        # Governance test suite (83 tests)
 ├── research/                      # Literature review and paper audits
 ├── science/                       # Evaluation protocol, datasets docs
 ├── architecture/                  # Architecture documentation

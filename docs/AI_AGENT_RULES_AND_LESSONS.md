@@ -98,6 +98,21 @@ experiments/EXP_NNN_NAME/
 ### 20. Project identity must never be mixed with another project
 This repository is **Protein Design**. It is not Ocean Sentinel or any other project. Do not import architecture, terminology, assumptions, datasets, or decisions from other projects.
 
+### 21. Run governance preflight before experiments
+Before starting any experiment or reporting any result, run `python -c "from governance.store import GovernanceStore; from governance.preflight import run_preflight, format_preflight; print(format_preflight(run_preflight(GovernanceStore(), {'pipeline_stage': 'YOUR_STAGE', 'model_family': 'YOUR_MODEL'})))"`. Check MUST rules.
+
+### 22. Fix related issues together in one pass
+When you find a problem, search the entire repository for the same pattern. Fix all instances in one coherent pass instead of fixing one and leaving others for future sessions to rediscover.
+
+### 23. Never report a diagnostic as an evaluation
+If native residues were visible during inference (e.g., via `data.y`), the output is diagnostic scoring. If you write "sequence recovery" anywhere in a report, verify the setup was truly all-masked.
+
+### 24. Do not create governance complexity without demonstrated need
+Every lesson, rule, or check must address a real problem that already happened or is concretely likely. Do not invent governance infrastructure preemptively.
+
+### 25. AI agents may propose lessons but cannot promote them
+Submit new lessons as `governance_lifecycle="PROPOSED"`. Only human review can change a lesson to ACTIVE or promote it into a rule. See `governance/ARCHITECTURE.md`.
+
 ---
 
 ## Error Recovery Rules

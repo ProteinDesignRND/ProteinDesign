@@ -77,3 +77,14 @@ This document chronologically logs all major architectural, methodological, and 
 - **Alternatives Considered:** Asserting "100% mathematical fidelity" or claiming 41.30% as benchmark generalization.
 - **Rationale:** Demarcating exact empirical boundaries avoids overclaiming and ensures strict fidelity to the scientific method.
 - **Consequences:** Robust, audited foundation for subsequent Phase 2 comparison with ProteinMPNN.
+
+---
+
+## [DEC-008] Lightweight Governance Architecture (Lesson/Rule/Event)
+- **Date:** 2026-09-24
+- **Decision:** Implement a three-entity governance architecture (Lesson, Rule, Event) using repository-native JSON storage with deterministic preflight retrieval. Seed with 6 lessons and 8 rules encoding the real ProteinSolver failure cases from Phase 1.
+- **Context:** The project experienced multiple wasted cycles rediscovering the same failures: information leak misreporting, Data/Batch interface mismatch, overclaimed reproduction fidelity, single-target benchmark escalation. These needed durable, machine-readable regression protection.
+- **Alternatives Considered:** Ocean Sentinel's full governance architecture (too complex); ad-hoc markdown rules only (no machine-readable retrieval); embedding-based RAG system (unnecessary infrastructure).
+- **Rationale:** The architecture must remain lightweight enough for a 5-person student team while preventing the specific catastrophic mistakes that already occurred. Three entities (Lesson, Rule, Event) cover all governance needs without taxonomy explosion. Deterministic context-based retrieval is sufficient and explainable.
+- **Constraints Enforced:** No embeddings, no vector databases, no autonomous lesson promotion, no numeric trust scores, no cross-project federation. PROPOSED lessons cannot block execution. Only human review promotes lessons to rules.
+- **Consequences:** 83/83 governance tests pass. All 6 ProteinSolver regression cases are encoded as durable lessons with corresponding rules. Preflight system produces MUST/SHOULD/FYI output with coverage summary.
