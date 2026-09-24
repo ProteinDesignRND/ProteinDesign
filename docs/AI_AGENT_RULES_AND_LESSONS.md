@@ -156,3 +156,19 @@ This project uses multiple AI systems with distinct roles:
 2. **Gemini inside Antigravity is NOT an independent reviewer.** It is the executor. Independent review comes from Claude, ChatGPT, or Perplexity.
 3. **Do not duplicate all work across AI systems.** Each system has a specific role. Use the right tool for the right task.
 4. **Independent AI systems challenge conclusions.** The executor proposes; the reviewers critique.
+
+---
+
+## Durable Principles (Permanent Governance Memory)
+
+1. **Unit-tested != Integrated**: A requirement is not integrated simply because a unit test passes. Production workflows (e.g. experiment runners, reporting pipelines) must actively invoke the governance checks.
+2. **Documented != Enforced**: Writing a rule or policy in markdown does not enforce it. Rules require explicit machine evaluation (`run_preflight`, `verify_integrity`, `evaluate_claim`) or automated checks.
+3. **Diagnostic != Evaluation**: When native residues are visible to the model (e.g. via `data.y` or partial masks), the run is a diagnostic score, NOT sequence recovery. Valid inverse-folding recovery strictly requires all positions masked (`data.x = 20`, `data.y = None`).
+4. **One Target != Benchmark**: A result on a single structure (such as 41.30% on 1n5uA03) is a single-target integration result. It must never be described as benchmark performance, generalization, or fold-representative.
+5. **Unknown Membership != Held-Out**: When training corpus data cannot be directly queried, membership is "NOT VERIFIABLE FROM ACCESSIBLE METADATA". Never describe a target as "held-out" or "unseen" without direct corpus proof.
+6. **Modern Compatibility != Historical Equivalence**: Functional reproduction on a modern Python/PyTorch stack does not prove numerical equivalence to historical Linux/PyG 1.3 runs. Always claim "FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION".
+7. **Direct-File Edits Can Bypass Weak Governance**: Directly editing JSON files (`lessons.json`, `rules.json`) bypasses store API logic. The store must maintain repository-level integrity validation (`store.verify_integrity()`) to detect unauthorized mutations or missing safety rules.
+8. **AI Cannot Self-Promote**: AI agents may propose lessons and surface conflicts, but can NEVER autonomously promote lessons to ACTIVE rules, escalate priority (SHOULD -> MUST), or override blockers.
+9. **Unknown Context Must Be Visible**: Incomplete context must never silently mean "no rules apply". Missing context dimensions and novel context values must be surfaced visibly as review warnings.
+10. **Negative Validation Matters**: A failed check or contradicted hypothesis is essential project knowledge. Negative validation events (`RULE_FAILED`, `LESSON_CONTRADICTED`) must be preserved in the append-only event log.
+11. **Recurring Failures Must Update Existing Knowledge**: When a known failure repeats, link it to the existing lesson or rule (`find_potential_duplicates`), update its recurrence record, or supersede it—do not create disconnected duplicate lessons.

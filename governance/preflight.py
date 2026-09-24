@@ -65,18 +65,44 @@ def _precedence_rank(scope: str) -> int:
     return 99
 
 
-def run_preflight(store: GovernanceStore, context: dict) -> dict:
+def run_preflight(
+    store: GovernanceStore,
+    context: Optional[dict] = None,
+    auto_derive: bool = False,
+    check_integrity: bool = False,
+) -> dict:
     """
     Run deterministic preflight check.
 
     Args:
         store: GovernanceStore instance.
-        context: Dict of context fields (model_family, pipeline_stage, etc.)
+        context: Dict of declared context fields (model_family, pipeline_stage, etc.)
+        auto_derive: If True, safely derive git and runtime environment context.
+        check_integrity: If True, run store integrity check for direct-mutation bypass.
 
     Returns:
         Dict with tiers (MUST, SHOULD, FYI), coverage summary,
-        conflicts, and novel conditions.
+        conflicts, novel conditions, context provenance, and integrity violations.
     """
+    declared_context = dict(context or {})
+    derived_context = {}
+    context_provenance = {}
+
+    if auto_derive:
+        from governance.context import derive_context
+        ctx_data = derive_context(declared_context=declared_context)
+        derived_context = ctx_data["derived"]
+        effective_context = ctx_data["effective"]
+        context_provenance = ctx_data["provenance"]
+    else:
+        effective_context = declared_context
+        for k in declared_context:
+            context_provenance[k] = "DECLARED"
+
+    integrity_violations = []
+    if check_integrity:
+        integrity_violations = store.verify_integrity(check_baseline=False)
+
     rules = store.load_rules()
     lessons = store.load_lessons()
 
@@ -91,7 +117,11 @@ def run_preflight(store: GovernanceStore, context: dict) -> dict:
             "novel_conditions": [],
         },
         "conflicts": [],
-        "context_provided": context,
+        "integrity_violations": integrity_violations,
+        "context_provided": effective_context,
+        "context_declared": declared_context,
+        "context_derived": derived_context,
+        "context_provenance": context_provenance,
     }
 
     # Process rules
@@ -144,11 +174,15 @@ def run_preflight(store: GovernanceStore, context: dict) -> dict:
         if tier == "MUST" and rule.get("governance_lifecycle") == "ACTIVE":
             active_must_rules.append(entry)
 
-    # Detect MUST-MUST conflicts (same scope, contradictory)
+    # Detect MUST-MUST conflicts (narrow/task/subsystem scope with multiple competing MUST rules)
     must_by_scope = {}
     for r in active_must_rules:
         scope = rules.get(r["rule_id"], {}).get("scope", "")
+        # Global project-wide and integrity rules coexist as complementary standards
+        if scope.lower() in ("project-wide", "integrity", "integrity_safety", "universal"):
+            continue
         must_by_scope.setdefault(scope, []).append(r)
+
     for scope, scope_rules in must_by_scope.items():
         if len(scope_rules) > 1:
             ids = [r["rule_id"] for r in scope_rules]
@@ -231,10 +265,20 @@ def format_preflight(result: dict) -> str:
     lines = ["=" * 60, "PREFLIGHT CHECK RESULTS", "=" * 60, ""]
 
     # Context
-    lines.append("Context:")
+    lines.append("Context (Effective):")
     for k, v in result.get("context_provided", {}).items():
-        lines.append(f"  {k}: {v}")
+        prov = result.get("context_provenance", {}).get(k, "UNKNOWN")
+        lines.append(f"  [{prov}] {k}: {v}")
     lines.append("")
+
+    # Integrity Violations (Critical)
+    violations = result.get("integrity_violations", [])
+    if violations:
+        lines.append("--- CRITICAL INTEGRITY VIOLATIONS (DIRECT BYPASS DETECTED) ---")
+        for v in violations:
+            lines.append(f"  [X] {v}")
+        lines.append("ACTION REQUIRED: Direct-file mutation detected! Restore store integrity.")
+        lines.append("")
 
     # Tiers
     for tier in ["MUST", "SHOULD", "FYI"]:

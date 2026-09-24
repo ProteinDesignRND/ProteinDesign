@@ -29,8 +29,13 @@ refactor: extract shared graph construction utilities
 2. **Experiment PRs** must include complete `metrics.json` and `run_log.txt`.
 3. **No force-pushing.** History must be preserved.
 4. **No direct pushes** to the main working branch without review.
-5. **Regression check**: if you modify compatibility shims, verify the baseline still passes:
+5. **Governance preflight**: Before running experiments or reporting, evaluate governance rules:
    ```powershell
+   .\environment\proteinsolver-original\Scripts\python.exe governance/preflight_cli.py --stage evaluation
+   ```
+6. **Regression check**: verify all tests pass:
+   ```powershell
+   uv run --python environment/proteinsolver-original/Scripts/python.exe pytest tests/
    .\environment\proteinsolver-original\Scripts\python.exe test_original_execution.py
    ```
 

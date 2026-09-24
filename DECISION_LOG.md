@@ -88,3 +88,14 @@ This document chronologically logs all major architectural, methodological, and 
 - **Rationale:** The architecture must remain lightweight enough for a 5-person student team while preventing the specific catastrophic mistakes that already occurred. Three entities (Lesson, Rule, Event) cover all governance needs without taxonomy explosion. Deterministic context-based retrieval is sufficient and explainable.
 - **Constraints Enforced:** No embeddings, no vector databases, no autonomous lesson promotion, no numeric trust scores, no cross-project federation. PROPOSED lessons cannot block execution. Only human review promotes lessons to rules.
 - **Consequences:** 83/83 governance tests pass. All 6 ProteinSolver regression cases are encoded as durable lessons with corresponding rules. Preflight system produces MUST/SHOULD/FYI output with coverage summary.
+
+---
+
+## [DEC-009] Final Governance Hardening, Direct-Bypass Protection, and Workflow Integration
+- **Date:** 2026-09-25
+- **Decision:** Harden the governance foundation against direct-file bypass, integrate automatic preflight into experiment templates, provide a preflight CLI, implement claim-level extrapolation evaluation, support retraction audits, and enable standard pytest discovery.
+- **Context:** The final acceptance red-team audit revealed that while schemas and preflight functions existed, governance was not invoked by `experiments/TEMPLATE/run.py`, direct edits to JSON files could silently mutate rules, pytest could not collect tests, and claims lacked a machine validator for extrapolation.
+- **Alternatives Considered:** Relying only on manual Python script execution without CLI; ignoring direct JSON file mutations; adding complex cryptographic hashing (rejected in favor of event log consistency and mandatory rule validation).
+- **Rationale:** A requirement is not integrated simply because a unit test exists. Integrating preflight into the experiment template guarantees that every new experiment runs safety checks and logs `RULE_APPLIED` events. Store integrity checks prevent accidental or adversarial mutation.
+- **Consequences:** 109/109 assertions pass across 25 pytest-collected test functions. Preflight CLI (`governance/preflight_cli.py`) available. `experiments/TEMPLATE/run.py` automatically evaluates preflight and records audit trail. All 6 ProteinSolver regressions protected with bad and good case verification.
+

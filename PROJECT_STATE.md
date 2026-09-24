@@ -59,10 +59,12 @@
     - Feature pipeline verified numerically identical on tested target 1n5uA03 (`max diff: 0.0`).
     - 41.30% result reclassified as single-target all-masked inverse-folding integration result.
     - Historical equivalence claim formulated as: FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION.
-- [x] **Milestone 2.5: Governance Foundation**
-  - `GOVERNANCE: IMPLEMENTED`: Lesson/Rule/Event architecture with 6 lessons, 8 rules, event log, and deterministic preflight.
-  - `GOVERNANCE: TESTED`: 83/83 tests pass covering schema validity, lifecycle, retrieval, applicability, conflict detection, AI boundaries, and all 6 ProteinSolver regression cases.
-  - `GOVERNANCE: DOCUMENTED`: Architecture doc, updated report index, team onboarding, AI agent rules.
+- [x] **Milestone 2.5: Governance Foundation & Final Red-Team Acceptance**
+  - `GOVERNANCE: IMPLEMENTED & HARDENED`: Lesson/Rule/Event architecture with 6 lessons, 8 rules, append-only event log, and deterministic preflight.
+  - `GOVERNANCE: TESTED`: 109/109 assertions pass across 25 pytest test suites (0 failures, 0 warnings) covering schema, retrieval, conflict resolution, store integrity against direct-file bypass, and all 6 ProteinSolver regressions with bad and good case verification.
+  - `GOVERNANCE: INTEGRATED`: Automatic preflight hooked into `experiments/TEMPLATE/run.py` (logging `RULE_APPLIED` events); CLI available at `governance/preflight_cli.py`.
+  - `GOVERNANCE: CLAIM PROTECTION`: Machine evaluation of claim scope, extrapolation detection (`EXTRAPOLATION_REVIEW_REQUIRED`), and retraction audit (`audit_retraction`).
+  - `GOVERNANCE: DOCUMENTED`: Complete reconciliation across DECISION_LOG, ARCHITECTURE, AI_AGENT_RULES_AND_LESSONS, and TEAM_ONBOARDING.
 - [ ] **Milestone 3: ProteinMPNN Integration & Baseline Verification (Phase 2)**
   - Integrate official ProteinMPNN repository.
   - Execute sanity checks and baseline recovery on shared benchmark structures.

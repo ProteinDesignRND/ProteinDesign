@@ -45,8 +45,10 @@
 | **Lessons** | `governance/data/lessons.json` | All project lessons (6 seeded from Phase 1 failures) |
 | **Rules** | `governance/data/rules.json` | All governance rules (8 core rules) |
 | **Events** | `governance/data/events.jsonl` | Append-only audit trail |
-| **Tests** | `tests/test_governance.py` | Comprehensive test suite (83 tests) |
-| **Closure Report** | `reports/GOVERNANCE_FOUNDATION_CLOSURE_REPORT.md` | Final governance foundation closure |
+| **Preflight CLI** | `governance/preflight_cli.py` | Command-line preflight check tool |
+| **Tests** | `tests/test_governance.py` | Comprehensive test suite (109 assertions across 25 pytest test suites) |
+| **Foundation Closure** | `reports/GOVERNANCE_FOUNDATION_CLOSURE_REPORT.md` | Foundation closure report (superseded by Final Acceptance Report) |
+| **Final Acceptance Report** | `reports/GOVERNANCE_FINAL_ACCEPTANCE_REPORT.md` | Final red-team acceptance and hardening report |
 
 ## Live Progress
 

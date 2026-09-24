@@ -82,3 +82,10 @@ PRECEDENCE_ORDER = [
 
 # --- Preflight Tiers ---
 PREFLIGHT_TIERS = {"MUST", "SHOULD", "FYI"}
+
+# --- Key Class & Function Exports ---
+from governance.schemas import Lesson, Rule, Event
+from governance.store import GovernanceStore
+from governance.preflight import run_preflight, format_preflight
+from governance.context import derive_context
+from governance.claim import evaluate_claim
