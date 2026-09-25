@@ -1,11 +1,12 @@
 # Antigravity Live Progress
 
-**Task:** Final Documentation Consistency Cleanup (PROTEIN-DESIGN-FINAL-DOC-CONSISTENCY-CLEANUP-V1)  
+**Task:** Final Foundation Integrity & Transition Gate (PROTEIN-DESIGN-FINAL-FOUNDATION-INTEGRITY-TRANSITION-GATE-V2)  
 **Agent:** Gemini 3.8 Flash High  
-**Started:** 2026-09-25T15:28:40+05:30  
-**Updated:** 2026-09-25T15:33:00+05:30  
+**Started:** 2026-09-25T16:00:48+05:30  
+**Updated:** 2026-09-25T16:08:45+05:30  
 **Status:** COMPLETE  
 **Freeze Classification:** FOUNDATION_FROZEN_WITH_LIMITATIONS  
+**Transition Status:** READY_FOR_PROTEINMPNN_INTEGRATION  
 
 ---
 
@@ -13,15 +14,17 @@
 
 | Phase | Status | Details |
 | :--- | :--- | :--- |
-| **PHASE 0: Documentation Audit** | ✅ COMPLETE | Audited TEAM_ONBOARDING.md, CONTRIBUTING.md, REPORT_INDEX.md, PROJECT_STATE.md, and DECISION_LOG.md for branch and authority consistency. |
-| **PHASE 1: Correction** | ✅ COMPLETE | Reconciled branch structure (`main` = stable integration branch, feature/governance = development); moved pre-governance handoff to superseded in REPORT_INDEX; registered GOVERNANCE_RELEASE_GATE_REPORT.md as sole freeze authority; added DEC-010. |
-| **PHASE 2: Test Verification** | ✅ COMPLETE | Verified 25/25 pytest suites pass (0.76s); verified 109/109 direct assertions pass (0 failures, 0 warnings); verified historical repo clean at `69ef0965`. |
-| **PHASE 3: Final Freeze Confirmation** | ✅ COMPLETE | Clean documentation reconciliation committed; foundation confirmed frozen with limitations; repository ready for ProteinMPNN integration. |
+| **PASS A: Comprehensive Discovery** | ✅ COMPLETE | Verified git baseline; confirmed external repo is nested clone (NOT submodule); audited all 4 knowledge layers; discovered snapshot commit label discrepancies, colloquial phrasing in metrics.md, and workstream ownership nuances. |
+| **PASS B: Classification Matrix** | ✅ COMPLETE | Grouped findings into 5 actionable categories (submodule vs clone, snapshot commit disambiguation, metric wording, workstream reality, transition report indexing) without manufacturing false lessons. |
+| **PASS C: Coherent Batch Fix** | ✅ COMPLETE | Applied all corrections together in one pass: updated GOVERNANCE_RELEASE_GATE_REPORT.md commit labels, refined science/metrics.md, added organizational reality note to TEAM_WORKSTREAMS.md, updated TEAM_ONBOARDING.md Section 19. |
+| **PASS D: Verification & Adversarial Replay**| ✅ COMPLETE | Full pytest suite passed (25/25 suites in 0.77s); direct assertions passed (109/109); live GPU baseline verified (41.30% recovery on 1n5uA03); EXP004 mask invariance audit verified (logit diff 0.0); preflight CLI and experiment runner verified. |
+| **PASS E: Final Sweep & Transition Report** | ✅ COMPLETE | Authoritative final report published at `reports/FINAL_FOUNDATION_INTEGRITY_AND_TRANSITION_GATE_REPORT.md` and indexed in `reports/REPORT_INDEX.md`; working tree clean. |
 
 ---
 
 ## Git & Repository State
 - **Branch:** `governance/final-acceptance-redteam-v1`  
 - **Base (main):** `e9b2c0e` (untouched)  
-- **External Submodule:** `external/proteinsolver-original` clean at `69ef0965`  
+- **Historical Repo:** `external/proteinsolver-original` (nested clone, NOT submodule, clean at `69ef0965`)  
+- **Remote:** `origin` configured to `https://github.com/dheeraj-7ty/ProteinDesign.git` (no push, no merge)  
 - **Next Phase:** Phase 2 / Milestone 3 (ProteinMPNN Integration & Baseline Verification)

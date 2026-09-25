@@ -8,7 +8,8 @@
 | **Phase 1 Reproduction** | `reports/PHASE1_PROTEINSOLVER_REPRODUCTION.md` | Complete E0 verification and hardening report |
 | **Provenance Manifest** | `reports/PROTEINSOLVER_PROVENANCE_MANIFEST.md` | Exact commit, hashes, environment, and compatibility layer documentation |
 | **Paper vs. Implementation** | `reports/paper_vs_implementation.md` | Systematic audit of paper claims vs. code reality |
-| **Governance Release Gate** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Final release-gate audit and foundation freeze report (**Sole Current Freeze Authority**) |
+| **Transition Gate Report** | `reports/FINAL_FOUNDATION_INTEGRITY_AND_TRANSITION_GATE_REPORT.md` | Authoritative final foundation integrity and transition-gate report (**Sole Current Transition Authority**) |
+| **Governance Release Gate** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Foundation freeze audit report (**Foundation Freeze Authority**) |
 
 ## Reference Documents (Supporting Evidence)
 
@@ -50,7 +51,8 @@
 | **Events** | `governance/data/events.jsonl` | Append-only audit trail |
 | **Preflight CLI** | `governance/preflight_cli.py` | Command-line preflight check tool |
 | **Tests** | `tests/test_governance.py` | Comprehensive test suite (109 assertions across 25 pytest test suites) |
-| **Release Gate Report** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Final release-gate audit and foundation freeze report (**Sole Current Freeze Authority**) |
+| **Transition Gate Report** | `reports/FINAL_FOUNDATION_INTEGRITY_AND_TRANSITION_GATE_REPORT.md` | Authoritative final foundation integrity and transition-gate report (**Sole Current Transition Authority**) |
+| **Release Gate Report** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Final release-gate audit and foundation freeze report (**Foundation Freeze Authority**) |
 | **Final Acceptance Report** | `reports/GOVERNANCE_FINAL_ACCEPTANCE_REPORT.md` | Final red-team acceptance report (Historical; superseded by Release Gate Report) |
 | **Foundation Closure** | `reports/GOVERNANCE_FOUNDATION_CLOSURE_REPORT.md` | Foundation closure report (Historical; superseded by Release Gate Report) |
 

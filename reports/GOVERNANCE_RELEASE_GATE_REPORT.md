@@ -5,7 +5,7 @@
 **Auditor / Agent:** Gemini 3.8 Flash High  
 **Environment:** Antigravity IDE 2.0  
 **Branch:** `governance/final-acceptance-redteam-v1`  
-**Current HEAD Commit:** `ceb86d0`  
+**Freeze-Audit Snapshot Commit:** `fc236f9` (Initial audit snapshot: `ceb86d0`)  
 **Base Commit (main):** `e9b2c0e`  
 **Historical Source Repository:** `external/proteinsolver-original` (Clean, commit `69ef0965a3fc3bf191804035b539720a06e58ba6`)  
 
@@ -200,8 +200,11 @@ The following limitations are explicitly documented and remain active:
 
 - **Active Branch:** `governance/final-acceptance-redteam-v1`
 - **Base Commit (main):** `e9b2c0e1e221a5ad7cbe3ab7017824befebc22cd` (untouched, ancestor of feature branch)
-- **External Submodule/Repo:** `external/proteinsolver-original` clean at `69ef0965a3fc3bf191804035b539720a06e58ba6`
-- **Working Tree:** Clean (all modifications committed or tracked in this release gate pass)
+- **Freeze-Audit Initial Snapshot:** `ceb86d0`
+- **Freeze-Audit Commit:** `fc236f9`
+- **Documentation Reconciliation Commit:** `ceeaa34`
+- **Historical Repository:** `external/proteinsolver-original` (external repository clone, NOT a git submodule; clean at `69ef0965a3fc3bf191804035b539720a06e58ba6`)
+- **Working Tree:** Clean
 - **Remote Operations:** No push or force-push executed.
 
 ---

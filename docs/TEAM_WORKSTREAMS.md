@@ -1,5 +1,8 @@
 # Team Workstreams
 
+> [!NOTE]
+> **Current Organizational Reality**: Workstreams B through E represent conceptual planning boundaries for future expansion. At present, the lead AI developer/integrator is the sole active operator in the repository; human teammates have not yet been assigned individual technical work. All current foundation and baseline work is handled through the single integration pathway.
+
 These are starting boundaries for dividing work. They are not immutable. If your work naturally crosses into another workstream, coordinate with the owner of that workstream and document the shared interface before making cross-workstream changes.
 
 ---

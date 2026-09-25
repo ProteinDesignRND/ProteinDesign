@@ -204,12 +204,12 @@ research/training-set-audit
 
 ## 19. Current workstreams
 
-See `docs/TEAM_WORKSTREAMS.md` for the full breakdown. Summary:
-- **A**: Research lead / integration (project lead)
-- **B**: Modern inverse-folding baselines (ProteinMPNN integration)
-- **C**: Structural validation (AlphaFold/ESMFold self-consistency)
-- **D**: Candidate selection / multi-objective analysis
-- **E**: Evaluation / statistics / visualization
+Workstreams B through E represent conceptual planning tracks for future expansion. At present, the lead AI developer/integrator is the sole active operator in the repository; human teammates have not yet been assigned individual technical roles. See `docs/TEAM_WORKSTREAMS.md` for full breakdown:
+- **A**: Research lead / integration (sole active operator currently)
+- **B**: Modern inverse-folding baselines (ProteinMPNN integration - queued next phase)
+- **C**: Structural validation (AlphaFold/ESMFold self-consistency - future)
+- **D**: Candidate selection / multi-objective analysis (future)
+- **E**: Evaluation / statistics / visualization (future)
 
 ## 20. How to hand work back to the lead
 

@@ -26,7 +26,7 @@ This document establishes the mathematical definitions, operational implementati
 
 ### A. Why Sequence Recovery (AAR) is NOT Sufficient
 - **Biological Reality:** Protein folding landscapes are degenerate. Many distinct sequence families fold into identical topologies (e.g., the Globin fold, TIM barrels).
-- **Project Implication:** ProteinSolver has a lower AAR (~33%) than ProteinMPNN (~51%). If we only evaluate AAR, ProteinSolver is guaranteed to lose by definition. However, if ProteinSolver samples structurally viable alternative sequences that ProteinMPNN ignores, it may provide genuine diversity benefits. Therefore, **scRMSD + scTM must take precedence over AAR**.
+- **Project Implication:** ProteinSolver has a lower average reported AAR (~33%) than ProteinMPNN (~51%). If we only evaluate AAR, ProteinSolver will predictably underperform on this metric alone by definition. However, if ProteinSolver samples structurally viable alternative sequences that ProteinMPNN ignores, it may provide genuine diversity benefits. Therefore, **scRMSD + scTM must take precedence over AAR**.
 
 ### B. Why Sequence Diversity Requires a Gatekeeper
 - Any model can achieve 100% diversity by emitting uniform random characters from the 20 amino acid alphabet.
