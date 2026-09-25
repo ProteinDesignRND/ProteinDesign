@@ -3,13 +3,16 @@
 ## Project Identity
 - **Project Name:** Protein Design / ProteinSolver Research Extension
 - **Parent Foundational Work:** Strokach et al., 2020, *"Fast and Flexible Protein Design Using Deep Graph Neural Networks"*, Cell Systems 11(4): 402–411.e4.
-- **Current Phase:** Phase 1.5 — E0 Scientific Hardening & Verification Audit
-- **Current Branch:** `research/ai-research-bootstrap`
+- **Current Phase:** Foundation Frozen (Milestone 2.5 Complete) — Ready for Phase 2 / Milestone 3 (ProteinMPNN Integration & Baseline Verification)
+- **Current Branch:** `governance/final-acceptance-redteam-v1`
+- **Integration Branch:** `main`
+- **Governance Freeze Status:** FOUNDATION_FROZEN_WITH_LIMITATIONS
 - **Date Created / Initialized:** 2026-09-24
 - **Milestone Labels:**
   - `E0-RUNTIME`: **COMPLETE**
   - `E0-SCIENTIFIC-HARDENING`: **COMPLETE**
   - `E0-EQUIVALENCE-STATUS`: **FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION**
+  - `GOVERNANCE-RELEASE-GATE`: **FROZEN (WITH LIMITATIONS)**
 
 ---
 

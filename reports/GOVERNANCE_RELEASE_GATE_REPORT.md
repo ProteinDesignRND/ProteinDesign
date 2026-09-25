@@ -171,13 +171,13 @@ A systematic search across all repository documents was performed for prohibited
 The following documents were reconciled and verified free of material contradictions:
 1. `docs/PROJECT_TRUTH.md`: Authoritative source of verified facts and explicit limitations.
 2. `docs/AI_AGENT_RULES_AND_LESSONS.md`: Contains all 25 operational rules plus 11 durable principles.
-3. `docs/TEAM_ONBOARDING.md`: Updated repository map and baseline instructions.
+3. `docs/TEAM_ONBOARDING.md`: Updated repository map, baseline instructions, and reconciled branch workflow (`main` = stable integration branch, pull requests as integration path).
 4. `docs/TEAM_WORKSTREAMS.md`: Workstream allocations preserved.
-5. `CONTRIBUTING.md`: Mandates governance preflight and test discovery before pull requests.
+5. `CONTRIBUTING.md`: Mandates governance preflight and test discovery before pull requests; aligned branch table with `main` as stable integration branch.
 6. `CLAIMS_REGISTRY.md`: Tracks claims V-01 through V-15, NV-01, S-01 through S-03, I-01 through I-03, H-01 through H-03, and R-01 through R-03.
-7. `PROJECT_STATE.md`: Milestone 2.5 finalized as completed.
-8. `DECISION_LOG.md`: DEC-001 through DEC-009 recorded.
-9. `reports/REPORT_INDEX.md`: Fully indexed active, supporting, superseded, and governance documents.
+7. `PROJECT_STATE.md`: Milestone 2.5 finalized as completed; status recorded as FOUNDATION_FROZEN_WITH_LIMITATIONS.
+8. `DECISION_LOG.md`: DEC-001 through DEC-010 recorded (including DEC-010 formalizing the foundation freeze).
+9. `reports/REPORT_INDEX.md`: Sole freeze authority registered (`GOVERNANCE_RELEASE_GATE_REPORT.md`); pre-governance handoff (`FOUNDATION_HANDOFF_REPORT.md`) and prior governance reports filed as historical/superseded.
 10. `governance/ARCHITECTURE.md`: Reflects 3-entity architecture and constraints.
 
 ---
@@ -199,8 +199,7 @@ The following limitations are explicitly documented and remain active:
 ## 12. Exact Git State
 
 - **Active Branch:** `governance/final-acceptance-redteam-v1`
-- **Current HEAD Commit:** `ceb86d029524d3a8a96abe1155e7fb7ff2269b10`
-- **Main Branch Commit:** `e9b2c0e1e221a5ad7cbe3ab7017824befebc22cd` (untouched, ancestor of feature branch)
+- **Base Commit (main):** `e9b2c0e1e221a5ad7cbe3ab7017824befebc22cd` (untouched, ancestor of feature branch)
 - **External Submodule/Repo:** `external/proteinsolver-original` clean at `69ef0965a3fc3bf191804035b539720a06e58ba6`
 - **Working Tree:** Clean (all modifications committed or tracked in this release gate pass)
 - **Remote Operations:** No push or force-push executed.

@@ -162,10 +162,12 @@ Copy `experiments/TEMPLATE/` to start a new experiment.
 
 ## 14. Git workflow
 
-- **Main branch**: `research/ai-research-bootstrap` (current working branch)
+- **Integration branch**: `main` (stable integration branch)
 - **Feature branches**: `feature/<descriptive-name>` for new capabilities
 - **Experiment branches**: `experiment/<exp-id>` for experimental runs
 - **Fix branches**: `fix/<issue-description>` for bug fixes
+- **Integration path**: Pull requests targeting `main` (direct unreviewed pushes to `main` are prohibited)
+- *Note on branch history*: `research/ai-research-bootstrap` and `foundation/team-handoff-v0.1` served as historical bootstrap/handoff branches. Governance hardening and foundation freeze were completed on `governance/final-acceptance-redteam-v1`.
 - See `CONTRIBUTING.md` for full details.
 
 ## 15. Branch naming

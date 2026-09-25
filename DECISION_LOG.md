@@ -99,3 +99,13 @@ This document chronologically logs all major architectural, methodological, and 
 - **Rationale:** A requirement is not integrated simply because a unit test exists. Integrating preflight into the experiment template guarantees that every new experiment runs safety checks and logs `RULE_APPLIED` events. Store integrity checks prevent accidental or adversarial mutation.
 - **Consequences:** 109/109 assertions pass across 25 pytest-collected test functions. Preflight CLI (`governance/preflight_cli.py`) available. `experiments/TEMPLATE/run.py` automatically evaluates preflight and records audit trail. All 6 ProteinSolver regressions protected with bad and good case verification.
 
+---
+
+## [DEC-010] Governance Release Gate Acceptance and Foundation Freeze
+- **Date:** 2026-09-25
+- **Decision:** Formally declare the governance foundation FROZEN under classification FOUNDATION_FROZEN_WITH_LIMITATIONS. Halt all governance redesign and speculative infrastructure development. Establish `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` as the sole current freeze authority and transition the project to Phase 2 / Milestone 3 (ProteinMPNN Integration & Baseline Verification).
+- **Context:** The Lesson/Rule/Event governance architecture underwent full implementation, adversarial red-teaming, direct-file bypass detection hardening, and workflow integration. All 25 pytest test suites (109 assertions) pass, all 6 ProteinSolver regressions are protected with bad and good input pairs, the template experiment runner enforces preflight, and documentation consistency audits have reconciled branch and authority definitions.
+- **Alternatives Considered:** Further cycles of speculative governance expansion; opening Phase 2 without a formal release-gate freeze.
+- **Rationale:** The governance foundation is complete, verified, and integrated. Continued development without empirical research would violate the scientific mission. A formal freeze provides a solid, stable baseline for ProteinMPNN integration.
+- **Consequences:** Governance is frozen. No further changes to `governance/` schemas or preflight logic are permitted. Next work is Workstream B (ProteinMPNN integration).
+

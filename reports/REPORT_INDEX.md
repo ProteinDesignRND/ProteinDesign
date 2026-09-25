@@ -8,7 +8,7 @@
 | **Phase 1 Reproduction** | `reports/PHASE1_PROTEINSOLVER_REPRODUCTION.md` | Complete E0 verification and hardening report |
 | **Provenance Manifest** | `reports/PROTEINSOLVER_PROVENANCE_MANIFEST.md` | Exact commit, hashes, environment, and compatibility layer documentation |
 | **Paper vs. Implementation** | `reports/paper_vs_implementation.md` | Systematic audit of paper claims vs. code reality |
-| **Foundation Handoff** | `reports/FOUNDATION_HANDOFF_REPORT.md` | Team handoff summary and remaining actions |
+| **Governance Release Gate** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Final release-gate audit and foundation freeze report (**Sole Current Freeze Authority**) |
 
 ## Reference Documents (Supporting Evidence)
 
@@ -36,6 +36,9 @@
 | Document | Path | Superseded By | Notes |
 | :--- | :--- | :--- | :--- |
 | `research/paper_vs_implementation.md` | `research/` | `reports/paper_vs_implementation.md` | Earlier version of the audit. Contains useful code-level detail but uses some overclaiming language that was corrected in the reports/ version. Preserved as historical reference. |
+| `reports/FOUNDATION_HANDOFF_REPORT.md` | `reports/` | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Earlier team handoff report (v0.1) from branch `foundation/team-handoff-v0.1`. Preserved as historical evidence of pre-governance handoff. Superseded by the Governance Release Gate Report as freeze authority. |
+| `reports/GOVERNANCE_FOUNDATION_CLOSURE_REPORT.md` | `reports/` | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Initial governance closure report. Preserved as historical evidence. Superseded by the Governance Release Gate Report. |
+| `reports/GOVERNANCE_FINAL_ACCEPTANCE_REPORT.md` | `reports/` | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Final red-team acceptance report. Preserved as historical evidence. Superseded by the Governance Release Gate Report. |
 
 ## Governance
 
@@ -47,9 +50,9 @@
 | **Events** | `governance/data/events.jsonl` | Append-only audit trail |
 | **Preflight CLI** | `governance/preflight_cli.py` | Command-line preflight check tool |
 | **Tests** | `tests/test_governance.py` | Comprehensive test suite (109 assertions across 25 pytest test suites) |
-| **Foundation Closure** | `reports/GOVERNANCE_FOUNDATION_CLOSURE_REPORT.md` | Foundation closure report (superseded by Final Acceptance Report) |
-| **Final Acceptance Report** | `reports/GOVERNANCE_FINAL_ACCEPTANCE_REPORT.md` | Final red-team acceptance and hardening report |
-| **Release Gate Report** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Final release-gate audit and foundation freeze report (Current Freeze Authority) |
+| **Release Gate Report** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Final release-gate audit and foundation freeze report (**Sole Current Freeze Authority**) |
+| **Final Acceptance Report** | `reports/GOVERNANCE_FINAL_ACCEPTANCE_REPORT.md` | Final red-team acceptance report (Historical; superseded by Release Gate Report) |
+| **Foundation Closure** | `reports/GOVERNANCE_FOUNDATION_CLOSURE_REPORT.md` | Foundation closure report (Historical; superseded by Release Gate Report) |
 
 ## Live Progress
 
