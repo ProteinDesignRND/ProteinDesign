@@ -1,24 +1,26 @@
 {
   "state": "COMPLETE",
   "current_stage": "COMPLETE",
-  "task_id": "PROTEIN-DESIGN-SCIENTIFIC-PROTOCOL-FINALIZATION-V1",
+  "task_id": "PROTEIN-DESIGN-PROTOCOL-MICRO-FREEZE-AUDIT-V1",
   "agent": "Gemini 3.8 Flash High",
   "branch": "governance/final-acceptance-redteam-v1",
-  "start_time": "2026-09-25T20:18:45+05:30",
-  "last_update": "2026-09-25T20:25:30+05:30",
+  "start_time": "2026-09-25T20:34:32+05:30",
+  "last_update": "2026-09-25T20:45:00+05:30",
   "freeze_decision": "FOUNDATION_FROZEN_WITH_LIMITATIONS",
   "transition_status": "READY_FOR_PROTEINMPNN_INTEGRATION",
-  "findings_count": 12,
-  "fixes_count": 12,
+  "findings_count": 17,
+  "fixes_count": 17,
   "completed": [
-    "STAGE 1: Discovery & truth audit complete across all science documents and Claude red-team findings",
-    "STAGE 2: Hybrid score and selection redesign implemented in src/hybrid/scoring.py and src/hybrid/selection.py",
-    "STAGE 3: Primary validation oracle frozen to AlphaFold2 v2.3.2; screening thresholds frozen; single primary endpoint defined as target-level mean scTM across selected library; statistical unit fixed to target/backbone paired Wilcoxon test",
-    "STAGE 4: Metric integrity hardened (net charge at pH 7.4, fixed-correspondence scTM, macro-average AAR, candidate budget accounting, E0-A/E0-B split)",
-    "STAGE 5: Study pre-registration created at science/PREREGISTRATION.md; test suite created at tests/test_scientific_protocol.py (36/36 tests passing); gate report published at reports/FINAL_SCIENTIFIC_PROTOCOL_FREEZE_AND_READINESS_GATE_REPORT.md"
+    "STAGE 1: Candidate Budget accounting unambiguously codified under Interpretation A (total generated candidates per target across all seeds and temperatures, K=500 for TS50)",
+    "STAGE 2: Common Candidate Universe enforced for hybrid scoring with both models evaluating the identical candidate population",
+    "STAGE 3: AlphaFold2 configuration singularly frozen to precision float16 on GPU (CUDA), 3 recycles, single-sequence mode, seed 42 (all OR-alternatives removed)",
+    "STAGE 4: Model-specific provenance language decoupled for TS50 benchmark targets",
+    "STAGE 5: Folding failure taxonomy decoupled between biological folding failure (scTM=0.0) and infrastructure runtime crashes (NEVER 0.0, excluded from dt, >10% invalidation rule)",
+    "STAGE 6: Fixed-correspondence scTM terminology explicitly disclaims standard alignment-based TM-score",
+    "STAGE 7: 42/42 pytest test suites passing (25 governance + 17 scientific protocol)"
   ],
   "in_progress": [],
   "blocked": [],
-  "next_action": "Stage and commit changes on governance/final-acceptance-redteam-v1",
+  "next_action": "Stage, commit, and push branch governance/final-acceptance-redteam-v1",
   "expected_remaining_minutes": 0
 }

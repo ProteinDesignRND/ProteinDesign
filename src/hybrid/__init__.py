@@ -14,6 +14,7 @@ from .scoring import (
     compute_percentile_ranks,
     compute_primary_hybrid_score,
     compute_exploratory_logit_hybrid,
+    score_common_candidate_universe,
 )
 from .selection import (
     Candidate,
@@ -23,12 +24,16 @@ from .selection import (
     compute_fixed_correspondence_sctm,
     compute_net_charge_at_ph74,
     compute_hydrophobic_core_fraction,
+    ValidationOutcomeType,
+    ValidationOutcome,
+    evaluate_validation_outcome,
 )
 
 __all__ = [
     "compute_percentile_ranks",
     "compute_primary_hybrid_score",
     "compute_exploratory_logit_hybrid",
+    "score_common_candidate_universe",
     "Candidate",
     "filter_viable_candidates",
     "select_diverse_library",
@@ -36,4 +41,7 @@ __all__ = [
     "compute_fixed_correspondence_sctm",
     "compute_net_charge_at_ph74",
     "compute_hydrophobic_core_fraction",
+    "ValidationOutcomeType",
+    "ValidationOutcome",
+    "evaluate_validation_outcome",
 ]

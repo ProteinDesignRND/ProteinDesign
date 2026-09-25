@@ -191,6 +191,13 @@ def compute_fixed_correspondence_sctm(
     Uses Zhang & Skolnick (2004) formulation with length-dependent d0(L)
     under optimal rigid-body Kabsch superposition on matched C-alpha coordinates.
 
+    CRITICAL TERMINOLOGY DISTINCTION:
+        This function evaluates the Fixed-Correspondence Self-Consistency TM-score (scTM)
+        under strict 1-to-1 sequence-to-structure residue correspondence (residue i in
+        prediction mapped to residue i in target backbone).
+        It does NOT perform dynamic programming sequence alignment, heuristic gap insertion,
+        or residue reordering, and must NOT be described as standard alignment-based TM-score (such as TM-align).
+
     Formula:
         scTM = (1 / L_target) * sum_{i=1}^{L_target} [ 1 / (1 + (d_i / d0(L_target))^2) ]
         d0(L_target) = 1.24 * (L_target - 15)^(1/3) - 1.8  (for L_target > 15)
@@ -328,3 +335,100 @@ def compute_hydrophobic_core_fraction(
         if aa in HYDROPHOBIC_RESIDUES and rsa < rsa_threshold
     )
     return float(buried_hydrophobic_count) / float(len(seq_clean))
+
+
+class ValidationOutcomeType:
+    """Taxonomy of structural folding validation outcomes."""
+    VALID = "valid_structure"
+    SCIENTIFIC_FAILURE = "scientific_folding_failure"
+    INFRASTRUCTURE_FAILURE = "infrastructure_runtime_failure"
+
+
+@dataclass
+class ValidationOutcome:
+    """Detailed structural validation result for a candidate.
+
+    Attributes:
+        status: One of ValidationOutcomeType (VALID, SCIENTIFIC_FAILURE, INFRASTRUCTURE_FAILURE).
+        sctm: Self-consistency TM-score. Valid float in (0, 1] if VALID, 0.0 if SCIENTIFIC_FAILURE,
+            None if INFRASTRUCTURE_FAILURE.
+        scrmsd: Self-consistency RMSD (None if failure).
+        plddt: Oracle confidence pLDDT (None if infrastructure failure).
+        error_reason: Diagnostic explanation of failure (None if VALID).
+        is_valid_for_statistical_test: Boolean indicating whether this candidate is valid
+            for inclusion in paired statistical comparisons. False for infrastructure failures.
+    """
+    status: str
+    sctm: Optional[float]
+    scrmsd: Optional[float]
+    plddt: Optional[float]
+    error_reason: Optional[str] = None
+    is_valid_for_statistical_test: bool = True
+
+
+def evaluate_validation_outcome(
+    outcome_type: str,
+    pred_coords: Optional[np.ndarray] = None,
+    target_coords: Optional[np.ndarray] = None,
+    plddt: Optional[float] = None,
+    scrmsd: Optional[float] = None,
+    error_reason: Optional[str] = None,
+) -> ValidationOutcome:
+    """Processes oracle output according to the pre-registered failure handling taxonomy.
+
+    Rules:
+    1. VALID: Oracle completed normally, coordinates are physical. scTM is computed normally.
+    2. SCIENTIFIC_FAILURE: Biological/generative failure (NaN coordinates, steric clash collapse,
+       pLDDT < 10.0). Handled as a true biological failure to form a folded protein.
+       Assigned scTM = 0.0, is_valid_for_statistical_test = True.
+    3. INFRASTRUCTURE_FAILURE: Runtime/system failure (OOM, timeout, driver crash, missing file).
+       Must NOT be assigned scTM = 0.0 (doing so artificially distorts model comparisons).
+       Assigned scTM = None, is_valid_for_statistical_test = False.
+       Subject to the <= 10% infrastructure-failure invalidation rule.
+
+    Args:
+        outcome_type: One of ValidationOutcomeType values.
+        pred_coords: Predicted C-alpha coordinates (required if VALID).
+        target_coords: Target reference C-alpha coordinates (required if VALID).
+        plddt: Mean pLDDT from oracle.
+        scrmsd: scRMSD value if available.
+        error_reason: Diagnostic reason string if failure occurred.
+
+    Returns:
+        ValidationOutcome instance.
+    """
+    if outcome_type == ValidationOutcomeType.VALID:
+        if pred_coords is None or target_coords is None:
+            raise ValueError("VALID outcome requires pred_coords and target_coords")
+        sctm = compute_fixed_correspondence_sctm(pred_coords, target_coords)
+        return ValidationOutcome(
+            status=ValidationOutcomeType.VALID,
+            sctm=sctm,
+            scrmsd=scrmsd,
+            plddt=plddt,
+            error_reason=None,
+            is_valid_for_statistical_test=True,
+        )
+
+    elif outcome_type == ValidationOutcomeType.SCIENTIFIC_FAILURE:
+        return ValidationOutcome(
+            status=ValidationOutcomeType.SCIENTIFIC_FAILURE,
+            sctm=0.0,
+            scrmsd=scrmsd,
+            plddt=plddt,
+            error_reason=error_reason or "Biological/generative folding failure",
+            is_valid_for_statistical_test=True,
+        )
+
+    elif outcome_type == ValidationOutcomeType.INFRASTRUCTURE_FAILURE:
+        return ValidationOutcome(
+            status=ValidationOutcomeType.INFRASTRUCTURE_FAILURE,
+            sctm=None,  # NEVER assign 0.0 to infrastructure crashes
+            scrmsd=None,
+            plddt=None,
+            error_reason=error_reason or "Infrastructure/runtime crash",
+            is_valid_for_statistical_test=False,
+        )
+
+    else:
+        raise ValueError(f"Unknown outcome_type: {outcome_type}")

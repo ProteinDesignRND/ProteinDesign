@@ -75,14 +75,17 @@
   - `PERPLEXITY DECOUPLING`: ProteinSolver masked pseudo-perplexity documented as non-comparable to ProteinMPNN autoregressive perplexity; retained as within-model diagnostics.
   - `DIVERSITY SPECIFICATION`: Three distinct stages codified (Raw, Viable, Selected library) with exact pairwise Hamming distance formulations.
   - `SCIENTIFIC WORDING AUDITED`: Scoped mask-invariance to EXP004 tested evidence; removed uncalibrated SOTA claims; corrected ProteinMPNN permutation decoding order.
-- [x] **Milestone 2.7: Scientific Protocol Pre-Registration & Independent Review Hardening**
+- [x] **Milestone 2.7: Scientific Protocol Pre-Registration & Micro-Freeze Audit Hardening**
   - `PROTOCOL PRE-REGISTERED`: Created `science/PREREGISTRATION.md` freezing all 24 study parameters prior to experimentation.
   - `PRIMARY HYBRID FORMULATION`: Scale-free within-pool percentile rank normalization ($H = \lambda p_{\text{MPNN}} + (1-\lambda) p_{\text{PS}}$) implemented in `src/hybrid/scoring.py`.
+  - `COMMON CANDIDATE UNIVERSE`: Primary hybrid scoring operates strictly on identical candidate sequences ($U_t$, $|U_t|=K$) scored by both models, preventing asymmetric rank leakage.
   - `PRIMARY ENDPOINT FROZEN`: Target-level mean fixed-correspondence scTM across the $M=10$ library evaluated by AlphaFold2 (v2.3.2).
-  - `PRIMARY ORACLE FROZEN`: AlphaFold2 (v2.3.2) frozen as single primary final validation oracle; Boltz-1 designated strictly for sensitivity analysis.
+  - `PRIMARY ORACLE FROZEN`: AlphaFold2 (v2.3.2) frozen with singular precision `float16` (`fp16`) on GPU (CUDA), 3 recycles, single-sequence mode, seed 42. (All OR-alternatives removed; Boltz-1 designated strictly for sensitivity analysis).
   - `STATISTICAL UNIT FIXED`: Target/backbone unit under paired Wilcoxon signed-rank test ($\alpha = 0.01$).
-  - `BUDGET MATCHER & E0 SPLIT`: Enforced matched generation budgets $K$; split E0 into E0-A (deterministic MAP control, 41.30%) and E0-B (stochastic baseline).
+  - `BUDGET MATCHER & E0 SPLIT`: Candidate budget $K$ unambiguously defined under Interpretation A as total generated candidates per target ($K=500$ for TS50: 167+167+166 across 3 seeds); split E0 into E0-A (deterministic MAP control, 41.30%) and E0-B (stochastic baseline).
+  - `FAILURE TAXONOMY DECOUPLED`: Biological folding failure assigned $\text{scTM} = 0.0$ and included in $\{d_t\}$; infrastructure crashes NEVER assigned 0.0, excluded from $\{d_t\}$, and trigger invalidation if $>10\%$.
   - `TWO-STAGE SELECTION`: Stage 1 hard viability gate $\to$ Stage 2 greedy diversity selection heuristic implemented in `src/hybrid/selection.py`.
+  - `VERIFICATION`: 42/42 pytest suites passing (25 governance + 17 scientific protocol).
 - [ ] **Milestone 3: ProteinMPNN Integration & Baseline Verification (Phase 2)**
   - Integrate official ProteinMPNN repository.
   - Execute sanity checks and baseline recovery on shared benchmark structures.

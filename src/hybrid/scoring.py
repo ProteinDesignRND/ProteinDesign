@@ -14,7 +14,20 @@ PRIMARY METHOD:
     - Percentile normalization is performed strictly within the target's candidate pool.
     - Ties are resolved deterministically using average ranking.
     - Higher percentile always indicates better (more confident) sequence.
-    - lambda is tuned ONLY on the development/tuning set and frozen before primary test evaluation.
+
+COMMON CANDIDATE UNIVERSE PIPELINE:
+    For any target backbone t:
+    1. Candidate Generation: Generate a single frozen candidate universe U_t of size K
+       (K = 100 for tuning, K = 500 for primary test).
+    2. MPNN Scoring: Compute sequence-level mean log-probability S_MPNN(u) for each u in U_t.
+    3. ProteinSolver Scoring: Compute sequence-level mean masked pseudo-log-likelihood S_PS(u) for each u in U_t.
+    4. Percentile Normalization: Compute within-universe percentile ranks p_MPNN(u) and p_PS(u)
+       strictly across the identical candidate pool U_t.
+    5. Hybrid Score: H(u) = lambda * p_MPNN(u) + (1 - lambda) * p_PS(u).
+    6. Screening & Selection: Viability gate (scRMSD <= 2.0 Å, pLDDT >= 80.0) -> diverse library selection (M = 10).
+
+    This pipeline guarantees that percentiles for ProteinMPNN and ProteinSolver are derived
+    from the exact same candidate population, preventing asymmetric or cross-pool ranking leakage.
 
 EXPLORATORY ABLATION:
     Raw logit interpolation:
@@ -22,7 +35,7 @@ EXPLORATORY ABLATION:
     Retained strictly as an exploratory ablation.
 """
 
-from typing import List, Sequence, Union
+from typing import List, Sequence, Union, Optional
 import numpy as np
 from scipy.stats import rankdata
 import torch
@@ -133,3 +146,53 @@ def compute_exploratory_logit_hybrid(
             f"Logit shape mismatch: mpnn={mpnn_logits.shape} vs ps={ps_logits.shape}"
         )
     return weight_lambda * mpnn_logits + (1.0 - weight_lambda) * ps_logits
+
+
+def score_common_candidate_universe(
+    candidate_ids: Sequence[str],
+    sequences: Sequence[str],
+    mpnn_scores: Union[Sequence[float], np.ndarray],
+    ps_scores: Union[Sequence[float], np.ndarray],
+    weight_lambda: float = 0.5,
+    tie_method: str = "average",
+) -> np.ndarray:
+    """Computes primary hybrid scores for a common, frozen candidate universe.
+
+    Guarantees that:
+    1. The candidate universe has identical length K across candidate IDs, sequences,
+       MPNN scores, and ProteinSolver scores.
+    2. Percentile ranks for MPNN and ProteinSolver are computed across the EXACT SAME
+       candidate universe, preventing any cross-pool or asymmetric rank leakage.
+    3. Hybrid score H(u) = lambda * p_MPNN(u) + (1 - lambda) * p_PS(u) is in (0, 1].
+
+    Args:
+        candidate_ids: List of candidate identifier strings of length K.
+        sequences: List of candidate sequence strings of length K.
+        mpnn_scores: Raw sequence-level log-probabilities from ProteinMPNN of length K.
+        ps_scores: Raw sequence-level pseudo-log-likelihoods from ProteinSolver of length K.
+        weight_lambda: Mixing coefficient lambda in [0.0, 1.0].
+        tie_method: Tie resolution method for within-pool ranking ('average').
+
+    Returns:
+        1D numpy array of hybrid scores of length K.
+
+    Raises:
+        ValueError: If array lengths mismatch or are inconsistent with a common universe.
+    """
+    k = len(candidate_ids)
+    if len(sequences) != k or len(mpnn_scores) != k or len(ps_scores) != k:
+        raise ValueError(
+            f"Common candidate universe dimension mismatch: "
+            f"ids={k}, sequences={len(sequences)}, mpnn={len(mpnn_scores)}, ps={len(ps_scores)}. "
+            f"All scores must be computed on the exact same candidate universe."
+        )
+
+    if k == 0:
+        return np.empty(0, dtype=np.float64)
+
+    return compute_primary_hybrid_score(
+        mpnn_scores=mpnn_scores,
+        ps_scores=ps_scores,
+        weight_lambda=weight_lambda,
+        tie_method=tie_method,
+    )

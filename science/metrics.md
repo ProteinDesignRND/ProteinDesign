@@ -178,7 +178,7 @@ When evaluated, it uses pre-declared external normalization bounds:
 ### J. Inference Latency & Computational Scaling
 Computational speed must be reported with:
 1. Exact hardware specifications (e.g. NVIDIA RTX 3050 6GB Laptop GPU vs. CPU).
-2. Execution precision (FP32 on CPU, FP16/BF16 on GPU).
+2. Execution precision (FP32 on CPU, float16 / fp16 on GPU).
 3. Batch size: Batch size 1 for iterative ProteinSolver; batch sizes 1 and 32 for ProteinMPNN.
 4. Timing boundaries: Timing strictly measures inference forward passes (`torch.cuda.synchronize()` before and after); model loading and data extraction are measured and reported separately as initialization overhead.
 5. Warmup & Repeatability: 5 warmup sequences followed by reporting median and interquartile range across 3 independent timing runs per target.
@@ -191,7 +191,7 @@ Computational speed must be reported with:
 To ensure evaluation rigor and prevent circular selection biases:
 1. **Screening vs. Validation Firewall:**
    - **Screening Oracle:** ESMFold (fast, local single-pass inference) is used to compute initial structural metrics for generation pools and candidate selection ($K = 100–500$ sequences/target).
-   - **Primary Final Structural Validation Oracle:** **AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, 3 recycles, no templates, single sequence mode, fp16/bf16 on GPU)** is the frozen primary validation oracle for the final selected library ($M = 10$ candidates/target).
+   - **Primary Final Structural Validation Oracle:** **AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, 3 recycles, no templates, single sequence mode, float16 / fp16 on GPU, seed 42)** is the frozen primary validation oracle for the final selected library ($M = 10$ candidates/target).
    - **Sensitivity Validation Oracle:** **Boltz-1 (v0.4.1, default diffusion steps, no templates, single sequence mode)** is designated strictly for sensitivity analysis.
 2. **Anti-Leakage Prohibition:**
    A metric or oracle score used as an objective criterion during candidate selection (ESMFold) must NEVER be cited as independent evidence of success without confirmation by the primary independent validation oracle (AlphaFold2).

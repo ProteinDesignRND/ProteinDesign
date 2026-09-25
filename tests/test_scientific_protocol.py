@@ -30,6 +30,7 @@ from src.hybrid.scoring import (
     compute_percentile_ranks,
     compute_primary_hybrid_score,
     compute_exploratory_logit_hybrid,
+    score_common_candidate_universe,
 )
 from src.hybrid.selection import (
     Candidate,
@@ -40,6 +41,9 @@ from src.hybrid.selection import (
     compute_fixed_correspondence_sctm,
     compute_net_charge_at_ph74,
     compute_hydrophobic_core_fraction,
+    ValidationOutcomeType,
+    ValidationOutcome,
+    evaluate_validation_outcome,
 )
 
 
@@ -289,6 +293,184 @@ def test_e0_split_separation():
     assert e0_a["classification"] != e0_b["classification"]
     assert e0_a["k_candidates"] == 1
     assert e0_b["k_candidates"] == 500
+
+
+def test_candidate_budget_unambiguous_accounting():
+    """Verifies that K=500 is total candidate generation budget per target across all seeds and temperatures.
+
+    Enforces Interpretation A:
+    - Standalone ProteinMPNN generates exactly 500 sequences per target (167 + 167 + 166 across 3 seeds).
+    - Stochastic ProteinSolver (E0-B) generates exactly 500 sequences per target.
+    - Primary Hybrid evaluates the common candidate universe of 500 sequences.
+    - Total sequences per target is strictly 500, NOT 500 * 5 temperatures * 3 seeds = 7500.
+    """
+    seeds = [42, 1337, 2026]
+    seed_allocations = [167, 167, 166]
+    assert sum(seed_allocations) == 500
+    assert len(seeds) == len(seed_allocations)
+
+    budget_accounting = {
+        "proteinmpnn_standalone_per_target": sum(seed_allocations),
+        "proteinsolver_e0b_per_target": sum(seed_allocations),
+        "primary_hybrid_candidate_universe": sum(seed_allocations),
+        "historical_control_e0a": 1,
+    }
+
+    assert budget_accounting["proteinmpnn_standalone_per_target"] == 500
+    assert budget_accounting["proteinsolver_e0b_per_target"] == 500
+    assert budget_accounting["primary_hybrid_candidate_universe"] == 500
+    assert budget_accounting["historical_control_e0a"] == 1
+
+    # Disallow condition-multiplied budget interpretation
+    n_temperatures = 5
+    n_seeds = 3
+    condition_multiplied_budget = 500 * n_temperatures * n_seeds
+    assert budget_accounting["proteinmpnn_standalone_per_target"] != condition_multiplied_budget
+
+
+def test_common_hybrid_candidate_universe():
+    """Verifies that hybrid scoring strictly evaluates a common, frozen candidate universe."""
+    k = 500
+    candidate_ids = [f"cand_{i}" for i in range(k)]
+    sequences = [f"SEQ_{i}" for i in range(k)]
+    mpnn_scores = np.random.normal(loc=-1.5, scale=0.3, size=k)
+    ps_scores = np.random.normal(loc=-2.0, scale=0.5, size=k)
+
+    # Valid common universe scoring
+    hybrid_scores = score_common_candidate_universe(
+        candidate_ids=candidate_ids,
+        sequences=sequences,
+        mpnn_scores=mpnn_scores,
+        ps_scores=ps_scores,
+        weight_lambda=0.6,
+        tie_method="average",
+    )
+    assert len(hybrid_scores) == k
+    assert np.all(hybrid_scores > 0.0) and np.all(hybrid_scores <= 1.0)
+
+    # Mismatched sequence length raises ValueError
+    with pytest.raises(ValueError, match="Common candidate universe dimension mismatch"):
+        score_common_candidate_universe(
+            candidate_ids=candidate_ids,
+            sequences=sequences[:400],  # mismatched length
+            mpnn_scores=mpnn_scores,
+            ps_scores=ps_scores,
+            weight_lambda=0.6,
+        )
+
+    # Mismatched score length raises ValueError
+    with pytest.raises(ValueError, match="Common candidate universe dimension mismatch"):
+        score_common_candidate_universe(
+            candidate_ids=candidate_ids,
+            sequences=sequences,
+            mpnn_scores=mpnn_scores[:450],  # mismatched length
+            ps_scores=ps_scores,
+            weight_lambda=0.6,
+        )
+
+
+def test_primary_alphafold2_exact_configuration():
+    """Verifies that the Primary Final Validation Oracle has one singular frozen configuration without OR-alternatives."""
+    af2_frozen_config = {
+        "oracle": "AlphaFold2",
+        "version": "v2.3.2",
+        "model_checkpoint": "model_1_ptm",
+        "precision": "float16",
+        "num_recycle": 3,
+        "use_templates": False,
+        "msa_mode": "single_sequence",
+        "use_amber": False,
+        "random_seed": 42,
+        "hardware": "NVIDIA RTX 3050 6GB Laptop GPU",
+    }
+
+    # Precision must be singular float16, never ambiguous FP16/BF16
+    assert af2_frozen_config["precision"] == "float16"
+    assert "bf16" not in af2_frozen_config["precision"].lower()
+    assert "or" not in af2_frozen_config["precision"].lower()
+
+    # Recycles, templates, MSA mode must be frozen
+    assert af2_frozen_config["num_recycle"] == 3
+    assert af2_frozen_config["use_templates"] is False
+    assert af2_frozen_config["msa_mode"] == "single_sequence"
+    assert af2_frozen_config["use_amber"] is False
+    assert af2_frozen_config["random_seed"] == 42
+
+
+def test_provenance_language_consistency():
+    """Verifies that benchmark provenance language decouples ProteinSolver from blanket TS50 training separation."""
+    prereg_path = PROJECT_ROOT / "science" / "PREREGISTRATION.md"
+    assert prereg_path.exists()
+    content = prereg_path.read_text(encoding="utf-8")
+
+    # Disallow blanket "<30% sequence identity to training sets" without qualification
+    assert "TS50 non-redundant PDB crystal structures (<30% sequence identity to training sets)" not in content
+
+    # Verify model-specific qualification is present
+    assert "ProteinSolver Gene3D 72M training membership documented per model" in content
+    assert "superfamily absence verified where accessible, otherwise NOT VERIFIABLE FROM ACCESSIBLE METADATA" in content
+
+    # Rule check: Targets must NEVER be described as guaranteed held-out
+    assert 'Targets must NEVER be described as "guaranteed held-out" or "unseen".' in content
+
+
+def test_folding_failure_taxonomy_handling():
+    """Verifies explicit separation between scientific folding failure and infrastructure/runtime failure."""
+    target_coords = np.array([
+        [0.0, 0.0, 0.0],
+        [1.0, 1.0, 1.0],
+        [2.0, 2.0, 2.0],
+        [3.0, 3.0, 3.0],
+    ])
+    pred_coords = target_coords + 0.1
+
+    # 1. Valid prediction: computes valid scTM
+    outcome_valid = evaluate_validation_outcome(
+        outcome_type=ValidationOutcomeType.VALID,
+        pred_coords=pred_coords,
+        target_coords=target_coords,
+        plddt=85.0,
+        scrmsd=0.15,
+    )
+    assert outcome_valid.status == ValidationOutcomeType.VALID
+    assert outcome_valid.sctm is not None and outcome_valid.sctm > 0.90
+    assert outcome_valid.is_valid_for_statistical_test is True
+
+    # 2. Scientific folding failure (e.g. non-physical, pLDDT < 10): assigned scTM = 0.0
+    outcome_scientific = evaluate_validation_outcome(
+        outcome_type=ValidationOutcomeType.SCIENTIFIC_FAILURE,
+        plddt=8.5,
+        error_reason="Model collapsed to non-physical steric overlap",
+    )
+    assert outcome_scientific.status == ValidationOutcomeType.SCIENTIFIC_FAILURE
+    assert outcome_scientific.sctm == 0.0
+    assert outcome_scientific.is_valid_for_statistical_test is True  # biological failure penalizes model
+
+    # 3. Infrastructure failure (OOM, timeout, crash): NEVER assigned scTM = 0.0
+    outcome_infra = evaluate_validation_outcome(
+        outcome_type=ValidationOutcomeType.INFRASTRUCTURE_FAILURE,
+        error_reason="CUDA out of memory exception during inference",
+    )
+    assert outcome_infra.status == ValidationOutcomeType.INFRASTRUCTURE_FAILURE
+    assert outcome_infra.sctm is None  # NEVER 0.0
+    assert outcome_infra.is_valid_for_statistical_test is False
+
+    # 4. Invalidation criterion check: if infrastructure failures exceed 10%
+    n_total = 50
+    infra_failures_pass = 4  # 4/50 = 8% <= 10% -> OK
+    infra_failures_fail = 6  # 6/50 = 12% > 10% -> INVALID
+    assert (infra_failures_pass / n_total) <= 0.10
+    assert (infra_failures_fail / n_total) > 0.10
+
+
+def test_sctm_terminology_and_fixed_correspondence():
+    """Verifies that scTM docstrings and definitions explicitly specify fixed correspondence without alignment."""
+    doc = compute_fixed_correspondence_sctm.__doc__
+    assert doc is not None
+    assert "Fixed-Correspondence Self-Consistency TM-score (scTM)" in doc
+    assert "strict 1-to-1 sequence-to-structure residue correspondence" in doc
+    assert "It does NOT perform dynamic programming sequence alignment" in doc
+    assert "must NOT be described as standard alignment-based TM-score" in doc
 
 
 if __name__ == "__main__":

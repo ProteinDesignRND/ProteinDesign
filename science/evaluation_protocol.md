@@ -106,7 +106,7 @@ where $d(u, v)$ is normalized Hamming distance, and $\text{score}(u)$ is the can
 To prevent circular evaluation leakage, the final selected library $S_{\text{selected}}$ ($M = 10$ per target) is folded and evaluated using the **Primary Final Structural Validation Oracle**:
 - **Oracle:** **AlphaFold2 (v2.3.2)**
 - **Model Checkpoint:** Monomodel weights `model_1_ptm`
-- **Inference Configuration:** Single sequence mode (no MSA search, no homologous templates), 3 recycles, standard Amber relaxation disabled for throughput consistency, precision FP16/BF16 on GPU.
+- **Inference Configuration:** Single sequence mode (no MSA search, no homologous templates), 3 recycles, standard Amber relaxation disabled for throughput consistency, precision float16 (`fp16`) on GPU (CUDA), random seed = 42.
 - **Sensitivity Validation Oracle:** **Boltz-1 (v0.4.1)** is designated as a secondary sensitivity analysis oracle.
 
 #### 3. Primary Endpoint Evaluation
@@ -144,7 +144,9 @@ Individual generated candidates ($K = 100$ or $500$) and selected candidates ($M
 - **Significance Level:** Pre-registered threshold $\alpha = 0.01$.
 - **Effect Size:** Hodges-Lehmann median paired difference and paired Cohen's $d_z$.
 - **Confidence Intervals:** 95% and 99% bootstrap confidence intervals computed over 10,000 resamples.
-- **Missing / Failed Targets:** If oracle folding fails on a target, it is recorded as a failure and assigned $\text{scTM} = 0.0$.
+- **Folding Failure Handling (Scientific vs Infrastructure Distinction):**
+  - Scientific / Model Folding Failure (non-physical coordinates, steric clash collapse, pLDDT < 10.0): assigned $\text{scTM} = 0.0$ as a biological design failure, included in $\{d_t\}$.
+  - Infrastructure / Runtime Failure (OOM, timeout >600s, software crash): NEVER assigned $\text{scTM} = 0.0$; retried once; if unresolvable, target is marked `INFRASTRUCTURE_FAILURE_UNVALIDATED` and excluded from $\{d_t\}$. If $>10\%$ fail due to infrastructure crashes, benchmark is declared INVALID / INCONCLUSIVE.
 - **Stratification:** Primary analysis is performed on the TS50 natural test set ($N=50$). The RFdiffusion de novo test set ($N=15$) is analyzed and reported separately.
 
 ---
@@ -152,7 +154,13 @@ Individual generated candidates ($K = 100$ or $500$) and selected candidates ($M
 ## 4. Benchmark Dataset Allocation & Candidate Budgets
 
 ### 1. Candidate Budget Accounting
-- **Definition of $K$:** Total candidate generation budget **PER TARGET PER METHOD PER CONDITION**.
+- **Definition of $K$:** Total candidate generation budget **PER TARGET PER METHOD/ARM across all temperatures and random seeds (Interpretation A)**.
+  - Development / Tuning Set: $K = 100$ total candidates per target.
+  - Primary Test Set: $K = 500$ total candidates per target.
+  - **Explicit Breakdown for TS50 ($K=500$):**
+    - ProteinMPNN: 500 sequences per target (167 seed 42, 167 seed 1337, 166 seed 2026 at $T^*_{\text{MPNN}}$).
+    - ProteinSolver (E0-B): 500 sequences per target (167 seed 42, 167 seed 1337, 166 seed 2026 at $T^*_{\text{PS}}$).
+    - Primary Hybrid: 500 sequences in Common Candidate Universe scored by both models.
 - **Stage Progression:**
   1. **Generation Budget ($K$):** $K = 100$ per target for development/tuning; $K = 500$ per target for frozen primary test evaluation.
   2. **Screening Pool ($S_{\text{raw}}$):** All $K$ candidates evaluated by screening oracle (ESMFold).
@@ -165,7 +173,7 @@ Individual generated candidates ($K = 100$ or $500$) and selected candidates ($M
 | Benchmark Subset | Purpose | Target Count ($N$) | Selection & Provenance Criteria |
 |---|---|---|---|
 | **Development / Tuning Set** | Hyperparameter search ($\lambda, T, \gamma$) | 20 backbones | CATH 4.2 validation split; diverse topologies. |
-| **Primary Test Set** | Frozen primary hypothesis testing | 50 backbones | TS50 non-redundant PDB crystal structures ($<30\%$ sequence identity to training sets). Training membership: documented per model. |
+| **Primary Test Set** | Frozen primary hypothesis testing | 50 backbones | TS50 non-redundant PDB crystal structures ($<30\%$ sequence identity to CATH 4.2 / ProteinMPNN training sets; ProteinSolver Gene3D 72M training membership documented per model: superfamily absence verified where accessible, otherwise NOT VERIFIABLE FROM ACCESSIBLE METADATA). |
 | **De Novo Test Set** | Generalizability on non-natural scaffolds | 15 backbones | RFdiffusion generated scaffolds (Watson et al. 2023). Described neutrally as "RFdiffusion-generated de novo backbones" (NOT called "homology-free" without explicit sequence/structural search). |
 
 ---
