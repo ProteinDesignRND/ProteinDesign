@@ -9,7 +9,9 @@
 | Document | Path | Purpose | Authority Scope |
 | :--- | :--- | :--- | :--- |
 | **Transition Gate Report** | `reports/FINAL_FOUNDATION_INTEGRITY_AND_TRANSITION_GATE_REPORT.md` | Final foundation integrity and transition-gate report | **Current Transition Authority** |
-| **Scientific Metrics & Evaluation Integrity Report** | `reports/FINAL_SCIENTIFIC_METRICS_AND_EVALUATION_INTEGRITY_REPORT.md` | Audit and specification of mathematical definitions, non-tautological viability metrics, oracle separation firewall, and anti-leakage protocols | **Scientific Protocol & Metrics Authority** |
+| **Protocol Freeze & Readiness Gate Report** | `reports/FINAL_SCIENTIFIC_PROTOCOL_FREEZE_AND_READINESS_GATE_REPORT.md` | Authoritative protocol freeze, Claude 2.0 audit disposition, and final readiness gate report | **Current Protocol Freeze Authority** |
+| **Study Pre-Registration** | `science/PREREGISTRATION.md` | Pre-registered freeze of all 24 study parameters prior to experimentation | **Study Pre-Registration Authority** |
+| **Scientific Metrics & Evaluation Integrity Report** | `reports/FINAL_SCIENTIFIC_METRICS_AND_EVALUATION_INTEGRITY_REPORT.md` | Audit of mathematical definitions, non-tautological viability, and oracle separation | **Scientific Protocol & Metrics Authority** |
 | **Governance Release Gate** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Foundation freeze audit and red-team closure | **Foundation Freeze Authority** |
 
 ## 3. Active Scientific Evidence

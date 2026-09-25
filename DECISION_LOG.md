@@ -119,4 +119,24 @@ This document chronologically logs all major architectural, methodological, and 
 - **Rationale:** Defensible scientific conclusions require mathematically precise definitions, strict separation between candidate selection and independent validation, explicit distinction between within-model diagnostics and cross-model metrics, and rigorously scoped empirical assertions.
 - **Consequences:** All metric equations are mathematically sound, evaluation is protected against circular tautology, and the protocol is ready for Phase 2 / Milestone 3 (ProteinMPNN integration).
 
+---
+
+## [DEC-012] Scientific Protocol Pre-Registration, Scale-Free Hybrid Scoring, and Single Primary Endpoint
+- **Date:** 2026-09-25
+- **Decision:** Formalize and freeze the study pre-registration (`science/PREREGISTRATION.md`):
+  1. Primary hybrid method defined as scale-free within-pool percentile rank normalization ($H(u) = \lambda p_{\text{MPNN}}(u) + (1-\lambda) p_{\text{PS}}(u)$), demoting raw logit interpolation to an exploratory ablation.
+  2. AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, 3 recycles, no templates) frozen as the single Primary Final Structural Validation Oracle; Boltz-1 designated strictly for sensitivity analysis.
+  3. Single primary study endpoint established as the target-level mean fixed-correspondence Self-Consistency TM-score ($\overline{\text{scTM}}_{\text{val}}$) across the $M=10$ selected library, evaluated by AlphaFold2.
+  4. Unit of statistical analysis established as the TARGET / BACKBONE ($N=50$ TS50 targets) evaluated via two-sided paired Wilcoxon signed-rank test ($\alpha = 0.01$).
+  5. E0 split into E0-A (historical deterministic MAP integration control on 1n5uA03, 41.30%) and E0-B (stochastic ProteinSolver candidate generation baseline).
+  6. Two-stage candidate selection enforced (Stage 1 hard viability gate $\to$ Stage 2 greedy diversity selection heuristic).
+  7. Hypervolume demoted to exploratory descriptive analysis with fixed external normalization bounds.
+  8. Mixing weight $\lambda$ mandated to be tuned strictly on the development split (CATH 4.2 validation) and frozen before test evaluation.
+  9. Explicit rule that all secondary baselines and exploratory analyses are reported regardless of outcome.
+- **Context:** An independent red-team audit by Claude Standalone 2.0 identified methodological vulnerabilities: raw logit addition across different scales, lack of a single pre-registered primary endpoint, ambiguity between AlphaFold2 and Boltz-1, candidate-level pseudoreplication in statistical testing, and potential evaluation leakage in candidate selection and hypervolume.
+- **Alternatives Considered:** Retaining raw logit interpolation as primary; evaluating both AF2 and Boltz-1 as co-primary oracles; using candidate-level pooling in statistical testing; post-hoc hyperparameter selection.
+- **Rationale:** Rigorous, publication-grade science requires pre-registration, unambiguous single primary endpoints, scale-free score normalization, paired target-level statistics to avoid pseudoreplication, and pre-frozen hyperparameters.
+- **Consequences:** All 24 protocol items are frozen in `science/PREREGISTRATION.md`, `src/hybrid/` provides cleanroom implementations, and tests verify mathematical behavior before ProteinMPNN integration.
+
+
 

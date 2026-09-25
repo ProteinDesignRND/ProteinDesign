@@ -75,6 +75,14 @@
   - `PERPLEXITY DECOUPLING`: ProteinSolver masked pseudo-perplexity documented as non-comparable to ProteinMPNN autoregressive perplexity; retained as within-model diagnostics.
   - `DIVERSITY SPECIFICATION`: Three distinct stages codified (Raw, Viable, Selected library) with exact pairwise Hamming distance formulations.
   - `SCIENTIFIC WORDING AUDITED`: Scoped mask-invariance to EXP004 tested evidence; removed uncalibrated SOTA claims; corrected ProteinMPNN permutation decoding order.
+- [x] **Milestone 2.7: Scientific Protocol Pre-Registration & Independent Review Hardening**
+  - `PROTOCOL PRE-REGISTERED`: Created `science/PREREGISTRATION.md` freezing all 24 study parameters prior to experimentation.
+  - `PRIMARY HYBRID FORMULATION`: Scale-free within-pool percentile rank normalization ($H = \lambda p_{\text{MPNN}} + (1-\lambda) p_{\text{PS}}$) implemented in `src/hybrid/scoring.py`.
+  - `PRIMARY ENDPOINT FROZEN`: Target-level mean fixed-correspondence scTM across the $M=10$ library evaluated by AlphaFold2 (v2.3.2).
+  - `PRIMARY ORACLE FROZEN`: AlphaFold2 (v2.3.2) frozen as single primary final validation oracle; Boltz-1 designated strictly for sensitivity analysis.
+  - `STATISTICAL UNIT FIXED`: Target/backbone unit under paired Wilcoxon signed-rank test ($\alpha = 0.01$).
+  - `BUDGET MATCHER & E0 SPLIT`: Enforced matched generation budgets $K$; split E0 into E0-A (deterministic MAP control, 41.30%) and E0-B (stochastic baseline).
+  - `TWO-STAGE SELECTION`: Stage 1 hard viability gate $\to$ Stage 2 greedy diversity selection heuristic implemented in `src/hybrid/selection.py`.
 - [ ] **Milestone 3: ProteinMPNN Integration & Baseline Verification (Phase 2)**
   - Integrate official ProteinMPNN repository.
   - Execute sanity checks and baseline recovery on shared benchmark structures.
