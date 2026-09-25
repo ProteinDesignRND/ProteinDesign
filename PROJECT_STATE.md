@@ -68,6 +68,13 @@
   - `GOVERNANCE: INTEGRATED`: Automatic preflight hooked into `experiments/TEMPLATE/run.py` (logging `RULE_APPLIED` events); CLI available at `governance/preflight_cli.py`.
   - `GOVERNANCE: CLAIM PROTECTION`: Machine evaluation of claim scope, extrapolation detection (`EXTRAPOLATION_REVIEW_REQUIRED`), and retraction audit (`audit_retraction`).
   - `GOVERNANCE: DOCUMENTED`: Complete reconciliation across DECISION_LOG, ARCHITECTURE, AI_AGENT_RULES_AND_LESSONS, and TEAM_ONBOARDING.
+- [x] **Milestone 2.6: Scientific Metrics & Evaluation Protocol Integrity Gate**
+  - `METRICS: MATHEMATICALLY CODIFIED`: Standard Zhang & Skolnick (2004) TM-score ($d_0(L_{\text{target}})$ normalized), Kabsch C$\alpha$ scRMSD, Henderson-Hasselbalch pI, and RSA-based hydrophobic core fraction.
+  - `SELECTION/EVALUATION FIREWALL`: Candidate survival split into Generative Structural Viability Rate (SVR) and Independent Validation Yield (IVY) to prevent tautological evaluation.
+  - `ORACLE SEPARATION`: Screening oracle (ESMFold) strictly separated from final independent validation oracle (AlphaFold2/Boltz-1).
+  - `PERPLEXITY DECOUPLING`: ProteinSolver masked pseudo-perplexity documented as non-comparable to ProteinMPNN autoregressive perplexity; retained as within-model diagnostics.
+  - `DIVERSITY SPECIFICATION`: Three distinct stages codified (Raw, Viable, Selected library) with exact pairwise Hamming distance formulations.
+  - `SCIENTIFIC WORDING AUDITED`: Scoped mask-invariance to EXP004 tested evidence; removed uncalibrated SOTA claims; corrected ProteinMPNN permutation decoding order.
 - [ ] **Milestone 3: ProteinMPNN Integration & Baseline Verification (Phase 2)**
   - Integrate official ProteinMPNN repository.
   - Execute sanity checks and baseline recovery on shared benchmark structures.

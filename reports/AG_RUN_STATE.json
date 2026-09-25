@@ -1,22 +1,24 @@
 {
   "state": "COMPLETE",
-  "current_stage": "PASS_E_FINAL_SWEEP",
-  "task_id": "PROTEIN-DESIGN-FINAL-FOUNDATION-INTEGRITY-TRANSITION-GATE-V2",
+  "current_stage": "COMPLETE",
+  "task_id": "PROTEIN-DESIGN-SCIENTIFIC-METRICS-EVALUATION-INTEGRITY-GATE-V3",
   "agent": "Gemini 3.8 Flash High",
   "branch": "governance/final-acceptance-redteam-v1",
-  "start_time": "2026-09-25T16:00:48+05:30",
-  "last_update": "2026-09-25T16:08:45+05:30",
+  "start_time": "2026-09-25T16:22:08+05:30",
+  "last_update": "2026-09-25T16:30:40+05:30",
   "freeze_decision": "FOUNDATION_FROZEN_WITH_LIMITATIONS",
   "transition_status": "READY_FOR_PROTEINMPNN_INTEGRATION",
+  "findings_count": 10,
+  "fixes_count": 10,
   "completed": [
-    "PASS A: Comprehensive discovery across 4 knowledge layers; verified external repo is nested clone (NOT submodule); audited snapshot commit labels and workstream roles",
-    "PASS B: Classification matrix formed across findings without false lesson manufacturing",
-    "PASS C: Coherent batch fix applied to GOVERNANCE_RELEASE_GATE_REPORT.md, science/metrics.md, docs/TEAM_WORKSTREAMS.md, and docs/TEAM_ONBOARDING.md",
-    "PASS D: Test verification completed (25 pytest suites passed in 0.77s; 109 direct assertions passed; GPU baseline verified; EXP004 mask invariance verified; preflight CLI verified)",
-    "PASS E: FINAL_FOUNDATION_INTEGRITY_AND_TRANSITION_GATE_REPORT.md published and indexed in REPORT_INDEX.md as Sole Current Transition Authority"
+    "STAGE 1: Discovery across science/metrics.md, science/evaluation_protocol.md, science/datasets.md, architecture/baseline_models.md, and documentation",
+    "STAGE 2: Classification of mathematical definition errors, operational gaps, tautology risks, and wording adjustments",
+    "STAGE 3: Batch fix applied to science/metrics.md, science/evaluation_protocol.md, architecture/baseline_models.md, docs/TEAM_ONBOARDING.md, docs/PROJECT_TRUTH.md, CLAIMS_REGISTRY.md, DECISION_LOG.md, PROJECT_STATE.md, and reports/REPORT_INDEX.md",
+    "STAGE 4: Verification via test_governance.py (109/109 passed), test_original_execution.py (all 6 steps passed), run_mask_invariance.py (logit diff = 0.0), and governance preflight CLI (clean)",
+    "STAGE 5: Repository-wide final sweep completed; created reports/FINAL_SCIENTIFIC_METRICS_AND_EVALUATION_INTEGRITY_REPORT.md"
   ],
   "in_progress": [],
   "blocked": [],
-  "next_action": "Phase 2 / Milestone 3: ProteinMPNN Integration & Baseline Verification",
+  "next_action": "Stage and commit changes on governance/final-acceptance-redteam-v1",
   "expected_remaining_minutes": 0
 }

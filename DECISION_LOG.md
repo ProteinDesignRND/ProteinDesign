@@ -109,3 +109,14 @@ This document chronologically logs all major architectural, methodological, and 
 - **Rationale:** The governance foundation is complete, verified, and integrated. Continued development without empirical research would violate the scientific mission. A formal freeze provides a solid, stable baseline for ProteinMPNN integration.
 - **Consequences:** Governance is frozen. No further changes to `governance/` schemas or preflight logic are permitted. Next work is Workstream B (ProteinMPNN integration).
 
+---
+
+## [DEC-011] Scientific Metrics, Non-Tautological Viability, and Evaluation Protocol Integrity
+- **Date:** 2026-09-25
+- **Decision:** Codify the standard Zhang & Skolnick (2004) TM-score formulation with length-dependent $d_0(L_{\text{target}})$, resolve tautological Candidate Survival Rate into Generative Structural Viability Rate (SVR) and Independent Validation Yield (IVY), decouple within-model perplexity diagnostics between ProteinSolver (masked pseudo-perplexity) and ProteinMPNN (autoregressive perplexity), establish an anti-leakage structural oracle firewall (ESMFold screening vs. AlphaFold2/Boltz-1 independent validation), mandate an a priori fixed Pareto reference point $\mathbf{r}$, define explicit biophysical proxies (Henderson-Hasselbalch pI, hydrophobic core fraction with $\text{RSA} < 0.20$), and reclassify thresholds from "canonical" to "project screening thresholds".
+- **Context:** A comprehensive audit of `science/metrics.md` and `science/evaluation_protocol.md` identified mathematical ambiguities (incomplete TM-score formula), metric tautology risk (evaluating candidate survival using the same criteria used to filter the set), invalid cross-model comparison of fundamentally different perplexity mechanisms, potential evaluation leakage across structural oracles, and overgeneralized phrasing ("canonical threshold", "100% mask-invariant").
+- **Alternatives Considered:** Retaining approximate or informal metric descriptions; treating within-model perplexity as directly comparable; using the same oracle for screening and final evaluation.
+- **Rationale:** Defensible scientific conclusions require mathematically precise definitions, strict separation between candidate selection and independent validation, explicit distinction between within-model diagnostics and cross-model metrics, and rigorously scoped empirical assertions.
+- **Consequences:** All metric equations are mathematically sound, evaluation is protected against circular tautology, and the protocol is ready for Phase 2 / Milestone 3 (ProteinMPNN integration).
+
+

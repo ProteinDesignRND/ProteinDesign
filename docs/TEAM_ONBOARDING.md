@@ -6,7 +6,7 @@ Welcome to the Protein Design research project. This document gives you everythi
 
 ## 1. What the project is
 
-This is a computational biology research project investigating whether an older protein sequence design model (ProteinSolver, 2020) can complement modern state-of-the-art models (ProteinMPNN, 2022) to produce better or more diverse protein sequences.
+This is a computational biology research project investigating whether an older protein sequence design model (ProteinSolver, 2020) can complement modern inverse-folding models such as ProteinMPNN (Dauparas et al. 2022) to produce better or more diverse protein sequences.
 
 We are NOT building a product. We are conducting a controlled scientific investigation.
 
@@ -20,10 +20,10 @@ Modern models like ProteinMPNN do this well (~51% native sequence recovery on st
 
 ProteinSolver (Strokach et al., Cell Systems 2020) is a graph neural network that treats sequence design as a constraint satisfaction problem (CSP). It uses a different architecture and different input features than ProteinMPNN:
 
-- **ProteinSolver**: pairwise heavy-atom distances (< 12 Å), masked-token BERT-style prediction, iterative unmasking
-- **ProteinMPNN**: backbone atom coordinates (N, CA, C, O), autoregressive left-to-right prediction with random order
+- **ProteinSolver**: graph neural network, pairwise heavy-atom distance edges (< 12 Å), masked residue conditional prediction, iterative constraint-satisfaction unmasking
+- **ProteinMPNN**: message-passing neural network, backbone atom coordinates (N, CA, C, O), autoregressive decoding conditioned on arbitrary or random residue permutation orders
 
-These differences mean their errors might be uncorrelated — which is the hypothesis we're testing.
+The architectural differences motivate testing whether the models provide complementary signals — which is the research hypothesis under investigation.
 
 ## 4. Current research question
 
@@ -40,7 +40,7 @@ Combining ProteinSolver scores with ProteinMPNN outputs through multi-objective 
 - ProteinSolver's historical source code has been cloned and verified (commit `69ef0965`). The working tree is 100% clean.
 - The published 567,060-parameter checkpoint loads correctly under `strict=True` after a documented key prefix mapping.
 - On one test structure (CATH domain 1n5uA03, 92 amino acids), ProteinSolver's all-masked CSP design achieves 41.30% native sequence identity (38/92 residues).
-- The model is 100% mask-invariant: hidden labels have zero effect on logits when all residues are masked.
+- In the tested all-masked mask-invariance experiment (EXP004), changing hidden/native labels produced a maximum absolute logit difference of 0.0.
 - An earlier "100% recovery" result was correctly identified as an information leak bug in the evaluation setup (not a model bug).
 - A cleanroom Biopython-based graph extractor produces tensors identical to the original repo pipeline on the tested target.
 

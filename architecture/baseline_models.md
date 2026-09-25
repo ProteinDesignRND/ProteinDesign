@@ -9,7 +9,7 @@ This document evaluates potential baseline models for the inverse folding and se
 | Model | Model Family | Input Representation | Decoding Method | Reported CATH 4.2 Recovery | Parameter Count | Include in Benchmark? |
 |---|---|---|---|:---:|:---:|:---:|
 | **ProteinSolver** | Residual EdgeConv GNN | Sparse distance matrix (<12 Å) | Iterative CSP Masked Sampling | ~32–35% | ~1.5M | **YES (Foundational Baseline)** |
-| **ProteinMPNN** | Message Passing GNN | Backbone coords (N, CA, C, O) | Autoregressive (Random Order) | 51.6% | ~1.8M | **YES (Primary SOTA Baseline)** |
+| **ProteinMPNN** | Message Passing GNN | Backbone coords (N, CA, C, O) | Autoregressive (Random Order) | 51.6% | ~1.8M | **YES (Primary Modern Baseline)** |
 | **PiFold** | Dual-track PiGNN | Multi-scale residue featurization | Non-autoregressive (One-shot) | 51.7% | ~2.5M | **RECOMMENDED (Fast Non-AR Baseline)** |
 | **ESM-IF1** | GVP-GNN + Transformer | Backbone coordinates | Autoregressive Transformer | 51.3% | ~142M | **OPTIONAL (Resource Dependent)** |
 | **LigandMPNN** | Message Passing GNN | Backbone coords + Ligand atoms | Autoregressive | N/A (ligand-aware) | ~2.0M | **NO (Specialized for Small Molecules)** |
@@ -35,11 +35,11 @@ This document evaluates potential baseline models for the inverse folding and se
 - **Paper:** Dauparas et al. (*Science* 2022).
 - **Model Family:** Autoregressive Message Passing Neural Network.
 - **Input:** 3D coordinates of N, CA, C, O backbone atoms; local coordinate frames and geometric invariant features (distances, angles).
-- **Output:** Conditional amino acid probabilities conditioned on backbone geometry and previously decoded positions.
-- **Strengths:** Gold-standard accuracy, high recovery (51.6%), robust to experimental backbone noise, extremely fast inference (<0.1s per sequence on GPU).
+- **Output:** Conditional amino acid probabilities conditioned on backbone geometry and previously decoded positions under a random or chosen decoding permutation order.
+- **Strengths:** High recovery (51.6% on CATH 4.2), robust to experimental backbone noise, extremely fast inference (<0.1s per sequence on GPU).
 - **Limitations:** Suffers from low sequence diversity at low temperatures ($T=0.1$); does not optimize multi-objective criteria.
 - **Compute Requirements:** Low (~200 MB GPU RAM).
-- **Benchmark Verdict:** **MANDATORY.** Universally acknowledged primary state-of-the-art benchmark.
+- **Benchmark Verdict:** **MANDATORY.** Primary modern inverse-folding baseline (Dauparas et al. 2022).
 
 ---
 

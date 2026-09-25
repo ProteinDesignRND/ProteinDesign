@@ -35,7 +35,7 @@ These claims are supported by direct inspection, execution, or primary literatur
 - It is NOT benchmark accuracy, generalization accuracy, or full ProteinSolver benchmark reproduction. `[EXPLICIT LIMITATION]`
 
 ### Mask Invariance (EXP004)
-- When all residues are masked (`x = 20`, `y = None`), logits are 100% mask-invariant across different hidden label sets: max absolute logit difference = 0.00000000e+00. `[VERIFIED]`
+- In the tested all-masked mask-invariance experiment (EXP004, `x = 20`, `y = None`), changing hidden/native labels produced a maximum absolute logit difference of 0.00000000e+00. `[VERIFIED]`
 - Designed sequences under identical seeds are bitwise identical regardless of hidden labels. `[VERIFIED]`
 - When `data.y` is supplied, `protein_design.py` copies reference labels via `strategy="ref"`, producing an information leak. This is NOT valid sequence recovery. `[VERIFIED]`
 
