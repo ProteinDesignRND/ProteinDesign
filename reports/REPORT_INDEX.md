@@ -49,6 +49,7 @@
 | **Tests** | `tests/test_governance.py` | Comprehensive test suite (109 assertions across 25 pytest test suites) |
 | **Foundation Closure** | `reports/GOVERNANCE_FOUNDATION_CLOSURE_REPORT.md` | Foundation closure report (superseded by Final Acceptance Report) |
 | **Final Acceptance Report** | `reports/GOVERNANCE_FINAL_ACCEPTANCE_REPORT.md` | Final red-team acceptance and hardening report |
+| **Release Gate Report** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Final release-gate audit and foundation freeze report (Current Freeze Authority) |
 
 ## Live Progress
 

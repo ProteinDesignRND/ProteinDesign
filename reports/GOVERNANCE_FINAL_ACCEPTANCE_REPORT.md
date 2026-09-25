@@ -29,27 +29,27 @@ However, initial red-team inspection revealed several material gaps:
 
 | Requirement | Implemented? | Unit Tested? | Integrated? | Bypassable? | Evidence | Action Taken |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Lesson Schema** | YES | YES | YES | NO (Validated) | `schemas.py::Lesson`, tests A1-A2 | Added integrity validation |
-| **Rule Schema** | YES | YES | YES | NO (Validated) | `schemas.py::Rule`, tests A3-A4 | Verified all 15 fields |
-| **Event History** | YES | YES | YES | NO | `store.py::append_event`, tests D1-D5 | Append-only JSONL format |
-| **Evidence vs Lifecycle** | YES | YES | YES | NO | `schemas.py`, test O1 | Independent taxonomy |
-| **Deterministic Retrieval** | YES | YES | YES | NO | `preflight.py::_context_matches`, tests E1-E4 | Explainable matching |
-| **Unknown Context Visibility** | YES | YES | YES | NO | `preflight.py`, test G1 | Visible warnings surfaced |
-| **Lightweight Context Derivation**| YES | YES | YES | NO | `context.py::derive_context`, tests ADV_CTX | Extracted git, python, PyTorch |
-| **Claim-Level Protection** | YES | YES | YES | NO | `claim.py::evaluate_claim`, tests T1-T5 | Machine validator implemented |
-| **Extrapolation Detection** | YES | YES | YES | NO | `claim.py`, test M1-M2 | `EXTRAPOLATION_REVIEW_REQUIRED` |
-| **Validation Levels Separation** | YES | YES | YES | NO | `schemas.py`, tests O1-O5 | Claim vs Rule vs Check decoupled |
-| **Precedence Hierarchy** | YES | YES | YES | NO | `preflight.py::_precedence_rank`, test H1 | Deterministic rank ordering |
-| **Conflict Detection** | YES | YES | YES | NO | `preflight.py`, tests I1-I2 | Scoped conflict resolution |
-| **Blocker / Override Behavior** | YES | YES | YES | NO | `store.py::record_override`, tests J1-J2, K1-K4 | PROPOSED stays FYI |
-| **Novelty Detection** | YES | YES | YES | NO | `preflight.py`, tests N1-N2 | Novel axis & value detection |
-| **Duplicate Handling** | YES | YES | YES | NO | `store.py::find_potential_duplicates`, tests Q1-Q3 | Keyword/title duplicate check |
-| **Versioning & Migration** | YES | YES | YES | NO | `store.py`, tests R1-R3 | Extra fields preserved |
-| **Retraction Audit** | YES | YES | YES | NO | `store.py::audit_retraction`, tests ADV_AUDIT | Traces applied experiments & artifacts |
-| **AI Agent Boundaries** | YES | YES | YES | NO | `seed.py::R-008`, tests S1-S3 | Autonomous promotion blocked |
-| **Six Regressions (Bad/Good)** | YES | YES | YES | NO | `tests/test_governance.py`, tests T1-T9 | Both bad and good inputs tested |
-| **Real Workflow Integration** | YES | YES | YES | NO | `experiments/TEMPLATE/run.py`, CLI | Preflight hooked into template |
-| **Test Discovery** | YES | YES | YES | NO | `pytest tests/` (25 passed, 0.88s) | Full pytest compatibility |
+| **Lesson Schema** | YES | YES | YES | DETECTABLE | `schemas.py::Lesson`, tests A1-A2 | Added schema & integrity validation |
+| **Rule Schema** | YES | YES | YES | DETECTABLE | `schemas.py::Rule`, tests A3-A4 | Verified all 15 fields |
+| **Event History** | YES | YES | YES | DETECTABLE | `store.py::append_event`, tests D1-D5 | Append-only JSONL format; audit check |
+| **Evidence vs Lifecycle** | YES | YES | YES | DETECTABLE | `schemas.py`, test O1 | Independent taxonomy |
+| **Deterministic Retrieval** | YES | YES | YES | DETECTABLE | `preflight.py::_context_matches`, tests E1-E4 | Explainable matching |
+| **Unknown Context Visibility** | YES | YES | YES | DETECTABLE | `preflight.py`, test G1 | Visible warnings surfaced |
+| **Lightweight Context Derivation**| YES | YES | YES | DETECTABLE | `context.py::derive_context`, tests ADV_CTX | Extracted git, python, PyTorch |
+| **Claim-Level Protection** | YES | YES | YES | DETECTABLE | `claim.py::evaluate_claim`, tests T1-T5 | Machine validator implemented |
+| **Extrapolation Detection** | YES | YES | YES | DETECTABLE | `claim.py`, test M1-M2 | `EXTRAPOLATION_REVIEW_REQUIRED` |
+| **Validation Levels Separation** | YES | YES | YES | DETECTABLE | `schemas.py`, tests O1-O5 | Claim vs Rule vs Check decoupled |
+| **Precedence Hierarchy** | YES | YES | YES | DETECTABLE | `preflight.py::_precedence_rank`, test H1 | Deterministic rank ordering |
+| **Conflict Detection** | YES | YES | YES | DETECTABLE | `preflight.py`, tests I1-I2 | Scoped conflict resolution |
+| **Blocker / Override Behavior** | YES | YES | YES | DETECTABLE | `store.py::record_override`, tests J1-J2, K1-K4 | PROPOSED stays FYI |
+| **Novelty Detection** | YES | YES | YES | DETECTABLE | `preflight.py`, tests N1-N2 | Novel axis & value detection |
+| **Duplicate Handling** | YES | YES | YES | DETECTABLE | `store.py::find_potential_duplicates`, tests Q1-Q3 | Keyword/title duplicate check |
+| **Versioning & Migration** | YES | YES | YES | DETECTABLE | `store.py`, tests R1-R3 | Extra fields preserved |
+| **Retraction Audit** | YES | YES | YES | DETECTABLE | `store.py::audit_retraction`, tests ADV_AUDIT | Traces applied experiments & artifacts |
+| **AI Agent Boundaries** | YES | YES | YES | DETECTABLE | `seed.py::R-008`, tests S1-S3 | Autonomous promotion blocked |
+| **Six Regressions (Bad/Good)** | YES | YES | YES | DETECTABLE | `tests/test_governance.py`, tests T1-T9 | Both bad and good inputs tested |
+| **Real Workflow Integration** | YES | YES | YES | DETECTABLE | `experiments/TEMPLATE/run.py`, CLI | Preflight hooked into template |
+| **Test Discovery** | YES | YES | YES | DETECTABLE | `pytest tests/` (25 passed, 0.86s) | Full pytest compatibility |
 
 ---
 
@@ -275,4 +275,4 @@ The following limitations are explicitly documented and acknowledged:
 ### **READY_WITH_EXPLICIT_LIMITATIONS**
 
 **Rationale:**  
-The Lesson/Rule/Event governance architecture is fully verified, hardened against bypass, integrated into the experiment workflow, and backed by a 109-assertion automated test suite with zero failures. It is ready to support the next research phase (ProteinMPNN baseline integration) subject to the four explicit limitations detailed in Section 12.
+The Lesson/Rule/Event governance architecture is verified, equipped with bypass detection and integrity validation, integrated into the experiment workflow, and backed by a 109-assertion automated test suite with zero failures. It is ready to support the next research phase (ProteinMPNN baseline integration) subject to the four explicit limitations detailed in Section 12.

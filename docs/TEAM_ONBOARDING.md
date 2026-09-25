@@ -84,10 +84,14 @@ Protein Design/
 ├── reports/                       # Analysis reports and audit documents
 ├── governance/                    # Lesson/Rule/Event governance system
 │   ├── ARCHITECTURE.md           # How the governance system works
-│   ├── data/                     # Lessons, rules, events (JSON)
-│   └── preflight.py              # Run preflight checks
+│   ├── data/                     # Lessons, rules, events (JSON/JSONL)
+│   ├── preflight.py              # Preflight check logic
+│   ├── preflight_cli.py          # Preflight CLI tool
+│   ├── context.py                # Context derivation (DERIVED vs DECLARED)
+│   ├── claim.py                  # Claim evaluation & extrapolation detection
+│   └── store.py                  # Storage & integrity validation
 ├── tests/
-│   └── test_governance.py        # Governance test suite (83 tests)
+│   └── test_governance.py        # Governance test suite (25 pytest suites, 109 assertions)
 ├── research/                      # Literature review and paper audits
 ├── science/                       # Evaluation protocol, datasets docs
 ├── architecture/                  # Architecture documentation
