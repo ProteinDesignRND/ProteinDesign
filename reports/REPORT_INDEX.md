@@ -8,8 +8,11 @@
 ## 2. Transition & Evaluation Authorities
 | Document | Path | Purpose | Authority Scope |
 | :--- | :--- | :--- | :--- |
-| **Transition Gate Report** | `reports/FINAL_FOUNDATION_INTEGRITY_AND_TRANSITION_GATE_REPORT.md` | Final foundation integrity and transition-gate report | **Current Transition Authority** |
-| **Protocol Freeze & Readiness Gate Report** | `reports/FINAL_SCIENTIFIC_PROTOCOL_FREEZE_AND_READINESS_GATE_REPORT.md` | Authoritative protocol freeze, Claude 2.0 audit disposition, and final readiness gate report | **Current Protocol Freeze Authority** |
+| **Final Pre-E1 Scientific Readiness Closure Report** | `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_CLOSURE_REPORT.md` | Final pre-E1 scientific readiness, manifest freeze, infeasibility rule, and consistency closure report | **Current Pre-E1 Protocol & Readiness Authority** |
+| **Development Hyperparameter Selection Freeze Report** | `reports/DEVELOPMENT_HYPERPARAMETER_SELECTION_FREEZE_REPORT.md` | Freeze of development objective $J$, Cartesian grids, freezing order, and tie breaking | **Development Hyperparameter Selection Authority** |
+| **ProteinMPNN Counterfactual Leakage Audit Report** | `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` | Verification of 100% native-sequence invariance under counterfactual inputs | **Cleanroom Integration Leakage Authority** |
+| **Transition Gate Report** | `reports/FINAL_FOUNDATION_INTEGRITY_AND_TRANSITION_GATE_REPORT.md` | Final foundation integrity and transition-gate report | **Historical Foundation Transition Authority** |
+| **Protocol Freeze & Readiness Gate Report** | `reports/FINAL_SCIENTIFIC_PROTOCOL_FREEZE_AND_READINESS_GATE_REPORT.md` | Authoritative protocol freeze, Claude 2.0 audit disposition, and final readiness gate report | **Historical Protocol Freeze Authority** |
 | **Study Pre-Registration** | `science/PREREGISTRATION.md` | Pre-registered freeze of all 24 study parameters prior to experimentation | **Study Pre-Registration Authority** |
 | **Scientific Metrics & Evaluation Integrity Report** | `reports/FINAL_SCIENTIFIC_METRICS_AND_EVALUATION_INTEGRITY_REPORT.md` | Audit of mathematical definitions, non-tautological viability, and oracle separation | **Scientific Protocol & Metrics Authority** |
 | **Governance Release Gate** | `reports/GOVERNANCE_RELEASE_GATE_REPORT.md` | Foundation freeze audit and red-team closure | **Foundation Freeze Authority** |
@@ -17,6 +20,7 @@
 ## 3. Active Scientific Evidence
 | Document | Path | Purpose |
 | :--- | :--- | :--- |
+| **ProteinMPNN Provenance Manifest** | `reports/PROTEINMPNN_PROVENANCE_MANIFEST.md` | Official ProteinMPNN commit, weights hashes, cleanroom architecture, and interface verification |
 | **Phase 1 Reproduction** | `reports/PHASE1_PROTEINSOLVER_REPRODUCTION.md` | Complete E0 verification and hardening report |
 | **Provenance Manifest** | `reports/PROTEINSOLVER_PROVENANCE_MANIFEST.md` | Exact commit, hashes, environment, and compatibility layer documentation |
 | **Paper vs. Implementation** | `reports/paper_vs_implementation.md` | Systematic audit of paper claims vs. code reality |

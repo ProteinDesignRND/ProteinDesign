@@ -10,19 +10,34 @@ Authoritative Rules:
        3 recycles, float16 GPU, seed 42, Amber disabled.
    No surrogate objectives are permitted.
 
-2. MPNN-Only Parameter Selection:
+2. Development Infeasibility Rule:
+   Every candidate hyperparameter configuration must successfully produce an M=10
+   unique viable library on ALL 20 development targets to be eligible for the primary J argmax.
+   If ANY one of the 20 development targets is SELECTION_INFEASIBLE_LT_M for that configuration,
+   the configuration is INELIGIBLE and receives objective J = -infinity for argmax purposes.
+   - Do NOT replace missing/infeasible development target scTM with 0.0.
+   - Do NOT exclude the infeasible target and average over the remaining targets.
+   - Do NOT reduce M.
+   - Do NOT regenerate beyond K.
+   - Do NOT alter screening thresholds.
+   - Do NOT silently substitute another temperature or seed.
+   - Report the configuration's infeasibility rate separately.
+   - If every configuration for an arm is infeasible, STOP THAT TUNING ARM and classify
+     the development tuning stage as INFEASIBLE rather than inventing a fallback.
+
+3. MPNN-Only Parameter Selection:
    Complete Cartesian product: T_MPNN x gamma
        T_MPNN in {0.1, 0.2, 0.5, 0.8, 1.0}
        gamma in {0.0, 0.25, 0.5, 1.0, 2.0}
    (25 combinations). (T*_MPNN, gamma*_MPNN) = argmax J.
 
-3. ProteinSolver E0-B Parameter Selection:
+4. ProteinSolver E0-B Parameter Selection:
    Complete Cartesian product: T_PS x gamma
        T_PS in {0.1, 0.5, 1.0}
        gamma in {0.0, 0.25, 0.5, 1.0, 2.0}
    (15 combinations). (T*_PS, gamma*_PS) = argmax J.
 
-4. Primary Hybrid Parameter Selection:
+5. Primary Hybrid Parameter Selection:
    Must evaluate the Common Candidate Universe generated at T*_MPNN.
    Therefore: T*_hybrid = T*_MPNN (zero independent temperature sweep).
    Complete Cartesian product: lambda x gamma
@@ -30,14 +45,14 @@ Authoritative Rules:
        gamma in {0.0, 0.25, 0.5, 1.0, 2.0}
    (35 combinations). (lambda*, gamma*_hybrid) = argmax J.
 
-5. Deterministic Selection Order:
+6. Deterministic Selection Order:
    Step 1: Select (T*_MPNN, gamma*_MPNN)
    Step 2: Select (T*_PS, gamma*_PS)
    Step 3: Using T*_MPNN, select (lambda*, gamma*_hybrid)
    Step 4: Freeze ALL resulting parameters
    Step 5: Only then permit TS50 execution.
 
-6. Deterministic Tie Breaking:
+7. Deterministic Tie Breaking:
    Ascending lexicographical ordering over declared grids:
    - For (T, gamma): ascending T, then ascending gamma.
    - For (lambda, gamma): ascending lambda, then ascending gamma.
@@ -98,29 +113,75 @@ def compute_target_sctm_mean(
 
 
 def compute_development_objective(
-    target_sctm_means: Sequence[float],
+    target_sctm_means: Sequence[Optional[float]],
     expected_n_dev: int = DEVELOPMENT_TARGET_COUNT,
+    infeasible_mask: Optional[Sequence[bool]] = None,
 ) -> float:
     """Computes the scalar development optimization objective J.
 
     Formula:
         J = (1 / N_dev) * sum_{t=1}^{N_dev} mean_m scTM_val(s_{t,m})
 
+    Infeasibility Rule (Pre-E1 Freeze):
+        Every candidate hyperparameter configuration must successfully produce an M=10
+        unique viable library on ALL N_dev=20 development targets to be eligible for
+        the primary J argmax.
+        If ANY single target is SELECTION_INFEASIBLE_LT_M for that configuration
+        (signaled via infeasible_mask[i]=True, target_sctm_means[i] is None, or
+        target_sctm_means[i] == -inf), the entire configuration is INELIGIBLE and
+        receives objective J = -infinity for argmax purposes.
+        - Do NOT replace missing/infeasible development target scTM with 0.0.
+        - Do NOT exclude the infeasible target and average over the remaining targets.
+        - Do NOT reduce M.
+        - Do NOT regenerate beyond K.
+        - Do NOT alter screening thresholds.
+        - Do NOT silently substitute another temperature or seed.
+
     Args:
         target_sctm_means: Target-level mean scTM values across the 20 development backbones.
+                           Can contain None or float('-inf') if a target was infeasible.
         expected_n_dev: Expected number of development targets (default 20).
+        infeasible_mask: Optional boolean mask of length N_dev where True indicates SELECTION_INFEASIBLE_LT_M.
 
     Returns:
-        Scalar development objective J in [0.0, 1.0].
+        Scalar development objective J in [0.0, 1.0] if all 20 targets are feasible,
+        or -infinity (float('-inf')) if any target is infeasible.
     """
     if len(target_sctm_means) != expected_n_dev:
         raise ValueError(
             f"Expected exactly {expected_n_dev} development targets, got {len(target_sctm_means)}"
         )
+    if infeasible_mask is not None:
+        if len(infeasible_mask) != expected_n_dev:
+            raise ValueError(
+                f"Expected infeasible_mask of length {expected_n_dev}, got {len(infeasible_mask)}"
+            )
+        if any(infeasible_mask):
+            return float("-inf")
+
+    clean_means = []
     for val in target_sctm_means:
+        if val is None or val == float("-inf") or np.isneginf(val):
+            return float("-inf")
         if val < 0.0 or val > 1.0:
             raise ValueError(f"Target-level mean scTM out of valid [0.0, 1.0] bounds: {val}")
-    return float(np.mean(target_sctm_means))
+        clean_means.append(val)
+
+    return float(np.mean(clean_means))
+
+
+def compute_configuration_infeasibility_rate(
+    infeasible_mask: Sequence[bool],
+    expected_n_dev: int = DEVELOPMENT_TARGET_COUNT,
+) -> float:
+    """Computes the development target infeasibility rate for a configuration.
+
+    Formula:
+        infeasibility_rate = (number of infeasible targets) / N_dev
+    """
+    if len(infeasible_mask) != expected_n_dev:
+        raise ValueError(f"Expected {expected_n_dev} targets, got {len(infeasible_mask)}")
+    return float(sum(1 for x in infeasible_mask if x) / expected_n_dev)
 
 
 def select_optimal_temperature_and_gamma(
@@ -134,6 +195,11 @@ def select_optimal_temperature_and_gamma(
         If two or more parameter combinations achieve identical J (within atol),
         select the combination that is first under ascending lexicographical order:
         primary key: T ascending; secondary key: gamma ascending.
+
+    Infeasibility handling:
+        Configurations receiving J = -infinity are ineligible.
+        If all configurations are infeasible (max_j == -infinity), STOP THAT TUNING ARM
+        and raise RuntimeError classifying the development tuning stage as INFEASIBLE.
 
     Args:
         grid_results: Mapping of (T, gamma) -> development objective J.
@@ -157,6 +223,12 @@ def select_optimal_temperature_and_gamma(
 
     # Find maximum J
     max_j = max(grid_results[pair] for pair in declared_grid)
+    if max_j == float("-inf") or np.isneginf(max_j):
+        raise RuntimeError(
+            f"DEVELOPMENT_TUNING_STAGE_INFEASIBLE: All {len(declared_grid)} configurations in {grid_type} tuning "
+            f"arm are ineligible (SELECTION_INFEASIBLE_LT_M on one or more development targets). "
+            f"Zero fallback substitution permitted."
+        )
 
     # Collect candidate pairs with maximum J (within tolerance)
     tied_pairs = [pair for pair in declared_grid if abs(grid_results[pair] - max_j) <= atol]
@@ -177,6 +249,11 @@ def select_optimal_lambda_and_gamma(
         select the combination that is first under ascending lexicographical order:
         primary key: lambda ascending; secondary key: gamma ascending.
 
+    Infeasibility handling:
+        Configurations receiving J = -infinity are ineligible.
+        If all configurations are infeasible (max_j == -infinity), STOP THAT TUNING ARM
+        and raise RuntimeError classifying the development tuning stage as INFEASIBLE.
+
     Args:
         grid_results: Mapping of (lambda, gamma) -> development objective J.
         atol: Absolute tolerance for floating-point equality.
@@ -191,6 +268,11 @@ def select_optimal_lambda_and_gamma(
 
     # Find maximum J
     max_j = max(grid_results[pair] for pair in declared_grid)
+    if max_j == float("-inf") or np.isneginf(max_j):
+        raise RuntimeError(
+            "DEVELOPMENT_TUNING_STAGE_INFEASIBLE: All 35 configurations in hybrid tuning arm are ineligible "
+            "(SELECTION_INFEASIBLE_LT_M on one or more development targets). Zero fallback substitution permitted."
+        )
 
     # Collect candidate pairs with maximum J (within tolerance)
     tied_pairs = [pair for pair in declared_grid if abs(grid_results[pair] - max_j) <= atol]

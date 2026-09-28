@@ -3,11 +3,11 @@
 ## Project Identity
 - **Project Name:** Protein Design / ProteinSolver Research Extension
 - **Parent Foundational Work:** Strokach et al., 2020, *"Fast and Flexible Protein Design Using Deep Graph Neural Networks"*, Cell Systems 11(4): 402–411.e4.
-- **Current Phase:** Phase 2 / Milestone 3 Cleanroom Integration Complete — Ready for Baseline Verification
+- **Current Phase:** Pre-E1 Scientific Readiness & Consistency Closure Complete — Ready for Authorized E1 Initiation
 - **Current Branch:** `governance/final-acceptance-redteam-v1`
 - **Integration Branch:** `main`
 - **Governance Freeze Status:** FOUNDATION_FROZEN_WITH_LIMITATIONS
-- **Date Created / Initialized:** 2026-09-24
+- **Date Created / Initialized:** 2026-09-24 (Last Updated: 2026-09-28)
 - **Milestone Labels:**
   - `E0-RUNTIME`: **COMPLETE**
   - `E0-SCIENTIFIC-HARDENING`: **COMPLETE**
@@ -16,6 +16,7 @@
   - `PROTEINMPNN-INTEGRATION`: **COMPLETE**
   - `PROTEINMPNN-BENCHMARK`: **NOT STARTED**
   - `PRE-E1-INTEGRITY-GATE`: **PASSED**
+  - `PRE-E1-SCIENTIFIC-READINESS-CLOSURE`: **COMPLETE**
 
 ---
 
@@ -113,8 +114,16 @@
   - Codified exact scalar development objective $J = (1/N_{\text{dev}}) \sum_t \overline{\text{scTM}}_{\text{val}}(t)$ evaluated with AlphaFold2.
   - Codified Cartesian product optimization grids: MPNN-only (25 pairs), PS E0-B (15 pairs), Hybrid $\lambda \times \gamma$ (35 pairs with $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ on Common Candidate Universe $U_t$).
   - Codified deterministic 5-step parameter freezing order and lexicographical tie-breaking rule.
-  - Implemented cleanroom optimization module `src/hybrid/optimization.py` and 8 focused tests in `tests/test_development_hyperparameter_selection.py` (71/71 pytest suites passing).
+  - Implemented cleanroom optimization module `src/hybrid/optimization.py` and focused tests in `tests/test_development_hyperparameter_selection.py`.
   - Appended `[DEC-015]`.
+- [x] **Milestone 3A.2: Pre-E1 Scientific Readiness and Consistency Closure: COMPLETE**
+  - Created immutable development manifest `data/manifests/development_20_cath42.txt` (SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`) comprising 20 distinct CATH topologies deterministically selected from Ingraham/Dauparas CATH 4.2 validation split (`chain_set_splits.json`, SHA-256: `8e9a587a50c7f6c026e4ed00f6c1c30b106100f36f7a01de47542bdfc060adc2`).
+  - Codified development optimization infeasibility rule ($J = -\infty$ for any target with $<10$ unique viable candidates) in `src/hybrid/optimization.py` and added unit tests (10/10 passing).
+  - Operationally froze ESMFold screening oracle configuration (Meta AI `esm` v2.0.0, `esmfold_v1` 3B, sequence-only, 4 recycles, `fp16` GPU, max len 1024 with chunking, seed 42, operational screening cutoffs $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ and $\text{pLDDT}_{\text{screen}} \ge 80.0$).
+  - Refined AlphaFold2 determinism wording: fixed inference seed = 42 controls stochastic initialization but does not guarantee bitwise GPU determinism across differing CUDA/hardware environments; froze 1-to-1 residue correspondence and 100% C-alpha resolution rules.
+  - Codified development candidate caching strategy (generate once per temperature, screen once, score once, reuse across all $\gamma$).
+  - Full test suite verified: 73 collected tests passing across 4 test files (25 governance, 27 scientific protocol, 11 ProteinMPNN, 10 development optimization).
+  - Appended `[DEC-016]`.
 - [ ] **Milestone 3B: ProteinMPNN Baseline Benchmark Execution (E1 / TS50): NOT STARTED**
   - Execute controlled benchmark baselines under frozen protocol (`science/evaluation_protocol.md`).
 - [ ] **Milestone 4: Research Question Freezing & Human Review**

@@ -66,14 +66,16 @@ To combine scores from fundamentally different objectives without scale mismatch
 3. Compute the primary hybrid score:
    $$H(u) = \lambda \cdot p_{\text{MPNN}}(u) + (1 - \lambda) \cdot p_{\text{PS}}(u), \quad \lambda \in [0.0, 1.0]$$
 4. **Development Hyperparameter Selection & Freezing Protocol ($T^*, \lambda^*, \gamma^*$):**
-   The mixing parameter $\lambda$ and diversity weights $\gamma$ are selected **strictly on the development set** (CATH 4.2 validation split, 20 backbones) by maximizing the scalar development objective:
+   The mixing parameter $\lambda$ and diversity weights $\gamma$ are selected **strictly on the development set** (frozen manifest `data/manifests/development_20_cath42.txt`, SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`, 20 backbones from the Ingraham/Dauparas CATH 4.2 validation split) by maximizing the scalar development objective:
    $$J = \frac{1}{N_{\text{dev}}} \sum_{t=1}^{N_{\text{dev}}} \overline{\text{scTM}}_{\text{val}}(t) = \frac{1}{N_{\text{dev}}} \sum_{t=1}^{N_{\text{dev}}} \left( \frac{1}{M} \sum_{m=1}^M \text{scTM}_{\text{val}}(s_{t,m}) \right)$$
-   using the frozen Primary Final Structural Validation Oracle (AlphaFold2 v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode, 3 recycles, fp16 GPU, seed 42, Amber disabled).
-   - MPNN-only: Cartesian product $T_{\text{MPNN}} \times \gamma$ (25 combinations) $\to (T^*_{\text{MPNN}}, \gamma^*_{\text{MPNN}}) = \arg\max J$.
-   - ProteinSolver E0-B: Cartesian product $T_{\text{PS}} \times \gamma$ (15 combinations) $\to (T^*_{\text{PS}}, \gamma^*_{\text{PS}}) = \arg\max J$.
-   - Primary Hybrid: $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ (evaluates common candidate universe $U_t$; zero independent temperature sweep). Cartesian product $\lambda \times \gamma$ (35 combinations) $\to (\lambda^*, \gamma^*_{\text{hybrid}}) = \arg\max J$.
-   - Freezing Order: 1. MPNN $\to$ 2. PS $\to$ 3. Hybrid $\to$ 4. Freeze ALL parameters $\to$ 5. TS50 execution permitted.
-   - Deterministic Tie-Breaking: Ascending lexicographical grid order. All parameters are **strictly frozen prior to TS50 evaluation**. Zero test-set tuning permitted.
+   using the frozen Primary Final Structural Validation Oracle (AlphaFold2 v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode, 3 recycles, fp16 GPU, fixed inference seed = 42, Amber disabled).
+   - **Development Infeasibility Rule ($J = -\infty$):** Any configuration producing `SELECTION_INFEASIBLE_LT_M` ($<10$ unique viable candidates) on ANY single development target receives $J = -\infty$ and is ineligible for argmax. If all configurations in an arm are infeasible, stop that tuning arm and classify the development tuning stage as `DEVELOPMENT_TUNING_STAGE_INFEASIBLE`.
+   - **MPNN-only:** Cartesian product $T_{\text{MPNN}} \times \gamma$ (25 combinations) $\to (T^*_{\text{MPNN}}, \gamma^*_{\text{MPNN}}) = \arg\max J$.
+   - **ProteinSolver E0-B:** Cartesian product $T_{\text{PS}} \times \gamma$ (15 combinations) $\to (T^*_{\text{PS}}, \gamma^*_{\text{PS}}) = \arg\max J$.
+   - **Primary Hybrid:** $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ (evaluates common candidate universe $U_t$; zero independent temperature sweep). Cartesian product $\lambda \times \gamma$ (35 combinations) $\to (\lambda^*, \gamma^*_{\text{hybrid}}) = \arg\max J$.
+   - **Development Caching:** Candidate pools at temperature $T$ are generated once, screened once with ESMFold, and scored once, then reused across all $\gamma$ values (and across all 35 $(\lambda, \gamma)$ combinations for hybrid on $U_t$).
+   - **Freezing Order:** 1. MPNN $\to$ 2. PS $\to$ 3. Hybrid $\to$ 4. Freeze ALL parameters $\to$ 5. TS50 execution permitted.
+   - **Deterministic Tie-Breaking:** Ascending lexicographical grid order. All parameters are **strictly frozen prior to TS50 evaluation**. Zero test-set tuning permitted.
 
 
 #### 3. Exploratory Logit Hybrid (Ablation Only)
@@ -217,12 +219,15 @@ Computational speed must be reported with:
 
 To ensure evaluation rigor and prevent circular selection biases:
 1. **Screening vs. Validation Firewall:**
-   - **Screening Oracle:** ESMFold (fast, local single-pass inference) is used to compute initial structural metrics for generation pools and candidate selection ($K = 100–500$ sequences/target).
-   - **Primary Final Structural Validation Oracle:** **AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, 3 recycles, no templates, single sequence mode, float16 / fp16 on GPU, seed 42)** is the frozen primary validation oracle for the final selected library ($M = 10$ candidates/target).
+   - **Screening Oracle:** ESMFold (Meta AI `esm` v2.0.0 / Hugging Face `facebook/esmfold_v1`, `esmfold_v1` 3B checkpoint, sequence-only mode, 4 recycles, float16 GPU with float32 CPU fallback, max len 1024 with chunking, fixed screening seed 42) is used exclusively to compute initial structural screening metrics for generation pools and candidate selection ($K = 100–500$ sequences/target).
+     - Operational screening thresholds: $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA} \land \text{pLDDT}_{\text{screen}} \ge 80.0$ (project-chosen operational cutoffs informed by literature conventions).
+   - **Primary Final Structural Validation Oracle:** **AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, 3 recycles, no templates, single sequence mode, float16 / fp16 on GPU, fixed inference seed = 42, Amber disabled)** is the frozen primary validation oracle for the final selected library ($M = 10$ candidates/target).
+     - Fixed inference seed controls stochastic initialization, but does not guarantee bitwise GPU determinism across differing CUDA drivers, cuBLAS algorithms, or hardware platforms.
+     - 1-to-1 residue correspondence without gaps; 100% resolved native $C_\alpha$ coordinates required.
    - **Sensitivity Validation Oracle:** **Boltz-1 (v0.4.1, default diffusion steps, no templates, single sequence mode)** is designated strictly for sensitivity analysis.
 2. **Anti-Leakage Prohibition:**
    A metric or oracle score used as an objective criterion during candidate selection (ESMFold) must NEVER be cited as independent evidence of success without confirmation by the primary independent validation oracle (AlphaFold2).
 3. **Hyperparameter Isolation & Freezing:**
-   All selection thresholds, mixing weight $\lambda^*$, diversity weights $\gamma^*$, and sampling temperatures $T^*$ must be determined strictly on the validation set (CATH 4.2 validation split, 20 backbones) maximizing development objective $J$, and strictly frozen prior to unblinding or evaluating final benchmark test targets (TS50). Zero tuning or post hoc selection against test outcomes is permitted.
+   All selection thresholds, mixing weight $\lambda^*$, diversity weights $\gamma^*$, and sampling temperatures $T^*$ must be determined strictly on the validation set (frozen manifest `data/manifests/development_20_cath42.txt`, 20 backbones) maximizing development objective $J$, and strictly frozen prior to unblinding or evaluating final benchmark test targets (TS50). Zero tuning or post hoc selection against test outcomes is permitted.
 
 

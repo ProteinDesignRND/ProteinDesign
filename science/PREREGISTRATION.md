@@ -119,14 +119,31 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 ---
 
 ## 8. Development Hyperparameter Selection & Freezing Protocol ($T^*, \lambda^*, \gamma^*$)
-- **Development / Tuning Set ($N_{\text{dev}} = 20$):** Hyperparameter selection for temperatures $T^*$, mixing coefficient $\lambda^*$, and diversity weights $\gamma^*$ is conducted **exclusively on the 20 CATH 4.2 validation backbones**. Zero tuning or parameter selection against primary test outcomes (TS50) is permitted.
+- **Development / Tuning Set ($N_{\text{dev}} = 20$):** Hyperparameter selection for temperatures $T^*$, mixing coefficient $\lambda^*$, and diversity weights $\gamma^*$ is conducted **exclusively on the 20 CATH 4.2 validation backbones** frozen in the immutable manifest:
+  - **Manifest File:** `data/manifests/development_20_cath42.txt` (SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`).
+  - **Canonical Provenance:** Ingraham et al. (NeurIPS 2019) / Dauparas et al. (Science 2022) CATH 4.2 validation split (`chain_set_splits.json`, SHA-256: `8e9a587a50c7f6c026e4ed00f6c1c30b106100f36f7a01de47542bdfc060adc2`).
+  - **Deterministic Selection Rule:** Deterministic first encounter of unique primary CATH topology in canonical validation split order across 20 distinct CATH topologies covering classes 1, 2, 3, and 4:
+    `2e6i.A` (4.10.1130), `2mh3.A` (4.10.280), `3gn4.E` (1.10.3060), `2qg3.A` (3.30.1960), `3abd.B` (3.30.900), `1z8s.A` (1.10.860), `5t5d.A` (3.40.35), `1f7e.A` (2.10.25), `2lg7.A` (2.60.60), `1h2s.A` (1.20.1070), `1yf9.A` (3.10.110), `2p2e.A` (2.60.300), `1cel.A` (2.70.100), `2kil.A` (3.90.1520), `1c52.A` (1.10.760), `2gmy.D` (1.20.1290), `1nyn.A` (3.30.1250), `2c6u.A` (3.10.100), `2ctt.A` (2.10.230), `3hxi.A` (3.30.760).
+  - Zero tuning or parameter selection against primary test outcomes (TS50) is permitted.
 - **Scalar Development Optimization Objective ($J$):**
   The scalar development optimization objective for all hyperparameter selection is the mean over the 20 development targets of the target-level mean fixed-correspondence scTM of the final selected $M=10$ library after the complete prescribed development pipeline:
   $$J = \frac{1}{N_{\text{dev}}} \sum_{t=1}^{N_{\text{dev}}} \overline{\text{scTM}}_{\text{val}}(t) = \frac{1}{N_{\text{dev}}} \sum_{t=1}^{N_{\text{dev}}} \left( \frac{1}{M} \sum_{m=1}^M \text{scTM}_{\text{val}}(s_{t,m}) \right)$$
   where:
-  - $N_{\text{dev}} = 20$ CATH 4.2 validation backbones.
+  - $N_{\text{dev}} = 20$ CATH 4.2 validation backbones from the frozen manifest.
   - $M = 10$ selected library size.
-  - $\text{scTM}_{\text{val}}$ is produced by the frozen Primary Final Structural Validation Oracle: AlphaFold2 v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode (no MSA, no templates), 3 recycles, precision `float16` (`fp16`) on GPU (CUDA), deterministic random seed 42, standard Amber relaxation disabled. No surrogate objective is permitted.
+  - $\text{scTM}_{\text{val}}$ is produced by the frozen Primary Final Structural Validation Oracle: AlphaFold2 v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode (no MSA, no templates), 3 recycles, precision `float16` (`fp16`) on GPU (CUDA), fixed inference seed = 42 (seed controls stochastic initialization but does not guarantee bitwise GPU determinism across heterogeneous hardware/CUDA drivers), standard Amber relaxation disabled. No surrogate objective is permitted.
+- **Development Infeasibility Rule ($J = -\infty$):**
+  For development hyperparameter optimization only:
+  - Every candidate hyperparameter configuration must successfully produce an $M=10$ unique viable library on ALL 20 development targets to be eligible for the primary $J$ argmax.
+  - If ANY single target is `SELECTION_INFEASIBLE_LT_M` ($<10$ unique viable candidates) for that configuration, the configuration is INELIGIBLE and receives objective $J = -\infty$ for argmax purposes.
+  - Do NOT replace missing/infeasible development target scTM with 0.0.
+  - Do NOT exclude the infeasible target and average over the remaining targets.
+  - Do NOT reduce $M$.
+  - Do NOT regenerate beyond $K=100$.
+  - Do NOT alter screening thresholds.
+  - Do NOT silently substitute another temperature or seed.
+  - Report the configuration's target infeasibility rate separately: $\text{infeasibility\_rate} = \frac{N_{\text{infeasible}}}{N_{\text{dev}}}$.
+  - If every configuration for an arm is infeasible, STOP THAT TUNING ARM and classify the development tuning stage as `DEVELOPMENT_TUNING_STAGE_INFEASIBLE` rather than inventing a fallback.
 - **MPNN-Only Parameter Selection ($T^*_{\text{MPNN}}, \gamma^*_{\text{MPNN}}$):**
   - Search Space: Complete Cartesian product $T_{\text{MPNN}} \times \gamma$ (25 combinations):
     $$T_{\text{MPNN}} \in \{0.1, 0.2, 0.5, 0.8, 1.0\}, \quad \gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$$
@@ -145,6 +162,12 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
     $$\lambda \in \{0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0\}, \quad \gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$$
   - Pipeline for every combination: Score candidate universe $U_t$ with both models $\to$ within-pool percentile rank normalization $\to$ compute $H(u)$ $\to$ ESMFold viability screening $\to$ unique viable deduplication $\to$ $M=10$ greedy selection $\to$ AlphaFold2 validation $\to$ objective $J$.
   - Selection Rule: $(\lambda^*, \gamma^*_{\text{hybrid}}) = \arg\max J$.
+- **Development Generation Reuse & Efficiency (Caching):**
+  - To avoid redundant re-generation without altering protocol semantics:
+    - MPNN Development: Generate candidate pools once for each target $\times$ temperature $\times$ seed allocation, screen once with ESMFold, score once, and reuse across all $\gamma$ values at that temperature.
+    - ProteinSolver Development: Generate candidate pools once for each target $\times$ temperature $\times$ seed allocation, screen once, score once, and reuse across all $\gamma$ values at that temperature.
+    - Hybrid Development: Generate Common Candidate Universe $U_t$ once at $T^*_{\text{MPNN}}$, score all candidates with both models once, compute within-pool percentiles once, and reuse across all 35 $(\lambda, \gamma)$ combinations.
+  - Caching MUST NOT alter candidate identities, ordering, counts, RNG states, scores, screening outcomes, or selection behavior.
 - **Deterministic 5-Step Freezing Order:**
   1. Select $(T^*_{\text{MPNN}}, \gamma^*_{\text{MPNN}})$ via Cartesian grid search on development set.
   2. Select $(T^*_{\text{PS}}, \gamma^*_{\text{PS}})$ via Cartesian grid search on development set.
@@ -160,7 +183,7 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
   Reuses the existing frozen failure taxonomy:
   - Generative biological folding failure: Assigned $\text{scTM} = 0.0$.
   - Infrastructure failure: Retried once; if unresolved, excluded from objective computation; benchmark declared invalid if $>10\%$ fail.
-  - Insufficient unique viable candidates ($< 10$): Target classified as `SELECTION_INFEASIBLE_LT_M` (missing in complete-case analysis; assigned 0.0 under conservative sensitivity analysis).
+  - Insufficient unique viable candidates ($< 10$): Target classified as `SELECTION_INFEASIBLE_LT_M`. For development hyperparameter optimization, the configuration receives $J = -\infty$ (ineligible for argmax). For confirmatory test-set analysis, missing in complete-case analysis, and assigned 0.0 under conservative sensitivity analysis.
 
 ---
 
@@ -192,21 +215,35 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 
 ---
 
-## 11. Screening Thresholds
-- **Thresholds:**
+## 11. Screening Oracle Configuration & Thresholds (ESMFold)
+- **Exact Oracle Implementation:** Meta AI `esm` (v2.0.0) / Hugging Face `transformers` `facebook/esmfold_v1`.
+- **Model Checkpoint:** `esmfold_v1` (3B parameters).
+- **Inference Mode:** Sequence-only input mode (zero MSA search, zero homologous templates).
+- **Recycle Count:** Exactly 4 recycles (`num_recycles = 4`, canonical default).
+- **Precision & Device:** `float16` (`fp16`) on GPU (CUDA), with `float32` CPU fallback if CUDA unavailable.
+- **Length & Chunking:** Maximum sequence length $L \le 1024$; chunking enabled (chunk size 128 / 64) for memory consistency.
+- **Screening Seed:** Fixed integer seed = 42 (`seed = 42`).
+- **Output & Metric Extraction:**
+  - 3D atomic coordinates extracted from predicted structure.
+  - $C_\alpha$ mapping: 1-to-1 residue index correspondence to native target backbone without gap insertion.
+  - $\text{scRMSD}_{\text{screen}}$: Kabsch-aligned root-mean-square deviation of $C_\alpha$ coordinates against native backbone.
+  - $\text{pLDDT}_{\text{screen}}$: Arithmetic mean of per-residue predicted LDDT values across the sequence: $\text{pLDDT} = \frac{1}{L} \sum_{i=1}^L \text{pLDDT}_i \in [0, 100]$.
+- **Operational Screening Thresholds:**
   $$\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA} \quad \text{AND} \quad \text{pLDDT}_{\text{screen}} \ge 80.0$$
-- Evaluated locally using the screening oracle (ESMFold). Candidates satisfying both criteria enter $S_{\text{viable}}$.
+  - Candidates satisfying both criteria enter $S_{\text{viable}}$.
+  - Candidates failing either criterion are classified as structural folding failures and excluded from $S_{\text{viable}}$.
+  - If a sequence cannot be evaluated due to memory error, library crash, or invalid character, it is classified as `INFRASTRUCTURE_FAILURE`.
 
 ---
 
 ## 12. Threshold Provenance
 - **Provenance Classification:** **Project-Chosen Operational Screening Thresholds**.
-- Informed by established literature standards (Watson et al. 2023 RFdiffusion, Dauparas et al. 2022 ProteinMPNN, Baker Lab de novo design).
+- Informed by established literature standards (Watson et al. 2023 RFdiffusion, Dauparas et al. 2022 ProteinMPNN, Lin et al. 2023 ESMFold, Baker Lab de novo design).
 - They were NOT calibrated on our project's test data and are NOT universal physical constants.
 
 ---
 
-## 13. Primary Final Structural Validation Oracle
+## 13. Primary Final Structural Validation Oracle (AlphaFold2)
 - **Exact Oracle Implementation:** **AlphaFold2 (v2.3.2)** / ColabFold single-sequence inference pipeline.
 - **Model Checkpoint:** Monomodel weights `model_1_ptm` (384-dim evoformer, fine-tuned with pTM head).
 - **Exact Numerical Precision:** `float16` (`fp16`) on GPU (CUDA). (FP16/BF16 alternatives removed; float16 is strictly frozen).
@@ -214,9 +251,16 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 - **Template Policy:** Homologous structural templates disabled (`use_templates = False`).
 - **MSA Policy:** Single sequence mode (`msa_mode = "single_sequence"`, no MSA search; sequence query replicated as single-sequence MSA).
 - **Amber Relaxation:** Disabled (`use_amber = False`).
-- **Determinism & Random Seed:** Deterministic execution with fixed integer seed 42 (`random_seed = 42`).
+- **Fixed Inference Seed:** Fixed inference seed = 42 (`random_seed = 42`). Setting a fixed random seed controls stochastic initialization and sampling within the framework, but does not guarantee bitwise GPU determinism across heterogeneous hardware architectures, CUDA drivers, or cuBLAS algorithm selections.
 - **Hardware Platform:** NVIDIA RTX 3050 6GB Laptop GPU (CUDA).
-- **Output Extraction:** Unrelaxed C$\alpha$ 3D coordinates and per-residue pLDDT array extracted directly from the unrelaxed PDB output.
+- **Residue & Structure Alignment Specifications:**
+  - **Residue Correspondence:** 1-to-1 residue index correspondence ($i$-th residue of design corresponds strictly to $i$-th residue of target backbone without gap insertion or alignment shifting).
+  - **$C_\alpha$ Coordinate Extraction:** Cartesian coordinates extracted strictly from canonical residue atoms (`ATOM ... CA ...`).
+  - **Target Backbone Preprocessing:** Native target PDBs are cleaned of water molecules, heteroatoms (`HETATM`), and alternate conformations (retaining conformation 'A' or highest occupancy).
+  - **Length Invariant:** Target and candidate sequence lengths must match exactly ($|s| = L$). Any length mismatch is classified as a fatal error (`INFRASTRUCTURE_FAILURE`).
+  - **Unresolved Residue Rule:** Every target backbone in the frozen development manifest and test set must have 100% resolved $C_\alpha$ coordinates across all residues $1..L$. Missing internal backbone coordinates render the target invalid.
+  - **Chain Selection:** For multi-chain native structures, target chain is explicitly specified by chain identifier (e.g. `chain A`). Single-chain inference is conducted on designed sequences.
+  - **Output Coordinate Selection:** Model output $C_\alpha$ coordinates are extracted from the rank-1 prediction of model 1 (`model_1_ptm`, unrelaxed structure).
 - **Firewall Rule:** AlphaFold2 is strictly reserved for validating the final selected candidate library ($M=10$). It is NEVER used during initial candidate generation, screening, or candidate selection.
 
 ---
@@ -292,7 +336,7 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 ---
 
 ## 18. Benchmark Dataset Partitions
-1. **Development / Tuning Set ($N = 20$):** CATH 4.2 validation split. Used for hyperparameter optimization ($T^*, \lambda^*, \gamma^*$) under the deterministic Section 8 optimization protocol.
+1. **Development / Tuning Set ($N = 20$):** CATH 4.2 validation split frozen in immutable manifest `data/manifests/development_20_cath42.txt` (SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`), derived deterministically from the canonical Ingraham et al. (NeurIPS 2019) / Dauparas et al. (Science 2022) validation split across 20 distinct CATH topologies. Used exclusively for hyperparameter optimization ($T^*, \lambda^*, \gamma^*$) under the deterministic Section 8 optimization protocol.
 2. **Primary Test Set ($N = 50$):** TS50 non-redundant PDB crystal structures ($<30\%$ sequence identity to CATH 4.2 / ProteinMPNN training sets; ProteinSolver Gene3D 72M training membership documented per model according to Section 19: superfamily absence verified where accessible, otherwise NOT VERIFIABLE FROM ACCESSIBLE METADATA). Evaluated once with frozen parameters.
 3. **De Novo Test Set ($N = 15$):** RFdiffusion generated scaffolds. Evaluated once as a separate stratified benchmark.
 

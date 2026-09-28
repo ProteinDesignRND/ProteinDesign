@@ -1,6 +1,6 @@
 # Project Truth — Single Source of Truth
 
-**Last Updated:** 2026-09-24  
+**Last Updated:** 2026-09-28  
 **Maintained By:** Project Lead  
 
 This document is the single authoritative reference for what has been verified, what is assumed, what remains untested, and what is known to be limited. All other project documents defer to this one when there is a conflict.
@@ -91,7 +91,11 @@ These claims are supported by direct inspection, execution, or primary literatur
 ---
 
 ### Protocol & Hyperparameter Optimization Framework
-- Development optimization objective $J$ is frozen as the mean over $N_{\text{dev}} = 20$ CATH 4.2 validation targets of target-level mean fixed-correspondence scTM across the selected $M = 10$ library evaluated by AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode, no templates, 3 recycles, fp16 GPU, seed 42, Amber disabled). `[VERIFIED SPECIFICATION]`
+- Development optimization objective $J$ is frozen as the mean over $N_{\text{dev}} = 20$ CATH 4.2 validation targets of target-level mean fixed-correspondence scTM across the selected $M = 10$ library evaluated by AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode, no templates, 3 recycles, fp16 GPU, fixed inference seed = 42, Amber disabled). `[VERIFIED SPECIFICATION]`
+- Development targets are frozen in immutable manifest `data/manifests/development_20_cath42.txt` (SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`), derived deterministically from the canonical Ingraham/Dauparas CATH 4.2 validation split across 20 distinct CATH topologies. `[VERIFIED SPECIFICATION]`
+- Development Infeasibility Rule ($J = -\infty$): Every configuration must produce $M=10$ unique viable candidates on ALL 20 development targets. If any target is `SELECTION_INFEASIBLE_LT_M`, the configuration receives $J = -\infty$ and is ineligible for argmax. If all configurations in an arm are infeasible, stop that tuning arm and classify the stage as `DEVELOPMENT_TUNING_STAGE_INFEASIBLE`. `[VERIFIED SPECIFICATION]`
+- Screening oracle ESMFold is frozen: Meta AI `esm` v2.0.0 / Hugging Face `facebook/esmfold_v1`, `esmfold_v1` (3B parameters), sequence-only, 4 recycles, `fp16` GPU, max len 1024 with chunking, seed 42, operational screening cutoffs $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ and $\text{pLDDT}_{\text{screen}} \ge 80.0$. `[VERIFIED SPECIFICATION]`
+- Development generation reuse (caching) is permitted and enforced: Candidate pools at temperature $T$ are generated once, screened once with ESMFold, and scored once, then reused across all $\gamma$ values (and across all 35 $(\lambda, \gamma)$ combinations for hybrid on $U_t$). `[VERIFIED SPECIFICATION]`
 - Parameter selection searches complete Cartesian grids:
   - MPNN-only: $T_{\text{MPNN}} \times \gamma$ ($5 \times 5 = 25$ combinations). `[VERIFIED SPECIFICATION]`
   - ProteinSolver E0-B: $T_{\text{PS}} \times \gamma$ ($3 \times 5 = 15$ combinations). `[VERIFIED SPECIFICATION]`

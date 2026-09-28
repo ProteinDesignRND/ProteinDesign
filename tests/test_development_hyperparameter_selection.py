@@ -25,6 +25,7 @@ from src.hybrid.optimization import (
     get_hybrid_tuning_grid,
     compute_target_sctm_mean,
     compute_development_objective,
+    compute_configuration_infeasibility_rate,
     select_optimal_temperature_and_gamma,
     select_optimal_lambda_and_gamma,
     DevelopmentHyperparameterState,
@@ -228,3 +229,67 @@ def test_8_no_test_outcome_used_for_tuning():
     # Cannot freeze with missing parameters
     with pytest.raises(RuntimeError, match="missing parameters"):
         state.step4_freeze()
+
+
+def test_9_development_infeasibility_rule():
+    """Requirement 9: Pre-E1 Development Infeasibility Rule.
+
+    - Every configuration must produce an M=10 unique viable library on ALL 20 targets.
+    - If ANY single target is SELECTION_INFEASIBLE_LT_M, configuration receives J = -infinity.
+    - Infeasible configurations are ineligible for argmax.
+    - Zero-filling, target exclusion, M reduction, or threshold alteration are strictly forbidden.
+    """
+    # Baseline 20 valid means
+    valid_means = [0.80] * 20
+    j_valid = compute_development_objective(valid_means, expected_n_dev=20)
+    assert j_valid == pytest.approx(0.80)
+
+    # 1 target infeasible via mask
+    infeasible_mask = [False] * 20
+    infeasible_mask[7] = True  # Target 8 is infeasible
+    j_infeasible = compute_development_objective(valid_means, expected_n_dev=20, infeasible_mask=infeasible_mask)
+    assert j_infeasible == float("-inf")
+
+    # Infeasibility rate calculation
+    rate = compute_configuration_infeasibility_rate(infeasible_mask, expected_n_dev=20)
+    assert rate == pytest.approx(1 / 20)
+
+    # 1 target infeasible via None or -inf in sequence
+    means_with_none = [0.80] * 19 + [None]
+    assert compute_development_objective(means_with_none, expected_n_dev=20) == float("-inf")
+
+    means_with_inf = [0.80] * 19 + [float("-inf")]
+    assert compute_development_objective(means_with_inf, expected_n_dev=20) == float("-inf")
+
+    # Selection ineligibility test:
+    # Let (0.1, 0.0) be first lexicographically but receive J = -inf (ineligible)
+    # Let (0.2, 0.5) be feasible with J = 0.70
+    mpnn_grid = get_mpnn_tuning_grid()
+    results = {pair: float("-inf") for pair in mpnn_grid}
+    results[(0.2, 0.5)] = 0.70
+    results[(0.5, 1.0)] = 0.65
+
+    # Optimal selection must choose (0.2, 0.5), NOT the lexicographically earlier (0.1, 0.0)
+    best_t, best_gamma = select_optimal_temperature_and_gamma(results, grid_type="mpnn")
+    assert (best_t, best_gamma) == (0.2, 0.5)
+
+
+def test_10_all_configurations_infeasible_stops_tuning_arm():
+    """Requirement 10: If every configuration in an arm is infeasible, stop that tuning arm and raise.
+
+    Classification: DEVELOPMENT_TUNING_STAGE_INFEASIBLE. Zero fallback substitution.
+    """
+    # MPNN arm where all 25 configurations produce J = -inf
+    mpnn_grid = get_mpnn_tuning_grid()
+    all_infeasible_mpnn = {pair: float("-inf") for pair in mpnn_grid}
+
+    with pytest.raises(RuntimeError, match="DEVELOPMENT_TUNING_STAGE_INFEASIBLE"):
+        select_optimal_temperature_and_gamma(all_infeasible_mpnn, grid_type="mpnn")
+
+    # Hybrid arm where all 35 configurations produce J = -inf
+    hybrid_grid = get_hybrid_tuning_grid()
+    all_infeasible_hybrid = {pair: float("-inf") for pair in hybrid_grid}
+
+    with pytest.raises(RuntimeError, match="DEVELOPMENT_TUNING_STAGE_INFEASIBLE"):
+        select_optimal_lambda_and_gamma(all_infeasible_hybrid)
+
