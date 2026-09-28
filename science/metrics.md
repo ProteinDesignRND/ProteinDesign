@@ -146,11 +146,30 @@ To eliminate circular evaluation where candidate selection and evaluation share 
 
 #### 1. Two-Stage Candidate Selection Protocol
 - **Stage 1 (Hard Viability Gate):**
-  Filter all $K$ candidates through the screening oracle (ESMFold). Discard candidates failing $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ or $\text{pLDDT}_{\text{screen}} \ge 80.0$, yielding $S_{\text{viable}}$.
+  Filter all $K$ candidates through the screening oracle (ESMFold). Discard candidates failing $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ or $\text{pLDDT}_{\text{screen}} \ge 80.0$, yielding viable pool $S_{\text{viable}}$.
+- **Duplicate Accounting & Unique Candidate Filtering:**
+  - $K$ counts all generated candidates, including duplicates.
+  - Deduplicate to unique viable sequences ($S_{\text{viable, unique}} \subseteq S_{\text{viable}}$), retaining the highest-scoring candidate for identical sequences.
+  - Report duplicate rate separately. Duplicates contribute distance $0.0$. Never silently regenerate duplicates.
+- **Insufficient Viable Candidates Rule:**
+  If $|S_{\text{viable, unique}}| < M=10$, mark arm/target as **`SELECTION_INFEASIBLE_LT_M`**. Do not silently regenerate, pad, or alter thresholds. Primary endpoint is undefined for complete-case analysis; reported under conservative zero-quality sensitivity.
 - **Stage 2 (Greedy Diversity-Aware Selection Heuristic):**
-  Select $M = 10$ candidates from $S_{\text{viable}}$ using greedy facility dispersion:
-  $$u^* = \arg\max_{u \in S_{\text{viable}} \setminus S'} \left[ \text{score}(u) + \gamma \cdot \min_{v \in S'} d(u, v) \right]$$
-  *Methodological Rule:* This greedy score is a **construction heuristic** and must NEVER be reported as an intrinsic static candidate quality metric.
+  From $S_{\text{viable, unique}}$, greedily select $M = 10$ candidates:
+  - First selection ($S' = \emptyset$):
+    $$u_1 = \arg\max_{u \in S_{\text{viable, unique}}} \text{score}(u)$$
+  - Subsequent selections ($1 \le |S'| < M$):
+    $$u^* = \arg\max_{u \in S_{\text{viable, unique}} \setminus S'} \left[ \text{score}(u) + \gamma^* \cdot \min_{v \in S'} d(u, v) \right]$$
+  where $d(u, v)$ is normalized Hamming distance in $[0, 1]$.
+- **Normalization Consistency of Selection Scores:**
+  Both primary arms use scores normalized to the matched $[0, 1]$ rank scale inside the greedy selector:
+  - Primary Hybrid: $\text{score}_{\text{hybrid}}(u) = H(u) \in (0, 1]$
+  - Primary MPNN-Only: $\text{score}_{\text{MPNN-only}}(u) = p_{\text{MPNN}}(u) \in (0, 1]$
+  Underlying raw log-likelihood and perplexity remain diagnostic metrics.
+- **Diversity Weight ($\gamma$) Search Grid:**
+  Pre-registered dimensionless grid $\gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$, tuned strictly on the development set separately for MPNN-only and hybrid selection, and frozen prior to TS50 evaluation.
+- **Deterministic Tie Breaking:**
+  All ties in primary score or greedy objective are broken deterministically by stable candidate identifier order (ascending lexicographical ID).
+- *Methodological Rule:* This greedy score is a **construction heuristic** and must NEVER be reported as an intrinsic static candidate quality metric. Final library diversity is evaluated independently after selection.
 
 #### 2. Pareto Hypervolume (Exploratory Descriptive Analysis)
 Hypervolume is demoted to an **exploratory descriptive metric** to avoid normalization leakage.

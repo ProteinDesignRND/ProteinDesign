@@ -148,6 +148,65 @@ def compute_exploratory_logit_hybrid(
     return weight_lambda * mpnn_logits + (1.0 - weight_lambda) * ps_logits
 
 
+def validate_common_candidate_order(
+    mpnn_candidate_ids: Sequence[str],
+    ps_candidate_ids: Sequence[str],
+    mpnn_sequences: Sequence[str],
+    ps_sequences: Sequence[str],
+) -> bool:
+    """Verifies that sequences scored by both models are identical and in identical candidate identity order.
+
+    Guarantees strict integrity of the Common Candidate Universe before percentile ranks are computed.
+
+    Raises:
+        ValueError: If lengths mismatch, candidate IDs differ, or sequences differ.
+    """
+    if len(mpnn_candidate_ids) != len(ps_candidate_ids):
+        raise ValueError(
+            f"Candidate ID length mismatch: mpnn={len(mpnn_candidate_ids)} vs ps={len(ps_candidate_ids)}"
+        )
+    if len(mpnn_sequences) != len(ps_sequences):
+        raise ValueError(
+            f"Sequence length mismatch: mpnn={len(mpnn_sequences)} vs ps={len(ps_sequences)}"
+        )
+    for idx, (m_id, p_id) in enumerate(zip(mpnn_candidate_ids, ps_candidate_ids)):
+        if m_id != p_id:
+            raise ValueError(
+                f"Candidate ID mismatch at index {idx}: mpnn='{m_id}' vs ps='{p_id}'"
+            )
+    for idx, (m_seq, p_seq) in enumerate(zip(mpnn_sequences, ps_sequences)):
+        if m_seq != p_seq:
+            raise ValueError(
+                f"Candidate sequence mismatch at index {idx} (ID '{mpnn_candidate_ids[idx]}'): "
+                f"mpnn='{m_seq}' vs ps='{p_seq}'"
+            )
+    return True
+
+
+def compute_mpnn_only_selection_score(
+    mpnn_scores: Union[Sequence[float], np.ndarray],
+    tie_method: str = "average",
+) -> np.ndarray:
+    """Computes the normalized score for the primary MPNN-only arm inside greedy selection.
+
+    Scale-Normalization Rule:
+        The greedy selector combines score(u) + gamma * diversity_term.
+        Because diversity distance d(u, v) in [0, 1] and hybrid score H(u) in (0, 1],
+        the primary MPNN-only arm must also use scores normalized to the [0, 1] rank scale:
+            score_MPNN_only(u) = p_MPNN(u) = percentile_rank(S_MPNN(u))
+        This guarantees scale compatibility across arms under the shared diversity formulation.
+        Underlying raw autoregressive log-likelihood and perplexity remain diagnostic metrics.
+
+    Args:
+        mpnn_scores: Sequence-level log-probability scores from ProteinMPNN.
+        tie_method: Tie resolution method ('average').
+
+    Returns:
+        1D numpy array of normalized percentile rank scores in (0, 1].
+    """
+    return compute_percentile_ranks(mpnn_scores, tie_method=tie_method)
+
+
 def score_common_candidate_universe(
     candidate_ids: Sequence[str],
     sequences: Sequence[str],
@@ -155,29 +214,35 @@ def score_common_candidate_universe(
     ps_scores: Union[Sequence[float], np.ndarray],
     weight_lambda: float = 0.5,
     tie_method: str = "average",
+    ps_candidate_ids: Optional[Sequence[str]] = None,
+    ps_sequences: Optional[Sequence[str]] = None,
 ) -> np.ndarray:
     """Computes primary hybrid scores for a common, frozen candidate universe.
 
     Guarantees that:
     1. The candidate universe has identical length K across candidate IDs, sequences,
        MPNN scores, and ProteinSolver scores.
-    2. Percentile ranks for MPNN and ProteinSolver are computed across the EXACT SAME
+    2. Sequences scored by both models are identical and in identical candidate identity order,
+       before percentile ranks are computed.
+    3. Percentile ranks for MPNN and ProteinSolver are computed across the EXACT SAME
        candidate universe, preventing any cross-pool or asymmetric rank leakage.
-    3. Hybrid score H(u) = lambda * p_MPNN(u) + (1 - lambda) * p_PS(u) is in (0, 1].
+    4. Hybrid score H(u) = lambda * p_MPNN(u) + (1 - lambda) * p_PS(u) is in (0, 1].
 
     Args:
-        candidate_ids: List of candidate identifier strings of length K.
+        candidate_ids: List of candidate identifier strings of length K (from ProteinMPNN generation).
         sequences: List of candidate sequence strings of length K.
         mpnn_scores: Raw sequence-level log-probabilities from ProteinMPNN of length K.
         ps_scores: Raw sequence-level pseudo-log-likelihoods from ProteinSolver of length K.
         weight_lambda: Mixing coefficient lambda in [0.0, 1.0].
         tie_method: Tie resolution method for within-pool ranking ('average').
+        ps_candidate_ids: Optional candidate IDs from ProteinSolver scoring to verify identity.
+        ps_sequences: Optional sequences from ProteinSolver scoring to verify identity.
 
     Returns:
         1D numpy array of hybrid scores of length K.
 
     Raises:
-        ValueError: If array lengths mismatch or are inconsistent with a common universe.
+        ValueError: If array lengths mismatch, ordering mismatches, or inputs are inconsistent.
     """
     k = len(candidate_ids)
     if len(sequences) != k or len(mpnn_scores) != k or len(ps_scores) != k:
@@ -186,6 +251,11 @@ def score_common_candidate_universe(
             f"ids={k}, sequences={len(sequences)}, mpnn={len(mpnn_scores)}, ps={len(ps_scores)}. "
             f"All scores must be computed on the exact same candidate universe."
         )
+
+    if ps_candidate_ids is not None or ps_sequences is not None:
+        p_ids = ps_candidate_ids if ps_candidate_ids is not None else candidate_ids
+        p_seqs = ps_sequences if ps_sequences is not None else sequences
+        validate_common_candidate_order(candidate_ids, p_ids, sequences, p_seqs)
 
     if k == 0:
         return np.empty(0, dtype=np.float64)
@@ -196,3 +266,4 @@ def score_common_candidate_universe(
         weight_lambda=weight_lambda,
         tie_method=tie_method,
     )
+

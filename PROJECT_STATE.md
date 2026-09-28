@@ -86,6 +86,17 @@
   - `FAILURE TAXONOMY DECOUPLED`: Biological folding failure assigned $\text{scTM} = 0.0$ and included in $\{d_t\}$; infrastructure crashes NEVER assigned 0.0, excluded from $\{d_t\}$, and trigger invalidation if $>10\%$.
   - `TWO-STAGE SELECTION`: Stage 1 hard viability gate $\to$ Stage 2 greedy diversity selection heuristic implemented in `src/hybrid/selection.py`.
   - `VERIFICATION`: 42/42 pytest suites passing (25 governance + 17 scientific protocol).
+- [x] **Milestone 2.8: Final Scientific Protocol Consistency Closure (V3 Freeze)**
+  - `DETERMINISTIC ALLOCATION MATRICES`: Codified exact balanced integer allocation matrices in `src/hybrid/budget.py`: Dev MPNN (7-7-6 across 5 temperatures $\times$ 3 seeds = 100); Dev PS E0-B (12-11-11 across 3 temperatures $\times$ 3 seeds = 100); Test (500 at frozen $T^*$ partitioned 167/167/166).
+  - `COMMON CANDIDATE UNIVERSE`: Codified integrity validation (`validate_common_candidate_order`) ensuring identical sequence and candidate ID order before percentile ranks are computed.
+  - `SELECTION SCORE NORMALIZATION`: Codified `score_MPNN_only(u) = p_MPNN(u)` so that both standalone MPNN and hybrid arms operate on the exact matched $[0, 1]$ percentile scale inside greedy facility dispersion.
+  - `GAMMA SEARCH GRID`: Frozen dimensionless search grid $\gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$ tuned on development set separately per arm.
+  - `GREEDY INITIALIZATION & TIE BREAKING`: Frozen first selection on empty $S'$ to candidate with maximum primary score; deterministic tie breaking by ascending candidate ID.
+  - `DUPLICATE ACCOUNTING & UNIQUE SELECTION`: Exact duplicates retained in raw accounting and reported separately; selection operates strictly on UNIQUE viable sequences; duplicates contribute 0 distance; no silent regeneration.
+  - `INSUFFICIENT VIABLE CANDIDATES POLICY`: If unique viable candidates $< 10$, arm is marked `SELECTION_INFEASIBLE_LT_M`; undefined in complete-case paired comparison; evaluated under conservative zero sensitivity.
+  - `STATISTICAL IMPLEMENTATION`: Two-sided paired Wilcoxon signed-rank test on $\{d_t\}_{t=1}^N$ with $\alpha = 0.01$ (`zero_method='wilcox'`, `correction=True`); 10,000 bootstrap resamples on target-level paired differences $d_t$.
+  - `TEST SUITE EXPANSION`: 52/52 pytest suites passing (25 governance + 27 scientific protocol).
+  - `DECISION LOGGED`: Appended `[DEC-014]`.
 - [ ] **Milestone 3: ProteinMPNN Integration & Baseline Verification (Phase 2)**
   - Integrate official ProteinMPNN repository.
   - Execute sanity checks and baseline recovery on shared benchmark structures.

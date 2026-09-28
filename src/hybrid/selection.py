@@ -125,6 +125,54 @@ def compute_diversity_distribution(
     }
 
 
+def deduplicate_candidates(
+    candidates: Sequence[Candidate],
+) -> Tuple[List[Candidate], float]:
+    """Deduplicates candidates based on exact amino acid sequence.
+
+    Rules (Phase 9):
+    1. Generation budget K counts every generated sample, including duplicates.
+    2. Exact duplicate sequences are retained in raw-generation accounting.
+    3. For final diversity-aware selection, operate strictly on UNIQUE viable sequences.
+    4. Exact duplicates contribute zero pairwise Hamming distance.
+    5. Report duplicate rate separately: duplicate_rate = (len(raw) - len(unique)) / len(raw).
+    6. Never silently regenerate duplicates.
+
+    For identical sequences, retains the candidate with the highest primary score
+    (ties broken deterministically by candidate ID).
+
+    Args:
+        candidates: Sequence of Candidate objects.
+
+    Returns:
+        Tuple of (unique_candidates_list, duplicate_rate).
+    """
+    if not candidates:
+        return [], 0.0
+
+    raw_count = len(candidates)
+    seq_to_best: Dict[str, Candidate] = {}
+
+    for cand in candidates:
+        seq = cand.sequence
+        if seq not in seq_to_best:
+            seq_to_best[seq] = cand
+        else:
+            curr = seq_to_best[seq]
+            if cand.score > curr.score or (
+                np.isclose(cand.score, curr.score, atol=1e-12) and cand.id < curr.id
+            ):
+                seq_to_best[seq] = cand
+
+    unique_candidates = list(seq_to_best.values())
+    # Deterministic ordering by candidate ID
+    unique_candidates.sort(key=lambda c: (-c.score, c.id))
+
+    duplicate_count = raw_count - len(unique_candidates)
+    duplicate_rate = float(duplicate_count) / float(raw_count)
+    return unique_candidates, duplicate_rate
+
+
 def select_diverse_library(
     candidates: Sequence[Candidate],
     library_size_m: int = 10,
@@ -132,11 +180,17 @@ def select_diverse_library(
 ) -> List[Candidate]:
     """Stage 2: Greedy diversity-aware selection heuristic.
 
-    NOTE ON METHODOLOGY:
+    NOTE ON METHODOLOGY & FORMULATION (Phases 7 & 8):
     This function implements a greedy construction heuristic to choose M candidates
     from a viable pool. The selection criterion maximizes a trade-off between intrinsic
-    candidate quality score and mutual dispersion from previously chosen candidates:
-        u* = argmax_{u in S_viable \\ S'} [ score(u) + gamma * min_{v in S'} d(u, v) ]
+    candidate quality score (normalized [0, 1]) and mutual dispersion from previously chosen candidates:
+        First selection (S' = empty):
+            u_1 = argmax_{u in S_viable} score(u)
+        Subsequent selections (|S'| >= 1):
+            u* = argmax_{u in S_viable \\ S'} [ score(u) + gamma * min_{v in S'} d(u, v) ]
+
+    TIE BREAKING:
+        Deterministic tie breaking is enforced by candidate identifier order (ascending lexicographical ID).
 
     IMPORTANT: The greedy score evaluated during selection is a construction heuristic
     and MUST NOT be reported as an order-independent static candidate metric. Final set
@@ -145,18 +199,19 @@ def select_diverse_library(
     Args:
         candidates: Candidate pool from Stage 1 (viable candidates).
         library_size_m: Target library size M (default 10).
-        diversity_weight_gamma: Trade-off parameter gamma >= 0.0.
+        diversity_weight_gamma: Trade-off parameter gamma >= 0.0 from pre-registered grid {0.0, 0.25, 0.5, 1.0, 2.0}.
             gamma = 0.0 selects top M purely by score.
 
     Returns:
         List of selected Candidate objects of length min(M, len(candidates)).
     """
     if len(candidates) <= library_size_m:
-        return list(candidates)
+        # Return sorted by score descending, tie broken by id
+        sorted_cands = sorted(candidates, key=lambda c: (-c.score, c.id))
+        return sorted_cands
 
-    remaining = list(candidates)
-    # Pick first candidate with highest score
-    remaining.sort(key=lambda c: c.score, reverse=True)
+    remaining = sorted(candidates, key=lambda c: (-c.score, c.id))
+    # Pick first candidate with highest primary score; tie-broken by ID
     selected = [remaining.pop(0)]
 
     while len(selected) < library_size_m and remaining:
@@ -171,15 +226,102 @@ def select_diverse_library(
                 for sel in selected
             )
             obj = cand.score + diversity_weight_gamma * min_dist
+
+            # Deterministic comparison: higher obj wins; ties broken by stable candidate ID
             if obj > best_objective:
                 best_objective = obj
                 best_candidate = cand
                 best_idx = idx
+            elif np.isclose(obj, best_objective, atol=1e-12):
+                if best_candidate is None or cand.id < best_candidate.id:
+                    best_objective = obj
+                    best_candidate = cand
+                    best_idx = idx
 
-        selected.append(best_candidate)
-        remaining.pop(best_idx)
+        if best_candidate is not None and best_idx >= 0:
+            selected.append(best_candidate)
+            remaining.pop(best_idx)
+        else:
+            break
 
     return selected
+
+
+@dataclass
+class LibrarySelectionResult:
+    """Represents the complete result of Stage 2 candidate selection for a target arm."""
+    status: str  # "SUCCESS" or "SELECTION_INFEASIBLE_LT_M"
+    selected: List[Candidate]
+    target_id: str
+    arm: str
+    unique_viable_count: int
+    raw_viable_count: int
+    duplicate_rate: float
+    error_reason: Optional[str] = None
+
+
+def select_candidate_library(
+    viable_candidates: Sequence[Candidate],
+    library_size_m: int = 10,
+    diversity_weight_gamma: float = 1.0,
+    target_id: str = "",
+    arm: str = "",
+) -> LibrarySelectionResult:
+    """Stage 2 library selection operating on unique viable candidates.
+
+    Enforces Phase 10 Insufficient Viable Candidates Policy:
+    If |unique S_viable| < M (10):
+        Marks status = SELECTION_INFEASIBLE_LT_M.
+        Does NOT silently regenerate candidates.
+        Does NOT pad with failed candidates or duplicates.
+        Does NOT alter screening thresholds or change M.
+        Target primary endpoint is undefined/missing for complete-case paired analysis.
+
+    Args:
+        viable_candidates: Candidates passing Stage 1 hard screening viability gate.
+        library_size_m: Required library size M (frozen at 10).
+        diversity_weight_gamma: Diversity trade-off gamma.
+        target_id: Identifier of target backbone.
+        arm: Method/arm identifier (e.g. 'hybrid', 'mpnn-only').
+
+    Returns:
+        LibrarySelectionResult detailing selection outcome.
+    """
+    raw_viable_count = len(viable_candidates)
+    unique_viable, dup_rate = deduplicate_candidates(viable_candidates)
+    unique_count = len(unique_viable)
+
+    if unique_count < library_size_m:
+        return LibrarySelectionResult(
+            status=ValidationOutcomeType.SELECTION_INFEASIBLE_LT_M,
+            selected=[],
+            target_id=target_id,
+            arm=arm,
+            unique_viable_count=unique_count,
+            raw_viable_count=raw_viable_count,
+            duplicate_rate=dup_rate,
+            error_reason=(
+                f"Insufficient unique viable candidates: found {unique_count} < M={library_size_m}. "
+                f"Marked SELECTION_INFEASIBLE_LT_M under frozen protocol."
+            ),
+        )
+
+    selected = select_diverse_library(
+        candidates=unique_viable,
+        library_size_m=library_size_m,
+        diversity_weight_gamma=diversity_weight_gamma,
+    )
+
+    return LibrarySelectionResult(
+        status="SUCCESS",
+        selected=selected,
+        target_id=target_id,
+        arm=arm,
+        unique_viable_count=unique_count,
+        raw_viable_count=raw_viable_count,
+        duplicate_rate=dup_rate,
+        error_reason=None,
+    )
 
 
 def compute_fixed_correspondence_sctm(
@@ -338,10 +480,11 @@ def compute_hydrophobic_core_fraction(
 
 
 class ValidationOutcomeType:
-    """Taxonomy of structural folding validation outcomes."""
+    """Taxonomy of structural folding validation outcomes and library feasibility."""
     VALID = "valid_structure"
     SCIENTIFIC_FAILURE = "scientific_folding_failure"
     INFRASTRUCTURE_FAILURE = "infrastructure_runtime_failure"
+    SELECTION_INFEASIBLE_LT_M = "selection_infeasible_lt_m"
 
 
 @dataclass
@@ -349,14 +492,15 @@ class ValidationOutcome:
     """Detailed structural validation result for a candidate.
 
     Attributes:
-        status: One of ValidationOutcomeType (VALID, SCIENTIFIC_FAILURE, INFRASTRUCTURE_FAILURE).
+        status: One of ValidationOutcomeType (VALID, SCIENTIFIC_FAILURE, INFRASTRUCTURE_FAILURE, SELECTION_INFEASIBLE_LT_M).
         sctm: Self-consistency TM-score. Valid float in (0, 1] if VALID, 0.0 if SCIENTIFIC_FAILURE,
-            None if INFRASTRUCTURE_FAILURE.
+            None if INFRASTRUCTURE_FAILURE or SELECTION_INFEASIBLE_LT_M.
         scrmsd: Self-consistency RMSD (None if failure).
-        plddt: Oracle confidence pLDDT (None if infrastructure failure).
+        plddt: Oracle confidence pLDDT (None if infrastructure failure or infeasible).
         error_reason: Diagnostic explanation of failure (None if VALID).
         is_valid_for_statistical_test: Boolean indicating whether this candidate is valid
-            for inclusion in paired statistical comparisons. False for infrastructure failures.
+            for inclusion in paired statistical comparisons. False for infrastructure failures
+            and selection-infeasible targets in complete-case analysis.
     """
     status: str
     sctm: Optional[float]
@@ -385,6 +529,9 @@ def evaluate_validation_outcome(
        Must NOT be assigned scTM = 0.0 (doing so artificially distorts model comparisons).
        Assigned scTM = None, is_valid_for_statistical_test = False.
        Subject to the <= 10% infrastructure-failure invalidation rule.
+    4. SELECTION_INFEASIBLE_LT_M: Arm generated fewer than M=10 unique viable candidates.
+       Assigned scTM = None, is_valid_for_statistical_test = False in complete-case analysis.
+       Reported under selection infeasibility rate; evaluated under conservative zero sensitivity.
 
     Args:
         outcome_type: One of ValidationOutcomeType values.
@@ -427,6 +574,16 @@ def evaluate_validation_outcome(
             scrmsd=None,
             plddt=None,
             error_reason=error_reason or "Infrastructure/runtime crash",
+            is_valid_for_statistical_test=False,
+        )
+
+    elif outcome_type == ValidationOutcomeType.SELECTION_INFEASIBLE_LT_M:
+        return ValidationOutcome(
+            status=ValidationOutcomeType.SELECTION_INFEASIBLE_LT_M,
+            sctm=None,  # Undefined in complete-case analysis
+            scrmsd=None,
+            plddt=None,
+            error_reason=error_reason or "Insufficient unique viable candidates (< M=10)",
             is_valid_for_statistical_test=False,
         )
 

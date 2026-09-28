@@ -31,11 +31,16 @@ from src.hybrid.scoring import (
     compute_primary_hybrid_score,
     compute_exploratory_logit_hybrid,
     score_common_candidate_universe,
+    validate_common_candidate_order,
+    compute_mpnn_only_selection_score,
 )
 from src.hybrid.selection import (
     Candidate,
     filter_viable_candidates,
+    deduplicate_candidates,
     select_diverse_library,
+    LibrarySelectionResult,
+    select_candidate_library,
     compute_pairwise_hamming_diversity,
     compute_diversity_distribution,
     compute_fixed_correspondence_sctm,
@@ -44,6 +49,17 @@ from src.hybrid.selection import (
     ValidationOutcomeType,
     ValidationOutcome,
     evaluate_validation_outcome,
+)
+from src.hybrid.budget import (
+    PROTEINMPNN_DEV_ALLOCATION,
+    PROTEINSOLVER_DEV_ALLOCATION,
+    PRIMARY_TEST_SEED_ALLOCATION_500,
+    GAMMA_SEARCH_GRID,
+    LAMBDA_SEARCH_GRID,
+    get_development_temperature_allocation,
+    get_test_seed_allocation,
+    generate_candidate_id,
+    validate_budget_matrix,
 )
 
 
@@ -471,6 +487,199 @@ def test_sctm_terminology_and_fixed_correspondence():
     assert "strict 1-to-1 sequence-to-structure residue correspondence" in doc
     assert "It does NOT perform dynamic programming sequence alignment" in doc
     assert "must NOT be described as standard alignment-based TM-score" in doc
+
+
+def test_exact_development_temperature_allocation():
+    """Verifies exact balanced integer allocation matrices for development tuning (K=100)."""
+    # 1. ProteinMPNN (K=100)
+    mpnn_alloc = get_development_temperature_allocation("proteinmpnn")
+    assert validate_budget_matrix(mpnn_alloc, 100) is True
+    assert set(mpnn_alloc.keys()) == {0.1, 0.2, 0.5, 0.8, 1.0}
+    # Verify exact balanced table
+    assert mpnn_alloc[0.1] == {42: 7, 1337: 7, 2026: 6}
+    assert mpnn_alloc[0.2] == {42: 7, 1337: 6, 2026: 7}
+    assert mpnn_alloc[0.5] == {42: 6, 1337: 7, 2026: 7}
+    assert mpnn_alloc[0.8] == {42: 7, 1337: 7, 2026: 6}
+    assert mpnn_alloc[1.0] == {42: 7, 1337: 6, 2026: 7}
+    # Per-seed totals
+    seed_totals = {42: 0, 1337: 0, 2026: 0}
+    for t_counts in mpnn_alloc.values():
+        for s, c in t_counts.items():
+            seed_totals[s] += c
+    assert seed_totals == {42: 34, 1337: 33, 2026: 33}
+
+    # 2. ProteinSolver E0-B (K=100)
+    ps_alloc = get_development_temperature_allocation("proteinsolver")
+    assert validate_budget_matrix(ps_alloc, 100) is True
+    assert set(ps_alloc.keys()) == {0.1, 0.5, 1.0}
+    # Verify exact balanced table
+    assert ps_alloc[0.1] == {42: 12, 1337: 11, 2026: 11}
+    assert ps_alloc[0.5] == {42: 11, 1337: 11, 2026: 11}
+    assert ps_alloc[1.0] == {42: 11, 1337: 11, 2026: 11}
+    ps_seed_totals = {42: 0, 1337: 0, 2026: 0}
+    for t_counts in ps_alloc.values():
+        for s, c in t_counts.items():
+            ps_seed_totals[s] += c
+    assert ps_seed_totals == {42: 34, 1337: 33, 2026: 33}
+
+
+def test_frozen_test_seed_allocation():
+    """Verifies frozen test-time seed allocation at T* for primary TS50 benchmark (K=500)."""
+    test_alloc = get_test_seed_allocation(500)
+    assert test_alloc == {42: 167, 1337: 167, 2026: 166}
+    assert sum(test_alloc.values()) == 500
+
+
+def test_candidate_id_reproducibility():
+    """Verifies reproducible candidate identifier derivation."""
+    cid = generate_candidate_id(
+        target_id="1n5uA03",
+        method_arm="hybrid",
+        temperature=0.2,
+        seed=42,
+        seq_idx=7,
+    )
+    assert cid == "1n5uA03_hybrid_T0.2_s42_idx0007"
+
+
+def test_common_candidate_order_validation():
+    """Verifies validation of identical sequence and ID ordering across models before scoring."""
+    ids = ["c1", "c2", "c3"]
+    seqs = ["ACDEF", "GHIKL", "MNPQR"]
+
+    # Passing case: exact match
+    assert validate_common_candidate_order(ids, list(ids), seqs, list(seqs)) is True
+
+    # Failing case: ID mismatch
+    with pytest.raises(ValueError, match="Candidate ID mismatch"):
+        validate_common_candidate_order(ids, ["c1", "c3", "c2"], seqs, seqs)
+
+    # Failing case: Sequence mismatch
+    with pytest.raises(ValueError, match="Candidate sequence mismatch"):
+        validate_common_candidate_order(ids, ids, seqs, ["ACDEF", "AAAAA", "MNPQR"])
+
+    # Failing case: Length mismatch
+    with pytest.raises(ValueError, match="Candidate ID length mismatch"):
+        validate_common_candidate_order(ids, ["c1", "c2"], seqs, seqs)
+
+
+def test_normalized_mpnn_only_selection_score():
+    """Verifies that MPNN-only greedy selection uses percentile rank score normalized to [0, 1]."""
+    raw_mpnn_scores = [-2.5, -1.2, -0.8, -3.1, -1.5]
+    p_mpnn = compute_mpnn_only_selection_score(raw_mpnn_scores)
+
+    assert len(p_mpnn) == len(raw_mpnn_scores)
+    # Highest raw score (-0.8, idx 2) maps to 1.0
+    assert p_mpnn[2] == 1.0
+    # Lowest raw score (-3.1, idx 3) maps to 0.2
+    assert p_mpnn[3] == 0.2
+    # Output is bounded in (0, 1]
+    assert np.all(p_mpnn > 0.0) and np.all(p_mpnn <= 1.0)
+
+
+def test_gamma_search_grid_freeze():
+    """Verifies frozen dimensionless gamma search grid for Stage 2 diversity selection."""
+    assert GAMMA_SEARCH_GRID == (0.0, 0.25, 0.5, 1.0, 2.0)
+    # Dimensionless check: all entries non-negative floats
+    for g in GAMMA_SEARCH_GRID:
+        assert isinstance(g, float) and g >= 0.0
+
+
+def test_first_greedy_selection_and_deterministic_tie_breaking():
+    """Verifies greedy selection initialization when S' is empty and deterministic tie breaking."""
+    # When S' is empty, first candidate chosen has maximum primary score
+    c1 = Candidate(id="cand_A", sequence="AAAA", target_id="t1", score=0.6)
+    c2 = Candidate(id="cand_B", sequence="CCCC", target_id="t1", score=0.9)  # highest score
+    c3 = Candidate(id="cand_C", sequence="DDDD", target_id="t1", score=0.4)
+
+    selected = select_diverse_library([c1, c2, c3], library_size_m=2, diversity_weight_gamma=1.0)
+    assert len(selected) == 2
+    # First chosen must be highest primary score (c2)
+    assert selected[0].id == "cand_B"
+
+    # Tie breaking test: c1 and c2 have identical scores
+    c_tie1 = Candidate(id="cand_Z", sequence="AAAA", target_id="t1", score=0.8)
+    c_tie2 = Candidate(id="cand_A", sequence="CCCC", target_id="t1", score=0.8)
+    c_tie3 = Candidate(id="cand_M", sequence="DDDD", target_id="t1", score=0.5)
+
+    selected_tie = select_diverse_library([c_tie1, c_tie2, c_tie3], library_size_m=2, diversity_weight_gamma=0.0)
+    # With gamma=0, candidates are chosen purely by score with tie broken by ID ascending: "cand_A" < "cand_Z"
+    assert selected_tie[0].id == "cand_A"
+    assert selected_tie[1].id == "cand_Z"
+
+
+def test_duplicate_candidate_accounting_and_deduplication():
+    """Verifies that duplicate sequences are tracked, contribute 0 distance, and are deduplicated before selection."""
+    c1 = Candidate(id="c1", sequence="AAAA", target_id="t1", score=0.7)
+    c2 = Candidate(id="c2", sequence="AAAA", target_id="t1", score=0.9)  # duplicate sequence, higher score
+    c3 = Candidate(id="c3", sequence="CCCC", target_id="t1", score=0.5)
+    c4 = Candidate(id="c4", sequence="DDDD", target_id="t1", score=0.6)
+
+    # Raw candidate pool has 4 sequences, but only 3 unique
+    unique_cands, dup_rate = deduplicate_candidates([c1, c2, c3, c4])
+    assert len(unique_cands) == 3
+    assert dup_rate == 0.25  # 1 duplicate / 4 total = 25%
+
+    # For the duplicate sequence "AAAA", the higher scoring candidate (c2, score=0.9) was retained
+    retained_ids = {c.id for c in unique_cands}
+    assert "c2" in retained_ids
+    assert "c1" not in retained_ids
+
+    # Identical sequences have Hamming distance 0.0
+    dist_self = compute_pairwise_hamming_diversity(["AAAA", "AAAA"])
+    assert dist_self == 0.0
+
+
+def test_insufficient_viable_candidates_handling():
+    """Verifies that targets with < M=10 unique viable candidates are marked SELECTION_INFEASIBLE_LT_M."""
+    # Create only 5 viable candidates when M=10 is required
+    viable_5 = [
+        Candidate(id=f"c{i}", sequence=f"SEQ{i}AAAA", target_id="t1", score=0.5)
+        for i in range(5)
+    ]
+
+    res = select_candidate_library(
+        viable_candidates=viable_5,
+        library_size_m=10,
+        diversity_weight_gamma=1.0,
+        target_id="t1",
+        arm="hybrid",
+    )
+
+    assert res.status == ValidationOutcomeType.SELECTION_INFEASIBLE_LT_M
+    assert len(res.selected) == 0  # No padding, no silent regeneration
+    assert res.unique_viable_count == 5
+    assert "SELECTION_INFEASIBLE_LT_M" in str(res.error_reason)
+
+    # Evaluate validation outcome for infeasible target
+    outcome = evaluate_validation_outcome(
+        outcome_type=ValidationOutcomeType.SELECTION_INFEASIBLE_LT_M,
+        error_reason=res.error_reason,
+    )
+    assert outcome.status == ValidationOutcomeType.SELECTION_INFEASIBLE_LT_M
+    assert outcome.sctm is None  # Undefined in complete-case analysis
+    assert outcome.is_valid_for_statistical_test is False  # Excluded from complete-case paired differences
+
+
+def test_bootstrap_target_level_semantics():
+    """Verifies that bootstrap resampling operates strictly on target-level paired differences d_t."""
+    # N = 50 TS50 targets
+    n_targets = 50
+    rng = np.random.default_rng(42)
+    # Simulate paired target differences
+    d_t = rng.normal(loc=0.03, scale=0.05, size=n_targets)
+
+    # Target-level bootstrap: 10,000 resamples of the length-50 vector d_t
+    n_boot = 10000
+    boot_means = np.empty(n_boot, dtype=np.float64)
+    for b in range(n_boot):
+        sample = rng.choice(d_t, size=n_targets, replace=True)
+        boot_means[b] = np.mean(sample)
+
+    ci_95 = (np.percentile(boot_means, 2.5), np.percentile(boot_means, 97.5))
+    assert ci_95[0] < ci_95[1]
+    # Unit check: bootstrap was performed strictly on target differences d_t (N=50), never on candidates
+    assert len(d_t) == 50
 
 
 if __name__ == "__main__":

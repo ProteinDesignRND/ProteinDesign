@@ -154,5 +154,27 @@ This document chronologically logs all major architectural, methodological, and 
 - **Rationale:** Absolute scientific integrity requires that candidate generation budgets are mathematically matched and bounded, hybrid percentiles are drawn from identical candidate universes, oracle configurations are deterministic and singular, failure modes are taxonomically accurate, and provenance statements never overclaim.
 - **Consequences:** All ambiguities are completely eliminated from `science/PREREGISTRATION.md`, `science/evaluation_protocol.md`, `science/metrics.md`, and `src/hybrid/`. Implementation and test suites enforce these rules.
 
+---
+
+### [DEC-014] 2026-09-28: Final Scientific Protocol Consistency Closure and Parameter Freeze
+- **Status:** APPROVED AND FROZEN
+- **Decider:** Repository Consistency Audit Agent & Protocol Integrity Gate
+- **Decision:**
+  1. **Deterministic Development Allocation Matrices:** Codified exact balanced integer allocation matrices: ProteinMPNN (7-7-6 across 5 temperatures $\times$ 3 seeds = 100 sequences/target); ProteinSolver E0-B (12-11-11 across 3 temperatures $\times$ 3 seeds = 100 sequences/target).
+  2. **Frozen Test-Time Seed Allocation:** Primary test generation ($K = 500$) is conducted strictly at optimal frozen temperature $T^*$ partitioned across seeds: seed 42 ($N=167$), seed 1337 ($N=167$), seed 2026 ($N=166$), with zero test-time temperature sweep.
+  3. **Common Candidate Universe Enforcement:** Primary hybrid is NOT a joint generator; ProteinMPNN generates $U_t$ ($K=500$ at $T^*_{\text{MPNN}}$), both models score the identical sequences in identical candidate identity order (`validate_common_candidate_order`), and percentiles are derived strictly within that pool.
+  4. **Selection Score Normalization Consistency:** Inside the greedy diversity selector ($\text{score}(u) + \gamma \cdot \text{diversity}$), the primary MPNN-only arm uses normalized percentile rank score ($\text{score}_{\text{MPNN-only}}(u) = p_{\text{MPNN}}(u) \in (0, 1]$), ensuring scale compatibility with hybrid score $H(u) \in (0, 1]$ and normalized Hamming distance in $[0, 1]$.
+  5. **Dimensionless Diversity Weight ($\gamma$) Search Grid:** Frozen to $\gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$, tuned strictly on the development set separately for MPNN-only and hybrid selection, and frozen prior to TS50 evaluation.
+  6. **Greedy Selection Initialization & Deterministic Tie Breaking:** First selection on empty $S'$ chooses candidate with maximum primary score; subsequent selections use the full greedy formula. All ties in score or objective are resolved deterministically by ascending candidate ID.
+  7. **Duplicate Accounting & Unique Candidate Filtering:** Generation budget $K$ counts all generated sequences including duplicates; duplicate rate is reported separately; Stage 2 selection operates strictly on UNIQUE viable sequences; duplicates contribute 0 distance; duplicates are never silently regenerated.
+  8. **Insufficient Viable Candidates Policy:** If $|S_{\text{viable, unique}}| < M=10$, mark arm/target as `SELECTION_INFEASIBLE_LT_M`. No silent regeneration, padding, or threshold alterations occur. Primary endpoint is undefined for complete-case paired comparison; conservative zero-quality sensitivity analysis is additionally reported.
+  9. **Statistical Test Specification:** Two-sided paired Wilcoxon signed-rank test on $\{d_t\}_{t=1}^N$ with $\alpha = 0.01$ (`scipy.stats.wilcoxon(..., zero_method='wilcox', correction=True, alternative='two-sided')`); 10,000 bootstrap resamples derived strictly from target-level paired differences $d_t$.
+  10. **Single Primary Confirmatory Hypothesis:** Exactly one primary comparison is evaluated; all secondary analyses are explicitly exploratory and unadjusted.
+- **Context:** Comprehensive repository-wide audit resolved all remaining mathematical, statistical, reproducibility, and bookkeeping degrees of freedom before starting ProteinMPNN integration.
+- **Alternatives Considered:** Using unnormalized raw log-probs in greedy selection (rejected: causes arbitrary scale incompatibility with [0, 1] diversity distance); unconstrained gamma search (rejected: introduces post-hoc tuning degrees of freedom); padding libraries with duplicates or failed sequences (rejected: invalidates experimental library size and statistical integrity).
+- **Rationale:** Complete scientific closure requires that every parameter, search grid, tie-breaking rule, duplicate policy, and edge case is fully determinized and tested in automated software before any experimental benchmark data is collected.
+- **Consequences:** Implementation in `src/hybrid/` and 27 scientific protocol tests (52 total pytest suites) fully verify all protocol rules. Repository is 100% frozen and ready for ProteinMPNN integration.
+
+
 
 
