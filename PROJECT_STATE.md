@@ -3,7 +3,7 @@
 ## Project Identity
 - **Project Name:** Protein Design / ProteinSolver Research Extension
 - **Parent Foundational Work:** Strokach et al., 2020, *"Fast and Flexible Protein Design Using Deep Graph Neural Networks"*, Cell Systems 11(4): 402–411.e4.
-- **Current Phase:** Foundation Frozen (Milestone 2.5 Complete) — Ready for Phase 2 / Milestone 3 (ProteinMPNN Integration & Baseline Verification)
+- **Current Phase:** Phase 2 / Milestone 3 Cleanroom Integration Complete — Ready for Baseline Verification
 - **Current Branch:** `governance/final-acceptance-redteam-v1`
 - **Integration Branch:** `main`
 - **Governance Freeze Status:** FOUNDATION_FROZEN_WITH_LIMITATIONS
@@ -13,6 +13,8 @@
   - `E0-SCIENTIFIC-HARDENING`: **COMPLETE**
   - `E0-EQUIVALENCE-STATUS`: **FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION**
   - `GOVERNANCE-RELEASE-GATE`: **FROZEN (WITH LIMITATIONS)**
+  - `PROTEINMPNN-INTEGRATION`: **COMPLETE**
+  - `PROTEINMPNN-BENCHMARK`: **NOT STARTED**
 
 ---
 
@@ -27,7 +29,8 @@
   - Strict checkpoint integrity: Verified (`strict=True`, 0 missing, 0 unexpected, 567,060 params).
   - Mask-invariance: Verified (max logit diff = 0.00000000e+00).
   - Integration result: 41.30% on 1n5uA03 (single-target all-masked inverse-folding integration result).
-  - ProteinMPNN: NOT STARTED (queued for Phase 2).
+  - ProteinMPNN cleanroom integration: **COMPLETE** (Official upstream Dauparas et al. 2022, commit `8907e66`, checkpoint `v_48_020.pt` SHA-256 verified, wrapper & tests passing).
+  - ProteinMPNN benchmark: **NOT STARTED** (No E1 or TS50 benchmark runs executed).
 - **Literature Audit Status:** INITIAL PASS COMPLETE / CONTINUOUS MONITORING ACTIVE.
 
 ---
@@ -97,9 +100,15 @@
   - `STATISTICAL IMPLEMENTATION`: Two-sided paired Wilcoxon signed-rank test on $\{d_t\}_{t=1}^N$ with $\alpha = 0.01$ (`zero_method='wilcox'`, `correction=True`); 10,000 bootstrap resamples on target-level paired differences $d_t$.
   - `TEST SUITE EXPANSION`: 52/52 pytest suites passing (25 governance + 27 scientific protocol).
   - `DECISION LOGGED`: Appended `[DEC-014]`.
-- [ ] **Milestone 3: ProteinMPNN Integration & Baseline Verification (Phase 2)**
-  - Integrate official ProteinMPNN repository.
-  - Execute sanity checks and baseline recovery on shared benchmark structures.
+- [x] **Milestone 3A: Official ProteinMPNN Cleanroom Integration: COMPLETE**
+  - Pinned official upstream repository (`https://github.com/dauparas/ProteinMPNN`, commit `8907e6671bfbfc92303b5f79c4b5e6ce47cdef57`, MIT License).
+  - Implemented cleanroom wrapper (`src/proteinmpnn/`) with coordinate parsing, device handling, and zero native sequence conditioning leakage.
+  - Verified SHA-256 cryptographic hashes for all official vanilla checkpoints (`v_48_020` default).
+  - Verified end-to-end interface compatibility with `src/hybrid` scoring, normalization, and diversity selection.
+  - 62/62 pytest test suites passing (25 governance + 27 scientific protocol + 10 ProteinMPNN).
+  - Published provenance manifest: `reports/PROTEINMPNN_PROVENANCE_MANIFEST.md`.
+- [ ] **Milestone 3B: ProteinMPNN Baseline Benchmark Execution (E1 / TS50): NOT STARTED**
+  - Execute controlled benchmark baselines under frozen protocol (`science/evaluation_protocol.md`).
 - [ ] **Milestone 4: Research Question Freezing & Human Review**
   - Present literature audit and E0 baseline findings to Human Principal Investigator.
   - Decide whether to retain, refine, or pivot the provisional hypothesis based on audit evidence.
