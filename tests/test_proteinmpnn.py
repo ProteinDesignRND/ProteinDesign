@@ -200,6 +200,46 @@ def test_zero_native_sequence_conditioning_leakage():
     assert 0.20 <= recovery <= 0.80, f"Recovery {recovery:.2%} outside expected inverse-folding range"
 
 
+def test_counterfactual_native_sequence_invariance(tmp_path):
+    """Rigorous counterfactual native-sequence invariance test.
+
+    Verifies that altering residue labels in the input structure (Native vs Poly-Ala vs Poly-Gly)
+    produces 100% IDENTICAL generated sequences and scores when backbone coordinates are unchanged.
+    """
+    pdb_original = PDB_1N5U
+    pdb_poly_ala = tmp_path / "1n5uA03_poly_ala.pdb"
+    pdb_poly_gly = tmp_path / "1n5uA03_poly_gly.pdb"
+
+    with open(pdb_original, "r") as f_in, open(pdb_poly_ala, "w") as f_ala, open(pdb_poly_gly, "w") as f_gly:
+        for line in f_in:
+            if line.startswith(("ATOM", "HETATM")):
+                line_ala = line[:17] + "ALA" + line[20:]
+                line_gly = line[:17] + "GLY" + line[20:]
+                f_ala.write(line_ala)
+                f_gly.write(line_gly)
+            else:
+                f_ala.write(line)
+                f_gly.write(line)
+
+    wrapper = ProteinMPNNWrapper(device="cpu")
+
+    # Run twice per condition to verify exact reproducibility
+    for _ in range(2):
+        cands_nat = wrapper.sample_candidates(pdb_original, target_id="1n5uA03", temperature=0.2, seed=42, num_sequences=3)
+        cands_ala = wrapper.sample_candidates(pdb_poly_ala, target_id="1n5uA03", temperature=0.2, seed=42, num_sequences=3)
+        cands_gly = wrapper.sample_candidates(pdb_poly_gly, target_id="1n5uA03", temperature=0.2, seed=42, num_sequences=3)
+
+        for i in range(3):
+            # Assert 100% string equality
+            assert cands_nat[i].sequence == cands_ala[i].sequence
+            assert cands_nat[i].sequence == cands_gly[i].sequence
+            # Assert 100% numerical equality (max difference = 0.0)
+            assert cands_nat[i].score == cands_ala[i].score
+            assert cands_nat[i].score == cands_gly[i].score
+            assert cands_nat[i].perplexity == cands_ala[i].perplexity
+            assert cands_nat[i].perplexity == cands_gly[i].perplexity
+
+
 # =========================================================================
 # 6. Sequence Scoring Interface and Directionality Tests
 # =========================================================================

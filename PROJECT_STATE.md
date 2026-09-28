@@ -15,6 +15,7 @@
   - `GOVERNANCE-RELEASE-GATE`: **FROZEN (WITH LIMITATIONS)**
   - `PROTEINMPNN-INTEGRATION`: **COMPLETE**
   - `PROTEINMPNN-BENCHMARK`: **NOT STARTED**
+  - `PRE-E1-INTEGRITY-GATE`: **PASSED**
 
 ---
 
@@ -105,8 +106,9 @@
   - Implemented cleanroom wrapper (`src/proteinmpnn/`) with coordinate parsing, device handling, and zero native sequence conditioning leakage.
   - Verified SHA-256 cryptographic hashes for all official vanilla checkpoints (`v_48_020` default).
   - Verified end-to-end interface compatibility with `src/hybrid` scoring, normalization, and diversity selection.
-  - 62/62 pytest test suites passing (25 governance + 27 scientific protocol + 10 ProteinMPNN).
+  - 63/63 pytest test suites passing (25 governance + 27 scientific protocol + 11 ProteinMPNN).
   - Published provenance manifest: `reports/PROTEINMPNN_PROVENANCE_MANIFEST.md`.
+  - Passed Pre-E1 counterfactual native-sequence leakage gate (100% invariance, max diff 0.00e+00): `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md`.
 - [ ] **Milestone 3B: ProteinMPNN Baseline Benchmark Execution (E1 / TS50): NOT STARTED**
   - Execute controlled benchmark baselines under frozen protocol (`science/evaluation_protocol.md`).
 - [ ] **Milestone 4: Research Question Freezing & Human Review**
