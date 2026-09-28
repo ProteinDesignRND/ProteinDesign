@@ -8,7 +8,8 @@
 ## 2. Transition & Evaluation Authorities
 | Document | Path | Purpose | Authority Scope |
 | :--- | :--- | :--- | :--- |
-| **Final Pre-E1 Scientific Readiness Closure Report** | `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_CLOSURE_REPORT.md` | Final pre-E1 scientific readiness, manifest freeze, infeasibility rule, and consistency closure report | **Current Pre-E1 Protocol & Readiness Authority** |
+| **Final Pre-E1 Scientific Readiness Reconciliation Report (V2)** | `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md` | Final pre-E1 surgical reconciliation pass: manifest verification, LF hash canonicalization, scTM boundary, hydrophobic core formalization, and AI authorization clarification | **Current Pre-E1 Protocol & Readiness Authority** |
+| **Final Pre-E1 Scientific Readiness Closure Report** | `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_CLOSURE_REPORT.md` | Pre-E1 scientific readiness, manifest freeze, infeasibility rule, and consistency closure report | **Pre-E1 Closure Baseline Authority** |
 | **Development Hyperparameter Selection Freeze Report** | `reports/DEVELOPMENT_HYPERPARAMETER_SELECTION_FREEZE_REPORT.md` | Freeze of development objective $J$, Cartesian grids, freezing order, and tie breaking | **Development Hyperparameter Selection Authority** |
 | **ProteinMPNN Counterfactual Leakage Audit Report** | `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` | Verification of 100% native-sequence invariance under counterfactual inputs | **Cleanroom Integration Leakage Authority** |
 | **Transition Gate Report** | `reports/FINAL_FOUNDATION_INTEGRITY_AND_TRANSITION_GATE_REPORT.md` | Final foundation integrity and transition-gate report | **Historical Foundation Transition Authority** |

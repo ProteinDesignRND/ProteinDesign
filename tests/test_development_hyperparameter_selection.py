@@ -293,3 +293,55 @@ def test_10_all_configurations_infeasible_stops_tuning_arm():
     with pytest.raises(RuntimeError, match="DEVELOPMENT_TUNING_STAGE_INFEASIBLE"):
         select_optimal_lambda_and_gamma(all_infeasible_hybrid)
 
+
+def test_11_development_target_manifest_integrity():
+    """Requirement 11: Validates exact integrity of immutable development target manifest.
+
+    Verifies:
+    1. File exists at data/manifests/development_20_cath42.txt.
+    2. Exact N=20 targets declared.
+    3. All 20 target IDs are unique (zero duplicates).
+    4. All 20 topology codes (Class.Arch.Topology) are unique (zero duplicate topologies).
+    5. Canonical LF SHA-256 matches 47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069.
+    6. Target 4bdx.A is excluded (its topology 2.10.25 duplicates 1f7e.A).
+    7. Target 3hxi.A (topology 3.30.760) is the 20th target.
+    """
+    import hashlib
+    from pathlib import Path
+
+    manifest_path = Path("data/manifests/development_20_cath42.txt")
+    assert manifest_path.exists(), f"Manifest not found: {manifest_path}"
+
+    with open(manifest_path, "rb") as f:
+        content_bytes = f.read()
+
+    # Canonical LF checksum check
+    lf_bytes = content_bytes.replace(b"\r\n", b"\n")
+    actual_sha = hashlib.sha256(lf_bytes).hexdigest()
+    expected_sha = "47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069"
+    assert actual_sha == expected_sha, f"SHA-256 mismatch: {actual_sha} != {expected_sha}"
+
+    lines = [
+        line.strip()
+        for line in lf_bytes.decode("utf-8").split("\n")
+        if line.strip() and not line.strip().startswith("#")
+    ]
+    assert len(lines) == 20, f"Expected 20 targets, got {len(lines)}"
+
+    target_ids = []
+    topologies = []
+    for line in lines:
+        parts = line.split()
+        assert len(parts) == 2, f"Invalid manifest row format: {line}"
+        target_ids.append(parts[0])
+        topologies.append(parts[1])
+
+    assert len(set(target_ids)) == 20, "Duplicate target IDs found in manifest"
+    assert len(set(topologies)) == 20, "Duplicate topologies found in manifest"
+
+    # Verify 4bdx.A is NOT in manifest and 3hxi.A IS in manifest
+    assert "4bdx.A" not in target_ids, "4bdx.A must be excluded due to duplicate topology 2.10.25"
+    assert "3hxi.A" in target_ids, "3hxi.A must be present as 20th unique topology"
+    assert target_ids[-1] == "3hxi.A"
+    assert topologies[-1] == "3.30.760"
+

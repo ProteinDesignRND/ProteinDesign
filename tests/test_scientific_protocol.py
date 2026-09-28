@@ -682,6 +682,97 @@ def test_bootstrap_target_level_semantics():
     assert len(d_t) == 50
 
 
+def test_prohibited_sctm_fold_threshold_wording():
+    """Requirement: Authoritative docs must NOT claim scTM > 0.5 indicates identical global fold topology.
+
+    Fixed-correspondence scTM uses Kabsch rigid-body superposition without alignment optimization
+    and does NOT inherit the classical alignment-based 0.5 fold threshold.
+    """
+    from pathlib import Path
+
+    doc_paths = [
+        Path("science/metrics.md"),
+        Path("science/PREREGISTRATION.md"),
+        Path("science/evaluation_protocol.md"),
+        Path("docs/PROJECT_TRUTH.md"),
+    ]
+
+    for p in doc_paths:
+        if not p.exists():
+            continue
+        content = p.read_text(encoding="utf-8")
+        assert "scTM > 0.5 indicates identical global fold topology" not in content, (
+            f"Prohibited fold topology claim found in {p}"
+        )
+        assert "indicates identical global fold topology" not in content, (
+            f"Prohibited fold topology claim found in {p}"
+        )
+
+
+def test_statistical_wilcoxon_edge_cases():
+    """Verifies two-sided paired Wilcoxon signed-rank test and bootstrap edge cases under frozen SciPy protocol."""
+    import scipy.stats as stats
+
+    # 1. Standard valid paired differences (N=50)
+    rng = np.random.default_rng(42)
+    d_t = rng.normal(loc=0.03, scale=0.05, size=50)
+    res = stats.wilcoxon(d_t, zero_method="wilcox", correction=True, alternative="two-sided")
+    assert res.pvalue is not None
+    assert 0.0 <= res.pvalue <= 1.0
+
+    # 2. All zero differences: with zero_method='wilcox', all zeros are discarded
+    import warnings
+    d_zeros = np.zeros(50)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        res_zeros = stats.wilcoxon(d_zeros, zero_method="wilcox", correction=True, alternative="two-sided")
+    # Discarding all observations yields nan in SciPy; protocol defines p=1.0, HL=0.0
+    assert np.isnan(res_zeros.pvalue)
+
+    # 3. Constant non-zero differences (s_d = 0)
+    d_const = np.full(50, 0.05)
+    res_const = stats.wilcoxon(d_const, zero_method="wilcox", correction=True, alternative="two-sided")
+    assert res_const.pvalue < 1e-5  # Highly significant all positive difference
+
+    # 4. Bootstrap reproducibility with fixed seed 42
+    rng1 = np.random.default_rng(42)
+    boot1 = [np.mean(rng1.choice(d_t, size=50, replace=True)) for _ in range(100)]
+    rng2 = np.random.default_rng(42)
+    boot2 = [np.mean(rng2.choice(d_t, size=50, replace=True)) for _ in range(100)]
+    np.testing.assert_allclose(boot1, boot2)
+
+
+def test_hydrophobic_core_fraction_calculation():
+    """Verifies reconciled hydrophobic core fraction definition: core hydrophobic / total hydrophobic."""
+    hydrophobic_set = set("VLIFMW")
+
+    def compute_f_core(sequence: str, rsa_values: list) -> tuple:
+        assert len(sequence) == len(rsa_values)
+        total_hydrophobic = sum(1 for aa in sequence if aa in hydrophobic_set)
+        if total_hydrophobic == 0:
+            return 0.0, True  # f_core = 0.0, denominator_zero = True
+        core_hydrophobic = sum(
+            1 for aa, rsa in zip(sequence, rsa_values)
+            if aa in hydrophobic_set and rsa < 0.20
+        )
+        return float(core_hydrophobic) / float(total_hydrophobic), False
+
+    # Case 1: Sequence with known hydrophobics: V (pos 2) with RSA 0.10, L (pos 3) with RSA 0.50 -> 1 core / 2 total = 0.5
+    seq = "AGVLGA"
+    rsa = [0.5, 0.4, 0.10, 0.50, 0.7, 0.8]  # V has 0.10 (<0.20), L has 0.50 (>=0.20)
+    f_core, den_zero = compute_f_core(seq, rsa)
+    assert f_core == 0.5  # 1 core / 2 total = 0.5
+    assert den_zero is False
+
+    # Case 2: Zero hydrophobic residues edge case (e.g. all-charged sequence)
+    seq_no_hydro = "GGGKRRKGG"
+    rsa_no_hydro = [0.5] * len(seq_no_hydro)
+    f_core_zero, den_zero_flag = compute_f_core(seq_no_hydro, rsa_no_hydro)
+    assert f_core_zero == 0.0
+    assert den_zero_flag is True
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
 

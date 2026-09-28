@@ -1,8 +1,10 @@
 # PRE-REGISTRATION SPECIFICATION: PROTEIN HYBRID EVALUATION STUDY
 **Document ID:** `SCIENCE-PREREGISTRATION-V1`  
-**Status:** **FROZEN PRIOR TO EXPERIMENTATION**  
-**Effective Date:** 2026-09-25  
-**Study Phase:** Pre-Phase 2 (Frozen Before ProteinMPNN Integration and Benchmark Execution)  
+**Registration History:**
+- **Original Registration:** Frozen 2026-09-25 (Pre-Phase 2, prior to ProteinMPNN cleanroom integration and prior to any benchmark execution)
+- **Amendment A1 (Pre-E1 Closure & Surgical Reconciliation):** Frozen 2026-09-28 (Prior to any benchmark candidate generation; manifest, oracle, and protocol clarifications only; zero test-set outcomes used)
+**Status:** **FROZEN PRIOR TO EXPERIMENTATION — PENDING HUMAN REVIEW/MERGE**  
+**Study Phase:** Pre-Phase 2 / Milestone 3A Closure  
 **Lead Repository:** `Protein Design`  
 
 ---
@@ -18,9 +20,10 @@ This is a **strictly two-sided scientific question**. No superiority or compleme
 The **single, pre-registered primary endpoint** is:
 $$\overline{\text{scTM}}_{\text{val}}(t) = \frac{1}{M} \sum_{m=1}^M \text{scTM}_{\text{val}}(s^{(m)}_t)$$
 The **target-level mean fixed-correspondence Self-Consistency TM-score** across the final selected candidate library ($M = 10$) evaluated by the **Primary Final Structural Validation Oracle (AlphaFold2 v2.3.2)**.
-- Direction: Higher is better ($\in (0, 1]$).
-- Normalization: Normalized strictly by target backbone length $L_{\text{target}}$.
-- Score formulation: Zhang & Skolnick (2004) formula under optimal rigid-body Kabsch superposition on matched C$\alpha$ positions.
+- **Direction:** Higher is better ($\in (0, 1]$).
+- **Normalization:** Normalized strictly by target backbone length $L_{\text{target}}$.
+- **Score Formulation:** Zhang & Skolnick (2004) formula under optimal rigid-body Kabsch superposition on matched C$\alpha$ positions.
+- **Methodological Boundary:** Fixed-correspondence scTM uses the Zhang–Skolnick TM-score functional form and length normalization, but fixes residue correspondence ($i \mapsto i$) and performs rigid-body Kabsch superposition; it is not standard TM-align/TM-score dynamic-programming alignment optimization. The classical literature threshold of 0.5 for "same fold" or "identical global fold topology" was established for dynamic-programming alignment optimization and MUST NOT be inherited as an interpretive threshold for this fixed-correspondence metric. The project makes zero claims of "identical fold" or "universal threshold" based on fixed-correspondence scTM; it is utilized strictly as a continuous, length-normalized structural similarity endpoint.
 
 ---
 
@@ -42,7 +45,9 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
   $$d_t = \overline{\text{scTM}}_{\text{hybrid}}(t) - \overline{\text{scTM}}_{\text{MPNN-only}}(t)$$
 - **Significance Level:** $\alpha = 0.01$ (two-tailed, pre-registered confirmatory threshold).
 - **Exact Implementation Details:**
-  - Python / SciPy reference: `scipy.stats.wilcoxon(x, y, zero_method='wilcox', correction=True, alternative='two-sided')`.
+  - Software & Library: Python 3.11 with SciPy v1.17.1 reference (`scipy.stats.wilcoxon`).
+  - Function call: `scipy.stats.wilcoxon(x, y, zero_method='wilcox', correction=True, alternative='two-sided')`.
+  - Approximation method: Normal approximation with continuity correction (`correction=True`), standard for $N \ge 25$.
   - Zero-difference policy: zero differences ($d_t = 0$) are handled using the Wilcox convention (discards zeros from ranking).
   - Tie handling in $|d_t|$: average rank assignment (`method='average'`).
   - Continuity correction: enabled (`correction=True`).
@@ -50,10 +55,16 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
   - Hodges-Lehmann paired median difference estimator (median of all pairwise Walsh averages $(d_i + d_j)/2$).
   - Paired Cohen's $d_z = \bar{d} / s_d$.
 - **Edge Cases:**
-  - If all $d_t = 0$: $p = 1.0$, effect size = $0.0$.
+  - If all $d_t = 0$: $p = 1.0$, Hodges-Lehmann effect size = $0.0$.
   - Zero standard deviation ($s_d = 0$): $d_z = 0.0$.
   - Insufficient valid target pairs: exclusions reported explicitly with reasons.
-- **Confidence Intervals:** 95% and 99% bootstrap confidence intervals derived strictly from **10,000 resamples of TARGET-LEVEL paired differences $d_t$** ($N = 50$). Individual candidate sequences are nested replicates and are NEVER bootstrapped.
+- **Confidence Intervals & Bootstrap Estimands:**
+  - 95% and 99% nonparametric bootstrap confidence intervals derived strictly from **10,000 resamples of TARGET-LEVEL paired differences $d_t$** ($N = 50$).
+  - Resampling RNG Seed: Fixed integer seed = 42 (`np.random.default_rng(42)`).
+  - Interval Type: Percentile bootstrap ($2.5^{\text{th}}$ and $97.5^{\text{th}}$ percentiles for 95% CI; $0.5^{\text{th}}$ and $99.5^{\text{th}}$ percentiles for 99% CI).
+  - Primary Estimand: Mean target-level paired difference $\Delta \overline{\text{scTM}} = \frac{1}{N_{\text{valid}}} \sum_{t=1}^{N_{\text{valid}}} d_t$.
+  - Secondary Estimand: Hodges-Lehmann median paired difference.
+  - Prohibition: Individual candidate sequences are nested replicates within targets and are STRICTLY NEVER bootstrapped.
 - **Multiple Comparisons Policy:** Exactly **ONE primary confirmatory hypothesis comparison** is evaluated. All secondary analyses (alternative temperatures, seeds, ablations, PiFold/ESM-IF1 baselines, raw-logit interpolation, oracle sensitivity) are explicitly designated as exploratory and unadjusted.
 - **Three-State Target Outcome Taxonomy:**
   1. **Missing Primary Endpoint (`SELECTION_INFEASIBLE_LT_M`):** Arm produces fewer than $M = 10$ unique viable candidates during screening. Primary endpoint for that target/arm is missing/undefined; no numeric scTM is manufactured. Evaluated via complete-case paired analysis; additionally reported under conservative zero-quality sensitivity analysis ($\overline{\text{scTM}} = 0.0$).
@@ -120,10 +131,11 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 
 ## 8. Development Hyperparameter Selection & Freezing Protocol ($T^*, \lambda^*, \gamma^*$)
 - **Development / Tuning Set ($N_{\text{dev}} = 20$):** Hyperparameter selection for temperatures $T^*$, mixing coefficient $\lambda^*$, and diversity weights $\gamma^*$ is conducted **exclusively on the 20 CATH 4.2 validation backbones** frozen in the immutable manifest:
-  - **Manifest File:** `data/manifests/development_20_cath42.txt` (SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`).
-  - **Canonical Provenance:** Ingraham et al. (NeurIPS 2019) / Dauparas et al. (Science 2022) CATH 4.2 validation split (`chain_set_splits.json`, SHA-256: `8e9a587a50c7f6c026e4ed00f6c1c30b106100f36f7a01de47542bdfc060adc2`).
-  - **Deterministic Selection Rule:** Deterministic first encounter of unique primary CATH topology in canonical validation split order across 20 distinct CATH topologies covering classes 1, 2, 3, and 4:
+  - **Manifest File:** `data/manifests/development_20_cath42.txt` (canonical LF SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`).
+  - **Canonical Provenance:** Ingraham et al. (NeurIPS 2019) / Dauparas et al. (Science 2022) CATH 4.2 validation split (`chain_set_splits.json`, raw downloaded artifact SHA-256: `8e9a587a50c7f6c026e4ed00f6c1c30b106100f36f7a01de47542bdfc060adc2`).
+  - **Deterministic Selection Rule:** Deterministic first encounter of unique primary CATH topology (Class.Arch.Topology) in canonical validation split order across 20 distinct CATH topologies covering classes 1, 2, 3, and 4:
     `2e6i.A` (4.10.1130), `2mh3.A` (4.10.280), `3gn4.E` (1.10.3060), `2qg3.A` (3.30.1960), `3abd.B` (3.30.900), `1z8s.A` (1.10.860), `5t5d.A` (3.40.35), `1f7e.A` (2.10.25), `2lg7.A` (2.60.60), `1h2s.A` (1.20.1070), `1yf9.A` (3.10.110), `2p2e.A` (2.60.300), `1cel.A` (2.70.100), `2kil.A` (3.90.1520), `1c52.A` (1.10.760), `2gmy.D` (1.20.1290), `1nyn.A` (3.30.1250), `2c6u.A` (3.10.100), `2ctt.A` (2.10.230), `3hxi.A` (3.30.760).
+  - *Topology Deduplication Note:* Target `4bdx.A` (chain 11 in validation split) has primary topology `2.10.25`, which duplicates chain 8 (`1f7e.A`), and is therefore correctly bypassed by the unique-topology selection rule, leading to the selection of `3hxi.A` (3.30.760).
   - Zero tuning or parameter selection against primary test outcomes (TS50) is permitted.
 - **Scalar Development Optimization Objective ($J$):**
   The scalar development optimization objective for all hyperparameter selection is the mean over the 20 development targets of the target-level mean fixed-correspondence scTM of the final selected $M=10$ library after the complete prescribed development pipeline:
@@ -195,7 +207,7 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 - **Integrity Rule:** For every target $t$, the candidate universe $U_t$ contains exactly $K = 500$ sequences generated by ProteinMPNN at frozen $T^*_{\text{MPNN}}$. ProteinSolver performs scoring only. Sequences scored by both models MUST be identical and in identical candidate identity order (`validate_common_candidate_order`) before percentile ranks are computed.
 - **Step-by-Step Pipeline:**
   1. **Candidate Universe Generation:** Generate candidate pool $U_t = \{u_1, \dots, u_K\}$ of size $K$ ($K=100$ tuning, $K=500$ primary test).
-  2. **ProteinMPNN Scoring:** Compute sequence-level mean autoregressive log-probability $S_{\text{MPNN}}(u)$ for each $u \in U_t$.
+  2. **ProteinMPNN Scoring:** Compute sequence-level mean autoregressive log-probability $S_{\text{MPNN}}(u)$ for each $u \in U_t$. In the official cleanroom wrapper, candidates are scored along their exact generation-time decoding permutation (`use_input_decoding_order=True, decoding_order=decoding_order`), ensuring that candidate scoring is strictly reproducible and that zero hidden re-sampling of permutations occurs.
   3. **ProteinSolver Scoring:** Compute sequence-level mean single-site masked pseudo-log-likelihood $S_{\text{PS}}(u)$ for each $u \in U_t$ (PLL scan; explicitly NOT called autoregressive log-likelihood).
   4. **Within-Universe Percentile Normalization:**
      $$p_{\text{MPNN}}(u) = \frac{\text{rank}(S_{\text{MPNN}}(u))}{K} \in (0, 1]$$
@@ -217,11 +229,12 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 
 ## 11. Screening Oracle Configuration & Thresholds (ESMFold)
 - **Exact Oracle Implementation:** Meta AI `esm` (v2.0.0) / Hugging Face `transformers` `facebook/esmfold_v1`.
-- **Model Checkpoint:** `esmfold_v1` (3B parameters).
+- **Model Checkpoint:** `esmfold_v1` (3B parameters; pinned to canonical Meta AI / Hugging Face release artifact).
 - **Inference Mode:** Sequence-only input mode (zero MSA search, zero homologous templates).
 - **Recycle Count:** Exactly 4 recycles (`num_recycles = 4`, canonical default).
 - **Precision & Device:** `float16` (`fp16`) on GPU (CUDA), with `float32` CPU fallback if CUDA unavailable.
-- **Length & Chunking:** Maximum sequence length $L \le 1024$; chunking enabled (chunk size 128 / 64) for memory consistency.
+- **Sequence Length Guard:** Maximum sequence length $L \le 1024$ residues (candidates exceeding 1024 are rejected).
+- **Internal Tensor Chunking:** Attention/trunk chunking enabled via `model.set_chunk_size(128)` (with 64 fallback for memory consistency on consumer GPUs); internal chunk size is distinct from sequence length.
 - **Screening Seed:** Fixed integer seed = 42 (`seed = 42`).
 - **Output & Metric Extraction:**
   - 3D atomic coordinates extracted from predicted structure.
@@ -336,18 +349,21 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 ---
 
 ## 18. Benchmark Dataset Partitions
-1. **Development / Tuning Set ($N = 20$):** CATH 4.2 validation split frozen in immutable manifest `data/manifests/development_20_cath42.txt` (SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`), derived deterministically from the canonical Ingraham et al. (NeurIPS 2019) / Dauparas et al. (Science 2022) validation split across 20 distinct CATH topologies. Used exclusively for hyperparameter optimization ($T^*, \lambda^*, \gamma^*$) under the deterministic Section 8 optimization protocol.
+1. **Development / Tuning Set ($N = 20$):** CATH 4.2 validation split frozen in immutable manifest `data/manifests/development_20_cath42.txt` (canonical LF SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`), derived deterministically from the canonical Ingraham et al. (NeurIPS 2019) / Dauparas et al. (Science 2022) validation split across 20 distinct CATH topologies. Used exclusively for hyperparameter optimization ($T^*, \lambda^*, \gamma^*$) under the deterministic Section 8 optimization protocol.
 2. **Primary Test Set ($N = 50$):** TS50 non-redundant PDB crystal structures ($<30\%$ sequence identity to CATH 4.2 / ProteinMPNN training sets; ProteinSolver Gene3D 72M training membership documented per model according to Section 19: superfamily absence verified where accessible, otherwise NOT VERIFIABLE FROM ACCESSIBLE METADATA). Evaluated once with frozen parameters.
+   - *Pre-Test Dependency:* The TS50 exact target manifest remains a pre-test dependency and must be frozen before TS50 benchmark execution. Development tuning (E1) is not blocked by TS50 manifest preparation.
 3. **De Novo Test Set ($N = 15$):** RFdiffusion generated scaffolds. Evaluated once as a separate stratified benchmark.
 
 ---
 
-## 19. Model-Specific Training Membership Language
-- **ProteinSolver:** Training membership in the 72M Gene3D corpus is classified as:
+## 19. Model-Specific Training Membership Language & Leakage Boundaries
+- **Native-Sequence Leakage Audit:** No native-sequence conditioning leakage was detected in the tested ProteinSolver and ProteinMPNN cleanroom integration paths or counterfactual audits. Native sequence tokens are strictly absent during candidate generation.
+- **ProteinSolver Historical Training Set:** Training membership in the 72M Gene3D corpus is classified as:
   - *"Not present in accessible training superfamily list"* (if superfamily code is absent from the 1,029 training superfamilies).
   - *"NOT VERIFIABLE FROM ACCESSIBLE METADATA"* (if raw domain membership cannot be resolved without downloading the external 72M dataset).
 - **ProteinMPNN:** Documented based on CATH 4.2 training vs. test topology splits.
 - **Rule:** Targets must NEVER be described as "guaranteed held-out" or "unseen".
+- **Scoped Leakage Language:** Targets and candidate pipelines must NEVER be described as "completely leak-free". No native-sequence conditioning leakage was detected in the tested ProteinSolver/ProteinMPNN cleanroom integration paths and counterfactual audits. ProteinSolver historical training-set membership for benchmark targets remains NOT VERIFIABLE FROM ACCESSIBLE METADATA.
 
 ---
 
@@ -362,9 +378,10 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
   - Macro-average Native Sequence Recovery (AAR)
   - Generative Structural Viability Rate (SVR)
   - Independent Validation Yield (IVY)
-  - Mean Self-Consistency RMSD (scRMSD)
-  - Net Charge at pH 7.4 ($Q_{\text{pH7.4}}$)
-  - Hydrophobic core fraction ($f_{\text{core}}$, $\text{RSA} < 0.20$ on predicted structure)
+  - Mean Self-Consistency RMSD (scRMSD; evaluated on 100% resolved native $C_\alpha$ backbone coordinates)
+  - Net Charge at pH 7.4 ($Q_{\text{pH7.4}}$, EMBOSS scale, explicitly NOT pI)
+  - Isoelectric Point ($\text{pI}$, theoretical $Q(\text{pH})=0.0$)
+  - Hydrophobic Core Fraction ($f_{\text{core}} = \text{core hydrophobic} / \text{total hydrophobic}$, $\text{RSA} < 0.20$; zero-hydrophobic sequence defined as $0.0$; evaluated on ESMFold for screening pool, AlphaFold2 for selected library, Boltz-1 for sensitivity)
   - Wall-clock inference latency (seconds per sequence)
 - **Diagnostic Metrics:**
   - ProteinSolver pseudo-perplexity ($\text{PPL}_{\text{PS}}$)

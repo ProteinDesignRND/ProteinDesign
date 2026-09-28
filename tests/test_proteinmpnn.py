@@ -322,3 +322,32 @@ def test_hybrid_pipeline_interoperability():
     # 5. Compute order-independent pairwise diversity
     div = compute_pairwise_hamming_diversity([c.sequence for c in selected])
     assert 0.0 <= div <= 1.0
+
+
+def test_rng_stream_sequential_consumption_and_ordering():
+    """Verifies that RNG stream is consumed sequentially per (temperature, seed) block without per-candidate reseeding.
+
+    Verifies:
+    1. Sequential candidates generated within the same block are distinct (no per-candidate reseeding).
+    2. Repeated generation under the same seed produces identical sequences in identical order.
+    3. Generating candidate pools once and reusing them preserves identical sequence identity and order.
+    """
+    wrapper = ProteinMPNNWrapper(device="cpu")
+    coords, _, target_id = extract_backbone_coordinates(PDB_1N5U)
+
+    # Generate 3 candidates in a single block
+    block_run1 = wrapper.sample_candidates(coords, target_id, temperature=0.5, seed=42, num_sequences=3)
+    block_run2 = wrapper.sample_candidates(coords, target_id, temperature=0.5, seed=42, num_sequences=3)
+
+    assert len(block_run1) == 3
+    assert len(block_run2) == 3
+
+    # Distinct sequences within the block (no silent per-candidate reseeding to seed 42)
+    assert block_run1[0].sequence != block_run1[1].sequence
+    assert block_run1[1].sequence != block_run1[2].sequence
+
+    # Identical sequence ordering across runs with identical seed
+    for idx in range(3):
+        assert block_run1[idx].id == block_run2[idx].id
+        assert block_run1[idx].sequence == block_run2[idx].sequence
+        assert block_run1[idx].score == block_run2[idx].score

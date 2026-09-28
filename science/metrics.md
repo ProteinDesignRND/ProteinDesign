@@ -10,7 +10,7 @@ This document establishes the mathematical definitions, operational implementati
 |---|---|---|---|:---:|
 | **Native Sequence Recovery (AAR)** | $\text{AAR} = \frac{1}{L} \sum_{i=1}^L \mathbb{I}(s_i = s_i^{\text{native}})$ (Macro-averaged per target) | Agreement with natural evolutionary sequence | Penalizes valid alternative sequences (neutral drift); favors memorization over de novo foldability. | Reference agreement proxy (No universal threshold; single-target result $\ne$ benchmark) |
 | **Primary Hybrid Score ($H$)** | $H(u) = \lambda p_{\text{MPNN}}(u) + (1-\lambda) p_{\text{PS}}(u)$ via scale-free within-pool percentile rank | Balanced score integrating modern autoregressive and constraint-satisfaction signals | Sensitive to pool candidate composition; requires pre-frozen $\lambda$ tuned on dev set. | **Primary Generation Scoring Method** |
-| **Fixed-Correspondence TM-Score (scTM)** | $\text{scTM} = \frac{1}{L_{\text{target}}} \sum_{i=1}^{L_{\text{target}}} \frac{1}{1 + (d_i / d_0)^2}$ under Kabsch C$\alpha$ superposition | Global fold topology similarity on matched residue mapping (length-scaled, scale-invariant) | Insensitive to local steric clashes or side-chain packing errors. | **PRIMARY STUDY ENDPOINT** (Target-level mean on selected library evaluated by primary validation oracle AlphaFold2) |
+| **Fixed-Correspondence TM-Score (scTM)** | $\text{scTM} = \frac{1}{L_{\text{target}}} \sum_{i=1}^{L_{\text{target}}} \frac{1}{1 + (d_i / d_0)^2}$ under Kabsch C$\alpha$ superposition | Continuous length-normalized backbone structural similarity under fixed residue correspondence (Kabsch superposition) | Insensitive to local steric clashes or side-chain packing errors. | **PRIMARY STUDY ENDPOINT** (Target-level mean on selected library evaluated by primary validation oracle AlphaFold2) |
 | **Self-Consistency RMSD (scRMSD)** | $\text{scRMSD} = \sqrt{\frac{1}{L} \sum_{i=1}^L \|\hat{\mathbf{x}}_i^{\text{CA}} - \mathbf{x}_i^{\text{CA}}\|^2}$ after optimal Kabsch superposition | Structural fidelity: Does predicted structure match design target backbone? | Hallucination on repeat motifs; sensitive to flexible loop ends. | Literature-supported project screening threshold: $\le 2.0\text{ \AA}$ |
 | **Predicted lDDT (pLDDT)** | $\text{Mean per-residue predicted lDDT} \in [0, 100]$ from folding oracle | Folding oracle's confidence in local structural prediction | High confidence on non-protein repeating sequences; confidence is not free energy ($\Delta G$). | Literature-supported project screening threshold: $\ge 80.0$ (Oracle-specific) |
 | **Structural Viability Rate (SVR)** | $\text{SVR} = \frac{|\{s \in S_{\text{raw}} : \text{scRMSD}_{\text{screen}}(s) \le 2.0\text{ \AA} \land \text{pLDDT}_{\text{screen}}(s) \ge 80\}|}{|S_{\text{raw}}|}$ | Raw generative structural yield under screening oracle (ESMFold) | Sensitive to choice of screening oracle and stringency of cutoffs. | Secondary generative yield metric (Non-tautological) |
@@ -90,7 +90,8 @@ is retained **strictly as an exploratory ablation** and is explicitly NOT the pr
   $$\text{scRMSD} = \sqrt{\frac{1}{L} \sum_{i=1}^L \|\mathbf{R} \mathbf{x}_{\text{pred}, i}^{\text{CA}} + \mathbf{t} - \mathbf{x}_{\text{target}, i}^{\text{CA}}\|^2}$$
 - **Operational Ingredients:**
   - Evaluated strictly over backbone $\text{C}\alpha$ atoms on matched sequence-to-structure residue correspondence ($N = L$).
-  - Missing electron density positions in target PDB must be excluded identically across all candidates, ensuring unresolved residues cannot silently shrink the evaluation set.
+  - **Benchmark Target Invariant:** For the frozen development (E1) and confirmatory (TS50) benchmarks, all target structures strictly require 100% resolved backbone $C_\alpha$ coordinates ($1..L$) without gaps, ensuring an exact 1-to-1 residue mapping ($N = L$) with zero silent target-specific residue subset alterations.
+  - *Generic Helper Boundary:* General-purpose metric utilities supporting missing experimental density masking exist solely for arbitrary exploratory PDB evaluation and are strictly NOT utilized in the frozen benchmark evaluation protocol.
   - Optimal rotation matrix $\mathbf{R} \in \text{SO}(3)$ and translation vector $\mathbf{t} \in \mathbb{R}^3$ are computed via the Kabsch algorithm.
   - Direction: Lower is better ($0.0\text{ \AA}$ indicates identical $\text{C}\alpha$ trace).
   - Threshold Context: $\text{scRMSD} \le 2.0\text{ \AA}$ is adopted as a **project screening threshold** based on standard literature practices (e.g. Baker Lab de novo design pipelines). It is not an absolute physical constant.
@@ -105,7 +106,8 @@ is retained **strictly as an exploratory ablation** and is explicitly NOT the pr
   - Superposition $(\mathbf{R}^*, \mathbf{t}^*)$ computed via Kabsch / TM-score maximizing rotation and translation.
   - Normalized strictly by $L_{\text{target}}$ to ensure length-scale invariance.
   - $d_0(L_{\text{target}}) = 1.24 \sqrt[3]{L_{\text{target}} - 15} - 1.8$ for $L_{\text{target}} > 15$ residues (minimum cutoff $0.5\text{ \AA}$).
-  - Direction: Higher is better ($\in (0, 1]$). $\text{scTM} > 0.5$ indicates identical global fold topology.
+  - Direction: Higher is better ($\in (0, 1]$).
+  - Methodological Boundary: Fixed-correspondence scTM uses the Zhang–Skolnick TM-score functional form and length normalization, but fixes residue correspondence ($i \mapsto i$) and performs rigid-body Kabsch superposition; it is not standard TM-align/TM-score dynamic-programming alignment optimization. The classical literature threshold of 0.5 for "same fold" or "identical global fold topology" was established for dynamic-programming alignment optimization and MUST NOT be inherited as an interpretive threshold for this fixed-correspondence metric. The project makes zero claims of "identical fold" or "universal threshold" based on fixed-correspondence scTM; it is utilized strictly as a continuous, length-normalized structural similarity endpoint.
 - **PRIMARY ENDPOINT STATUS:**
   The primary statistical endpoint of the entire research project is:
   $$\overline{\text{scTM}}_{\text{val}}(t) = \frac{1}{M} \sum_{m=1}^M \text{scTM}_{\text{val}}(s^{(m)}_t)$$
@@ -193,14 +195,25 @@ When evaluated, it uses pre-declared external normalization bounds:
 
 ### I. Biophysical Proxies
 - **Net Charge at pH 7.4 ($Q_{\text{pH7.4}}$):**
-  Calculated using the Henderson-Hasselbalch equation with standard EMBOSS pKa values at neutral pH 7.4.
+  Calculated using the Henderson-Hasselbalch equation with standard EMBOSS pKa values (N-term: 8.6, C-term: 3.6, Lys: 10.8, Arg: 12.5, His: 6.5, Asp: 3.9, Glu: 4.1, Cys: 8.5, Tyr: 10.1) at neutral pH 7.4.
   *Terminology Rule:* This is strictly labeled **Net Charge at pH 7.4** ($Q_{\text{pH7.4}}$), explicitly NOT "pI".
 - **Isoelectric Point (pI):**
-  The theoretical pH at which the net charge equals zero: $Q(\text{pI}) = 0.0$.
-  *Limitation:* Sequence-based heuristic ignoring 3D electrostatic environments and tertiary salt bridges.
+  The theoretical pH at which the net charge equals zero: $Q(\text{pI}) = 0.0$, computed using the EMBOSS pKa scale via binary bisection on pH in $[0.0, 14.0]$ to within $\pm 0.01$ pH units.
+  *Limitation:* Sequence-based heuristic ignoring 3D electrostatic microenvironments and tertiary salt bridges.
 - **Hydrophobic Core Fraction ($f_{\text{core}}$):**
-  Fraction of project-defined hydrophobic residues $\mathcal{H} = \{\text{Val, Leu, Ile, Phe, Met, Trp}\}$ occupying core positions (relative solvent accessibility $\text{RSA} < 0.20$).
-  *Structural Reference Rule:* Evaluated on the **predicted 3D structure from the folding oracle** (since de novo candidates lack an experimental structure). Denominator is total sequence length $L$.
+  Fraction of project-defined hydrophobic residues $\mathcal{H} = \{\text{Val, Leu, Ile, Phe, Met, Trp}\}$ buried in the structural core:
+  $$f_{\text{core}} = \frac{|\{i \in \{1, \dots, L\} : s_i \in \mathcal{H} \land \text{RSA}_i < 0.20\}|}{|\{i \in \{1, \dots, L\} : s_i \in \mathcal{H}\}|}$$
+  - **Numerator:** Count of project-defined hydrophobic residues ($\text{V, L, I, F, M, W}$) with Relative Solvent Accessibility $\text{RSA} < 0.20$.
+  - **Denominator:** Total count of project-defined hydrophobic residues in the sequence ($N_{\text{hydrophobic}} = \sum_{i=1}^L \mathbb{I}(s_i \in \mathcal{H})$).
+  - **Terminology Guard:** This metric is strictly designated the **Hydrophobic Core Fraction** ($f_{\text{core}}$), explicitly NOT "hydrophobic-core density" (which would divide by sequence length $L$).
+  - **Zero-Hydrophobic Edge Case:** If a sequence contains zero hydrophobic residues ($N_{\text{hydrophobic}} = 0$), $f_{\text{core}}$ is defined as $0.0$, and the instance is flagged with `denominator_zero = True` in descriptive reporting rather than silently dividing by zero.
+  - **RSA Calculation:** Computed from the 3D atomic coordinates using the Shrake-Rupley numerical surface area algorithm (probe radius $1.4\text{ \AA}$, 960 points/sphere; Biopython `Bio.PDB.ShrakeRupley`), normalized by Tien et al. (2013) empirical maximum accessible surface areas.
+  - **Oracle Attribution for Structural Source:**
+    - Screening-stage candidates: Evaluated on the **ESMFold** predicted 3D structure.
+    - Final selected library ($M = 10$): Evaluated on the **AlphaFold2** predicted 3D structure.
+    - Sensitivity analyses: Evaluated on the **Boltz-1** predicted 3D structure.
+    - For every secondary metric report, log exact oracle metadata: oracle name, model checkpoint, package version, precision, and inference settings.
+  - **Secondary Metric Status:** Strictly secondary and descriptive. $f_{\text{core}}$, $Q_{\text{pH7.4}}$, and $\text{pI}$ MUST NEVER become candidate selection criteria or optimization tuning objectives.
 
 ---
 

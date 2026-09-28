@@ -18,7 +18,7 @@ These claims are supported by direct inspection, execution, or primary literatur
 - Edge connectivity: all residue pairs with minimum heavy-atom distance < 12.0 Å. `[VERIFIED]`
 
 ### Checkpoint & Repository
-- Historical repository: `external/proteinsolver-original`, commit `69ef0965a3fc3bf191804035b539720a06e58ba6`, branch `master`, working tree clean (zero modifications). `[VERIFIED]`
+- Historical repository: `external/proteinsolver-original`, commit `69ef0965a3fc3bf191804035b539720a06e58ba6`, branch `master`, working tree clean (zero modifications). Independent nested Git repository clone, NOT a git submodule (no `.gitmodules` exists). `[VERIFIED]`
 - This commit is **the upstream repository revision tested in this study**. It is NOT confirmed to be the exact source state at the time of the 2020 Cell Systems publication. `[VERIFIED — with limitation]`
 - Published checkpoint: `e53-s1952148-d93703104.state` (SHA-256: `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727`). `[VERIFIED]`
 - Checkpoint loads under `strict=True` with 0 missing keys, 0 unexpected keys, 45/45 tensor shapes matching, 567,060 parameters. `[VERIFIED]`
@@ -92,15 +92,18 @@ These claims are supported by direct inspection, execution, or primary literatur
 
 ### Protocol & Hyperparameter Optimization Framework
 - Development optimization objective $J$ is frozen as the mean over $N_{\text{dev}} = 20$ CATH 4.2 validation targets of target-level mean fixed-correspondence scTM across the selected $M = 10$ library evaluated by AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode, no templates, 3 recycles, fp16 GPU, fixed inference seed = 42, Amber disabled). `[VERIFIED SPECIFICATION]`
-- Development targets are frozen in immutable manifest `data/manifests/development_20_cath42.txt` (SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`), derived deterministically from the canonical Ingraham/Dauparas CATH 4.2 validation split across 20 distinct CATH topologies. `[VERIFIED SPECIFICATION]`
+- Development targets are frozen in immutable manifest `data/manifests/development_20_cath42.txt` (canonical LF SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`), derived deterministically from the canonical Ingraham/Dauparas CATH 4.2 validation split across 20 distinct CATH topologies. Target `4bdx.A` duplicates topology `2.10.25` of `1f7e.A` and is correctly bypassed, selecting `3hxi.A` as target 20. `[VERIFIED SPECIFICATION]`
 - Development Infeasibility Rule ($J = -\infty$): Every configuration must produce $M=10$ unique viable candidates on ALL 20 development targets. If any target is `SELECTION_INFEASIBLE_LT_M`, the configuration receives $J = -\infty$ and is ineligible for argmax. If all configurations in an arm are infeasible, stop that tuning arm and classify the stage as `DEVELOPMENT_TUNING_STAGE_INFEASIBLE`. `[VERIFIED SPECIFICATION]`
-- Screening oracle ESMFold is frozen: Meta AI `esm` v2.0.0 / Hugging Face `facebook/esmfold_v1`, `esmfold_v1` (3B parameters), sequence-only, 4 recycles, `fp16` GPU, max len 1024 with chunking, seed 42, operational screening cutoffs $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ and $\text{pLDDT}_{\text{screen}} \ge 80.0$. `[VERIFIED SPECIFICATION]`
+- Screening oracle ESMFold is frozen: Meta AI `esm` v2.0.0 / Hugging Face `facebook/esmfold_v1`, `esmfold_v1` (3B parameters), sequence-only, 4 recycles, `fp16` GPU, max sequence length 1024 with internal chunking (chunk size 128 / 64), seed 42, operational screening cutoffs $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ and $\text{pLDDT}_{\text{screen}} \ge 80.0$. `[VERIFIED SPECIFICATION]`
 - Development generation reuse (caching) is permitted and enforced: Candidate pools at temperature $T$ are generated once, screened once with ESMFold, and scored once, then reused across all $\gamma$ values (and across all 35 $(\lambda, \gamma)$ combinations for hybrid on $U_t$). `[VERIFIED SPECIFICATION]`
 - Parameter selection searches complete Cartesian grids:
   - MPNN-only: $T_{\text{MPNN}} \times \gamma$ ($5 \times 5 = 25$ combinations). `[VERIFIED SPECIFICATION]`
   - ProteinSolver E0-B: $T_{\text{PS}} \times \gamma$ ($3 \times 5 = 15$ combinations). `[VERIFIED SPECIFICATION]`
   - Primary Hybrid: $\lambda \times \gamma$ ($7 \times 5 = 35$ combinations), with $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ strictly enforced via Common Candidate Universe $U_t$. `[VERIFIED SPECIFICATION]`
 - Selection order: 1. $(T^*_{\text{MPNN}}, \gamma^*_{\text{MPNN}})$ $\to$ 2. $(T^*_{\text{PS}}, \gamma^*_{\text{PS}})$ $\to$ 3. $(\lambda^*, \gamma^*_{\text{hybrid}})$ $\to$ 4. Freeze ALL parameters $\to$ 5. TS50 execution authorized. Ties resolved deterministically via ascending lexicographical grid order. `[VERIFIED SPECIFICATION]`
+- Fixed-Correspondence scTM Methodological Boundary: scTM fixes residue correspondence ($i \mapsto i$) and performs rigid-body Kabsch superposition without dynamic programming alignment; does NOT inherit the classical 0.5 "same fold" threshold. `[VERIFIED SPECIFICATION]`
+- Scoped Leakage Boundary: No native-sequence conditioning leakage was detected in the tested ProteinSolver/ProteinMPNN integration paths or counterfactual audits. ProteinSolver historical training-set membership for benchmark targets remains NOT VERIFIABLE FROM ACCESSIBLE METADATA. `[VERIFIED]`
+- Pre-Test Dependency: The TS50 exact target manifest is a pre-test dependency and must be frozen before TS50 benchmark execution. `[VERIFIED SPECIFICATION]`
 
 ---
 

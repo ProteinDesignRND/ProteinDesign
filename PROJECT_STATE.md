@@ -3,7 +3,7 @@
 ## Project Identity
 - **Project Name:** Protein Design / ProteinSolver Research Extension
 - **Parent Foundational Work:** Strokach et al., 2020, *"Fast and Flexible Protein Design Using Deep Graph Neural Networks"*, Cell Systems 11(4): 402–411.e4.
-- **Current Phase:** Pre-E1 Scientific Readiness & Consistency Closure Complete — Ready for Authorized E1 Initiation
+- **Current Phase:** Pre-E1 Scientific Readiness & Protocol Reconciliation Complete — Pending Human Review/Merge on PR #1
 - **Current Branch:** `governance/final-acceptance-redteam-v1`
 - **Integration Branch:** `main`
 - **Governance Freeze Status:** FOUNDATION_FROZEN_WITH_LIMITATIONS
@@ -17,6 +17,8 @@
   - `PROTEINMPNN-BENCHMARK`: **NOT STARTED**
   - `PRE-E1-INTEGRITY-GATE`: **PASSED**
   - `PRE-E1-SCIENTIFIC-READINESS-CLOSURE`: **COMPLETE**
+  - `PRE-E1-SURGICAL-RECONCILIATION`: **COMPLETE**
+  - `AUTHORIZATION-STATUS`: **FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE**
 
 ---
 
@@ -122,8 +124,18 @@
   - Operationally froze ESMFold screening oracle configuration (Meta AI `esm` v2.0.0, `esmfold_v1` 3B, sequence-only, 4 recycles, `fp16` GPU, max len 1024 with chunking, seed 42, operational screening cutoffs $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ and $\text{pLDDT}_{\text{screen}} \ge 80.0$).
   - Refined AlphaFold2 determinism wording: fixed inference seed = 42 controls stochastic initialization but does not guarantee bitwise GPU determinism across differing CUDA/hardware environments; froze 1-to-1 residue correspondence and 100% C-alpha resolution rules.
   - Codified development candidate caching strategy (generate once per temperature, screen once, score once, reuse across all $\gamma$).
-  - Full test suite verified: 73 collected tests passing across 4 test files (25 governance, 27 scientific protocol, 11 ProteinMPNN, 10 development optimization).
   - Appended `[DEC-016]`.
+- [x] **Milestone 3A.3: Pre-E1 Surgical Protocol & Provenance Reconciliation: COMPLETE**
+  - Delineated pre-registration version history: original registration frozen 2026-09-25; Amendment A1 frozen 2026-09-28 before any benchmark candidate generation.
+  - Reconciled manifest provenance: canonical LF SHA-256 `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`, raw downloaded CATH artifact SHA-256 `8e9a587a50c7f6c026e4ed00f6c1c30b106100f36f7a01de47542bdfc060adc2`. Enforced `eol=lf` via `.gitattributes`.
+  - Reconciled manifest targets: confirmed 20 targets (`2e6i.A`, `2mh3.A`, `3gn4.E`, `2qg3.A`, `3abd.B`, `1z8s.A`, `5t5d.A`, `1f7e.A`, `2lg7.A`, `1h2s.A`, `1yf9.A`, `2p2e.A`, `1cel.A`, `2kil.A`, `1c52.A`, `2gmy.D`, `1nyn.A`, `2c6u.A`, `2ctt.A`, `3hxi.A`); documented that `4bdx.A` (chain 11) duplicates topology `2.10.25` of `1f7e.A` (chain 8) and was correctly bypassed by unique-topology rule.
+  - Removed 0.5 fold topology claim from fixed-correspondence scTM; added explicit methodological boundary (continuous length-normalized structural similarity, not alignment TM-score).
+  - Reconciled hydrophobic core fraction definition ($f_{\text{core}} = \text{core hydrophobic} / \text{total hydrophobic}$, $\text{RSA} < 0.20$), with $0.0$ edge-case handling.
+  - Explicitly attributed secondary structural metrics to folding oracles (ESMFold for screening, AF2 for selected library, Boltz-1 for sensitivity).
+  - Frozen ProteinMPNN scoring permutation (generation-time decoding permutation retained and reused during scoring).
+  - Frozen statistical reproducibility details: SciPy v1.17.1, two-sided paired Wilcoxon (`zero_method='wilcox'`, `correction=True`), 10,000 target-level paired bootstrap resamples with seed 42, percentile method, Hodges-Lehmann effect size.
+  - Replaced "submodule" with "independent nested Git repository clone" throughout.
+  - Authorization status: `FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE` on PR #1.
 - [ ] **Milestone 3B: ProteinMPNN Baseline Benchmark Execution (E1 / TS50): NOT STARTED**
   - Execute controlled benchmark baselines under frozen protocol (`science/evaluation_protocol.md`).
 - [ ] **Milestone 4: Research Question Freezing & Human Review**
