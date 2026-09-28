@@ -47,6 +47,20 @@ from .budget import (
     generate_candidate_id,
     validate_budget_matrix,
 )
+from .optimization import (
+    DEVELOPMENT_TARGET_COUNT,
+    SELECTION_LIBRARY_SIZE,
+    MPNN_TEMPERATURE_GRID,
+    PROTEINSOLVER_TEMPERATURE_GRID,
+    get_mpnn_tuning_grid,
+    get_proteinsolver_tuning_grid,
+    get_hybrid_tuning_grid,
+    compute_target_sctm_mean,
+    compute_development_objective,
+    select_optimal_temperature_and_gamma,
+    select_optimal_lambda_and_gamma,
+    DevelopmentHyperparameterState,
+)
 
 __all__ = [
     "compute_percentile_ranks",
@@ -77,4 +91,17 @@ __all__ = [
     "get_test_seed_allocation",
     "generate_candidate_id",
     "validate_budget_matrix",
+    "DEVELOPMENT_TARGET_COUNT",
+    "SELECTION_LIBRARY_SIZE",
+    "MPNN_TEMPERATURE_GRID",
+    "PROTEINSOLVER_TEMPERATURE_GRID",
+    "get_mpnn_tuning_grid",
+    "get_proteinsolver_tuning_grid",
+    "get_hybrid_tuning_grid",
+    "compute_target_sctm_mean",
+    "compute_development_objective",
+    "select_optimal_temperature_and_gamma",
+    "select_optimal_lambda_and_gamma",
+    "DevelopmentHyperparameterState",
 ]
+

@@ -109,6 +109,12 @@
   - 63/63 pytest test suites passing (25 governance + 27 scientific protocol + 11 ProteinMPNN).
   - Published provenance manifest: `reports/PROTEINMPNN_PROVENANCE_MANIFEST.md`.
   - Passed Pre-E1 counterfactual native-sequence leakage gate (100% invariance, max diff 0.00e+00): `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md`.
+- [x] **Milestone 3A.1: Development Hyperparameter Selection Protocol Freeze: COMPLETE**
+  - Codified exact scalar development objective $J = (1/N_{\text{dev}}) \sum_t \overline{\text{scTM}}_{\text{val}}(t)$ evaluated with AlphaFold2.
+  - Codified Cartesian product optimization grids: MPNN-only (25 pairs), PS E0-B (15 pairs), Hybrid $\lambda \times \gamma$ (35 pairs with $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ on Common Candidate Universe $U_t$).
+  - Codified deterministic 5-step parameter freezing order and lexicographical tie-breaking rule.
+  - Implemented cleanroom optimization module `src/hybrid/optimization.py` and 8 focused tests in `tests/test_development_hyperparameter_selection.py` (71/71 pytest suites passing).
+  - Appended `[DEC-015]`.
 - [ ] **Milestone 3B: ProteinMPNN Baseline Benchmark Execution (E1 / TS50): NOT STARTED**
   - Execute controlled benchmark baselines under frozen protocol (`science/evaluation_protocol.md`).
 - [ ] **Milestone 4: Research Question Freezing & Human Review**
@@ -116,3 +122,4 @@
   - Decide whether to retain, refine, or pivot the provisional hypothesis based on audit evidence.
 - [ ] **Milestone 5: Controlled Experimentation (E0–E5)**
   - Execute evaluation protocol (`science/evaluation_protocol.md`).
+

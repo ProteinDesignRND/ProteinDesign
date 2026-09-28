@@ -90,15 +90,26 @@ These claims are supported by direct inspection, execution, or primary literatur
 
 ---
 
+### Protocol & Hyperparameter Optimization Framework
+- Development optimization objective $J$ is frozen as the mean over $N_{\text{dev}} = 20$ CATH 4.2 validation targets of target-level mean fixed-correspondence scTM across the selected $M = 10$ library evaluated by AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode, no templates, 3 recycles, fp16 GPU, seed 42, Amber disabled). `[VERIFIED SPECIFICATION]`
+- Parameter selection searches complete Cartesian grids:
+  - MPNN-only: $T_{\text{MPNN}} \times \gamma$ ($5 \times 5 = 25$ combinations). `[VERIFIED SPECIFICATION]`
+  - ProteinSolver E0-B: $T_{\text{PS}} \times \gamma$ ($3 \times 5 = 15$ combinations). `[VERIFIED SPECIFICATION]`
+  - Primary Hybrid: $\lambda \times \gamma$ ($7 \times 5 = 35$ combinations), with $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ strictly enforced via Common Candidate Universe $U_t$. `[VERIFIED SPECIFICATION]`
+- Selection order: 1. $(T^*_{\text{MPNN}}, \gamma^*_{\text{MPNN}})$ $\to$ 2. $(T^*_{\text{PS}}, \gamma^*_{\text{PS}})$ $\to$ 3. $(\lambda^*, \gamma^*_{\text{hybrid}})$ $\to$ 4. Freeze ALL parameters $\to$ 5. TS50 execution authorized. Ties resolved deterministically via ascending lexicographical grid order. `[VERIFIED SPECIFICATION]`
+
+---
+
 ## Not Yet Tested
 
-- ProteinMPNN baseline execution and integration
-- Multi-target benchmark evaluation (CATH 4.2 / TS50 / CAMEO)
+- Development hyperparameter selection execution ($K=100$ candidate generation, ESMFold screening, and AlphaFold2 validation across 20 dev targets)
+- ProteinMPNN baseline benchmark execution on TS50 ($K=500$ at $T^*_{\text{MPNN}}$)
+- Multi-target benchmark evaluation (TS50 / RFdiffusion de novo)
 - Head-to-head comparison: ProteinSolver vs. ProteinMPNN on shared targets
 - Complementarity analysis: whether ProteinSolver logits correlate with orthogonal biophysical properties
-- Structural validation pipeline (AlphaFold2 / ESMFold self-consistency)
-- Ensemble / hybrid candidate selection
+- Primary hybrid benchmark execution and candidate selection on TS50
 - Statistical significance of any observed differences
 - Training set membership of any benchmark target beyond 1n5uA03
 - Historical runtime numerical equivalence (Python 3.6 / PyG 1.3)
 - General kmbio/Biopython parser equivalence across diverse structures
+

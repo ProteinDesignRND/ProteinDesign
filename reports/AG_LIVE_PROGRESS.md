@@ -1,12 +1,12 @@
 # Antigravity Live Progress
 
-**Task:** Pre-E1 ProteinMPNN Leakage Integrity Gate (PROTEIN-DESIGN-PRE-E1-PROTEINMPNN-LEAKAGE-INTEGRITY-GATE-V1)  
+**Task:** Development Hyperparameter Selection Protocol & Objective Freeze (`PROTEIN-DESIGN-DEVELOPMENT-HYPERPARAMETER-SELECTION-FREEZE-V1`)  
 **Agent:** Gemini 3.8 Flash High  
-**Started:** 2026-09-28T15:35:00Z  
-**Updated:** 2026-09-28T15:40:00Z  
+**Started:** 2026-09-28T15:45:00Z  
+**Updated:** 2026-09-28T16:05:00Z  
 **Status:** COMPLETE (100% Complete)  
-**Current Stage:** STAGE_8_PRE_E1_INTEGRITY_GATE_PASSED  
-**Readiness Classification:** **PRE_E1_INTEGRITY_GATE_PASSED** (E1 Benchmark Not Run)  
+**Current Stage:** STAGE_9_DEVELOPMENT_HYPERPARAMETER_SELECTION_PROTOCOL_FROZEN  
+**Readiness Classification:** **DEVELOPMENT_HYPERPARAMETER_SELECTION_PROTOCOL_FROZEN** (E1 / TS50 Benchmarks Not Run)  
 
 ---
 
@@ -14,29 +14,30 @@
 
 | Phase | Status | Details |
 | :--- | :--- | :--- |
-| **CHECK 1: Official Mask & Conditioning Semantics** | ✅ PASSED | Traced `S`, `chain_M`, `chain_M_pos`, `decoding_order`, and `randn` in official `external/proteinmpnn/protein_mpnn_utils.py`. Proved that only fixed residues (`chain_mask=0`) query `S_true`; de novo design (`chain_mask=1`) retains sampled token $S_t$. Cleanroom wrapper additionally supplies `S_blank = torch.zeros((1, L))` guaranteeing zero leakage. |
-| **CHECK 2: Counterfactual Native-Sequence Invariance** | ✅ PASSED | Created empirical counterfactual test on 1n5uA03 with Native vs Poly-Ala vs Poly-Gly PDBs (identical coordinates, mutated labels). Observed 100% string identity across all candidate sequences and exact `0.00e+00` numerical score difference. |
-| **CHECK 3: Native Sequence Path Trace** | ✅ PASSED | Traced pipeline: native sequence string parsed by `extract_backbone_coordinates` is discarded in `_prepare_tensors`; `coords_to_proteinmpnn_batch` injects `dummy_seq = "A" * L`; `S_blank` is passed to `model.sample`. Native sequence does NOT enter $S$, `chain_M`, `model.sample`, `model.forward`, decoding order, score calculation, or candidate metadata. |
-| **CHECK 4: Scoring Semantics** | ✅ PASSED | Verified $S_{\text{MPNN}}(u)$ evaluates exact mean autoregressive log-probability over generated sequence along designated decoding order $\pi$; higher is better ($\le 0$); perplexity is $\exp(-S_{\text{MPNN}}(u)) \ge 1.0$. Scoring evaluates candidate $u$ and never uses native labels as targets during candidate evaluation. |
-| **CHECK 5: Reproducibility** | ✅ PASSED | Repeated counterfactual tests; confirmed identical candidates for same seed (seed 42) and stochastic divergence for different seeds (seed 42 vs 2026). Exact max score diff across counterfactuals: `0.00000000e+00`. |
-| **CHECK 6: Full Regression Suite** | ✅ PASSED | 63/63 pytest suites passed (25 governance + 27 scientific protocol + 11 ProteinMPNN); historical ProteinSolver execution passed (567,060 params, MAP recovery 41.30%); EXP004 mask invariance passed (`max diff = 0.0`); governance preflight passed (8 evaluated, 6 relevant, 0 conflicts). |
-| **CHECK 7: Documentation** | ✅ PASSED | Published `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` and updated `PROJECT_STATE.md` with `PRE-E1-INTEGRITY-GATE: PASSED`. |
-| **CHECK 8: Git & PR Workflow** | 🔄 READY FOR COMMIT | Ready to commit validated changes to `governance/final-acceptance-redteam-v1` and update PR #1. |
+| **PHASE 1: Scalar Development Objective ($J$)** | ✅ PASSED | Formally codified scalar development optimization objective $J = (1/N_{\text{dev}}) \sum_t \overline{\text{scTM}}_{\text{val}}(t)$ over the $N_{\text{dev}}=20$ CATH 4.2 validation backbones ($M=10$ library) evaluated via AlphaFold2 v2.3.2 (`model_1_ptm`, single-sequence, 3 recycles, fp16 GPU, seed 42, Amber disabled). Zero surrogate objectives permitted. |
+| **PHASE 2: MPNN-Only Cartesian Grid ($T_{\text{MPNN}} \times \gamma$)** | ✅ PASSED | Codified full Cartesian product $T_{\text{MPNN}} \in \{0.1, 0.2, 0.5, 0.8, 1.0\} \times \gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$ (25 combinations); complete development pipeline evaluated under objective $J \to (T^*_{\text{MPNN}}, \gamma^*_{\text{MPNN}}) = \arg\max J$. |
+| **PHASE 3: ProteinSolver E0-B Cartesian Grid ($T_{\text{PS}} \times \gamma$)** | ✅ PASSED | Codified full Cartesian product $T_{\text{PS}} \in \{0.1, 0.5, 1.0\} \times \gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$ (15 combinations); complete development pipeline evaluated under objective $J \to (T^*_{\text{PS}}, \gamma^*_{\text{PS}}) = \arg\max J$. |
+| **PHASE 4: Primary Hybrid Cartesian Grid ($\lambda \times \gamma$) & Invariant** | ✅ PASSED | Strictly enforced $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ on Common Candidate Universe $U_t$ (zero independent temperature sweep). Full Cartesian product $\lambda \in \{0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0\} \times \gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$ (35 combinations) evaluated under objective $J \to (\lambda^*, \gamma^*_{\text{hybrid}}) = \arg\max J$. |
+| **PHASE 5: Deterministic 5-Step Freezing Order** | ✅ PASSED | Codified 5-step order: 1. MPNN $\to$ 2. PS $\to$ 3. Hybrid $\to$ 4. Freeze ALL parameters $\to$ 5. Permit TS50 benchmark execution. Zero test-set inspection or tuning permitted. |
+| **PHASE 6: Deterministic Tie-Breaking Logic** | ✅ PASSED | Codified ascending lexicographical grid order for tied $J$ (for $(T, \gamma)$: ascending $T$, then ascending $\gamma$; for $(\lambda, \gamma)$: ascending $\lambda$, then ascending $\gamma$). Secondary criteria (AAR, latency, diversity, perplexity, visual inspection) strictly prohibited. |
+| **PHASE 7: Code Implementation & Automated Unit Tests** | ✅ PASSED | Implemented in `src/hybrid/optimization.py` with 8 dedicated unit tests in `tests/test_development_hyperparameter_selection.py`. 71/71 pytest suites passing repository-wide. |
+| **PHASE 8: Regression Checks & Preflight** | ✅ PASSED | Preflight passed with 0 conflicts; historical ProteinSolver 6/6 passed; EXP004 mask invariance `max diff = 0.0`; `external/proteinsolver-original` 100% clean and untouched. |
+| **PHASE 9: Documentation & Commit Readiness** | ✅ PASSED | Published `reports/DEVELOPMENT_HYPERPARAMETER_SELECTION_FREEZE_REPORT.md`; updated PREREGISTRATION.md, evaluation_protocol.md, metrics.md, PROJECT_TRUTH.md, PROJECT_STATE.md, DECISION_LOG.md ([DEC-015]). Ready for commit and push to existing PR #1. |
 
 ---
 
 ## Execution Statistics
-- **Elapsed Time:** ~5 minutes
+- **Elapsed Time:** ~20 minutes
 - **Estimated Remaining Time:** 0 minutes
-- **Tests Completed:** 63 pytest test suites passed (109 governance assertions + 27 scientific protocol + 11 ProteinMPNN)
-- **Historical Regressions:** 100% passing (ProteinSolver 41.30% recovery, mask invariance max logit diff 0.0)
+- **Tests Completed:** 71 pytest test suites passed (109 governance assertions + 27 scientific protocol + 11 ProteinMPNN + 8 optimization)
+- **Historical Regressions:** 100% passing (ProteinSolver 41.30% recovery, mask invariance max logit diff 0.00e+00)
 - **Blockers:** 0
 
 ---
 
 ## Git & Repository State
 - **Branch:** `governance/final-acceptance-redteam-v1`  
-- **Current HEAD:** `2cd8476`  
+- **Current HEAD:** `3a65909`  
 - **Base (main):** `e9b2c0e` (untouched)  
 - **Historical Repo:** `external/proteinsolver-original` (clean at `69ef0965`, untouched)  
-- **Next Phase:** Milestone 3B (Pre-authorized for first controlled E1 baseline run)
+- **Scientific Firewall:** E1 = NOT RUN; TS50 = NOT RUN; AF2 / ESMFold benchmark screening = NOT RUN.

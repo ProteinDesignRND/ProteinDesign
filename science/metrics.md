@@ -65,8 +65,16 @@ To combine scores from fundamentally different objectives without scale mismatch
    Ties are broken deterministically using standard average ranking. Higher percentile always indicates better sequence confidence.
 3. Compute the primary hybrid score:
    $$H(u) = \lambda \cdot p_{\text{MPNN}}(u) + (1 - \lambda) \cdot p_{\text{PS}}(u), \quad \lambda \in [0.0, 1.0]$$
-4. **Hyperparameter Freezing Rule:**
-   The mixing parameter $\lambda$ is tuned **strictly on the development/tuning set** (CATH 4.2 validation split, 20 backbones) across a pre-registered grid $\lambda \in \{0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0\}$, and **frozen prior to unblinding the primary test set**.
+4. **Development Hyperparameter Selection & Freezing Protocol ($T^*, \lambda^*, \gamma^*$):**
+   The mixing parameter $\lambda$ and diversity weights $\gamma$ are selected **strictly on the development set** (CATH 4.2 validation split, 20 backbones) by maximizing the scalar development objective:
+   $$J = \frac{1}{N_{\text{dev}}} \sum_{t=1}^{N_{\text{dev}}} \overline{\text{scTM}}_{\text{val}}(t) = \frac{1}{N_{\text{dev}}} \sum_{t=1}^{N_{\text{dev}}} \left( \frac{1}{M} \sum_{m=1}^M \text{scTM}_{\text{val}}(s_{t,m}) \right)$$
+   using the frozen Primary Final Structural Validation Oracle (AlphaFold2 v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode, 3 recycles, fp16 GPU, seed 42, Amber disabled).
+   - MPNN-only: Cartesian product $T_{\text{MPNN}} \times \gamma$ (25 combinations) $\to (T^*_{\text{MPNN}}, \gamma^*_{\text{MPNN}}) = \arg\max J$.
+   - ProteinSolver E0-B: Cartesian product $T_{\text{PS}} \times \gamma$ (15 combinations) $\to (T^*_{\text{PS}}, \gamma^*_{\text{PS}}) = \arg\max J$.
+   - Primary Hybrid: $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ (evaluates common candidate universe $U_t$; zero independent temperature sweep). Cartesian product $\lambda \times \gamma$ (35 combinations) $\to (\lambda^*, \gamma^*_{\text{hybrid}}) = \arg\max J$.
+   - Freezing Order: 1. MPNN $\to$ 2. PS $\to$ 3. Hybrid $\to$ 4. Freeze ALL parameters $\to$ 5. TS50 execution permitted.
+   - Deterministic Tie-Breaking: Ascending lexicographical grid order. All parameters are **strictly frozen prior to TS50 evaluation**. Zero test-set tuning permitted.
+
 
 #### 3. Exploratory Logit Hybrid (Ablation Only)
 Raw logit interpolation:
@@ -166,7 +174,7 @@ To eliminate circular evaluation where candidate selection and evaluation share 
   - Primary MPNN-Only: $\text{score}_{\text{MPNN-only}}(u) = p_{\text{MPNN}}(u) \in (0, 1]$
   Underlying raw log-likelihood and perplexity remain diagnostic metrics.
 - **Diversity Weight ($\gamma$) Search Grid:**
-  Pre-registered dimensionless grid $\gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$, tuned strictly on the development set separately for MPNN-only and hybrid selection, and frozen prior to TS50 evaluation.
+  Pre-registered dimensionless grid $\gamma \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$, tuned strictly on the development set separately for MPNN-only ($\gamma^*_{\text{MPNN}}$) and hybrid selection ($\gamma^*_{\text{hybrid}}$) via Cartesian grid optimization of objective $J$, and frozen prior to TS50 evaluation.
 - **Deterministic Tie Breaking:**
   All ties in primary score or greedy objective are broken deterministically by stable candidate identifier order (ascending lexicographical ID).
 - *Methodological Rule:* This greedy score is a **construction heuristic** and must NEVER be reported as an intrinsic static candidate quality metric. Final library diversity is evaluated independently after selection.
@@ -214,6 +222,7 @@ To ensure evaluation rigor and prevent circular selection biases:
    - **Sensitivity Validation Oracle:** **Boltz-1 (v0.4.1, default diffusion steps, no templates, single sequence mode)** is designated strictly for sensitivity analysis.
 2. **Anti-Leakage Prohibition:**
    A metric or oracle score used as an objective criterion during candidate selection (ESMFold) must NEVER be cited as independent evidence of success without confirmation by the primary independent validation oracle (AlphaFold2).
-3. **Hyperparameter Isolation:**
-   All selection thresholds, mixing weight $\lambda$, diversity weight $\gamma$, and sampling temperatures must be determined strictly on the validation set (CATH 4.2 validation split, 20 backbones), NEVER on final benchmark test targets.
+3. **Hyperparameter Isolation & Freezing:**
+   All selection thresholds, mixing weight $\lambda^*$, diversity weights $\gamma^*$, and sampling temperatures $T^*$ must be determined strictly on the validation set (CATH 4.2 validation split, 20 backbones) maximizing development objective $J$, and strictly frozen prior to unblinding or evaluating final benchmark test targets (TS50). Zero tuning or post hoc selection against test outcomes is permitted.
+
 
