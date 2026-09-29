@@ -232,7 +232,7 @@ Computational speed must be reported with:
 
 To ensure evaluation rigor and prevent circular selection biases:
 1. **Screening vs. Validation Firewall:**
-   - **Screening Oracle:** ESMFold (Meta AI `esm` v2.0.0 / Hugging Face `facebook/esmfold_v1`, `esmfold_v1` 3B checkpoint, sequence-only mode, 4 recycles, float16 GPU with float32 CPU fallback, max len 1024 with chunking, fixed screening seed 42) is used exclusively to compute initial structural screening metrics for generation pools and candidate selection ($K = 100–500$ sequences/target).
+   - **Screening Oracle:** ESMFold (Meta AI `esm` v2.0.0 / Hugging Face `facebook/esmfold_v1`, `esmfold_v1` 3B checkpoint, sequence-only mode, 4 recycles, strictly float16 GPU with chunk size 128 for confirmatory benchmark; CPU float32 and chunk size 64 classified strictly as non-confirmatory diagnostics; max len 1024, fixed screening seed 42) is used exclusively to compute initial structural screening metrics for generation pools and candidate selection ($K = 100–500$ sequences/target).
      - Operational screening thresholds: $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA} \land \text{pLDDT}_{\text{screen}} \ge 80.0$ (project-chosen operational cutoffs informed by literature conventions).
    - **Primary Final Structural Validation Oracle:** **AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, 3 recycles, no templates, single sequence mode, float16 / fp16 on GPU, fixed inference seed = 42, Amber disabled)** is the frozen primary validation oracle for the final selected library ($M = 10$ candidates/target).
      - Fixed inference seed controls stochastic initialization, but does not guarantee bitwise GPU determinism across differing CUDA drivers, cuBLAS algorithms, or hardware platforms.

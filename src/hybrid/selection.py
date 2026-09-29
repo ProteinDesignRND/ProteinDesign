@@ -452,9 +452,16 @@ def compute_hydrophobic_core_fraction(
 ) -> float:
     """Computes the hydrophobic core fraction of a folded candidate structure.
 
-    Numerator: Residues in {V, L, I, F, M, W} with Relative Solvent Accessibility RSA < 0.20.
-    Denominator: Total sequence length L.
-    Structural Reference: Evaluated on the predicted structure from the folding oracle.
+    Definition (DEC-017 / Pre-Registration):
+        f_core = (number of hydrophobic residues in {V, L, I, F, M, W} with RSA < 0.20)
+                 / (total number of hydrophobic residues in {V, L, I, F, M, W})
+
+    Edge case:
+        If the sequence contains zero hydrophobic residues, returns 0.0.
+
+    CRITICAL TERMINOLOGY:
+        This metric is the fraction of hydrophobic residues buried in the core.
+        It must NOT be described as "hydrophobic-core density".
 
     Args:
         sequence: Amino acid sequence string.
@@ -472,11 +479,15 @@ def compute_hydrophobic_core_fraction(
     if not seq_clean:
         return 0.0
 
+    total_hydrophobic_count = sum(1 for aa in seq_clean if aa in HYDROPHOBIC_RESIDUES)
+    if total_hydrophobic_count == 0:
+        return 0.0
+
     buried_hydrophobic_count = sum(
         1 for aa, rsa in zip(seq_clean, rsa_values)
         if aa in HYDROPHOBIC_RESIDUES and rsa < rsa_threshold
     )
-    return float(buried_hydrophobic_count) / float(len(seq_clean))
+    return float(buried_hydrophobic_count) / float(total_hydrophobic_count)
 
 
 class ValidationOutcomeType:

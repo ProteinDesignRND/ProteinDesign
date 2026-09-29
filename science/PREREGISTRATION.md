@@ -232,9 +232,9 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 - **Model Checkpoint:** `esmfold_v1` (3B parameters; pinned to canonical Meta AI / Hugging Face release artifact).
 - **Inference Mode:** Sequence-only input mode (zero MSA search, zero homologous templates).
 - **Recycle Count:** Exactly 4 recycles (`num_recycles = 4`, canonical default).
-- **Precision & Device:** `float16` (`fp16`) on GPU (CUDA), with `float32` CPU fallback if CUDA unavailable.
+- **Precision & Device (Frozen Benchmark Path):** Strictly `float16` (`fp16`) on GPU (CUDA). If CUDA is unavailable or a GPU out-of-memory error occurs, it is classified as `INFRASTRUCTURE_FAILURE` (retried once, then logged as unvalidated if unresolvable), NEVER silently falling back to CPU or alternative precisions. CPU `float32` execution is classified strictly as a non-confirmatory local diagnostic / smoke-test mode and is prohibited from producing confirmatory benchmark evidence.
 - **Sequence Length Guard:** Maximum sequence length $L \le 1024$ residues (candidates exceeding 1024 are rejected).
-- **Internal Tensor Chunking:** Attention/trunk chunking enabled via `model.set_chunk_size(128)` (with 64 fallback for memory consistency on consumer GPUs); internal chunk size is distinct from sequence length.
+- **Internal Tensor Chunking (Frozen Benchmark Path):** Attention/trunk chunking frozen to `model.set_chunk_size(128)`. If chunk size 128 fails due to memory exhaustion, it is treated as an infrastructure failure, not a silent parameter change. Alternative chunk sizes (such as 64) are classified strictly as non-confirmatory diagnostic modes. Internal chunk size is distinct from sequence length.
 - **Screening Seed:** Fixed integer seed = 42 (`seed = 42`).
 - **Output & Metric Extraction:**
   - 3D atomic coordinates extracted from predicted structure.

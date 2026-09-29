@@ -111,8 +111,8 @@ The **PRIMARY HYBRID METHOD** normalizes scores to scale-free within-pool percen
   - **Checkpoint:** `esmfold_v1` (3B parameters).
   - **Mode:** Sequence-only input mode (zero MSA search, zero homologous templates).
   - **Recycles:** Exactly 4 recycles (`num_recycles = 4`).
-  - **Device & Precision:** GPU CUDA, `float16` (`fp16`), with CPU `float32` fallback if CUDA unavailable.
-  - **Length & Chunking:** Maximum sequence length $L \le 1024$; chunking enabled (chunk size 128 / 64) for memory stability.
+  - **Device & Precision (Frozen Benchmark Path):** Strictly GPU CUDA, `float16` (`fp16`). If CUDA is unavailable or GPU OOM occurs, classify as `INFRASTRUCTURE_FAILURE` (retried once, then logged as unvalidated); CPU `float32` execution is strictly non-confirmatory diagnostic mode.
+  - **Length & Chunking (Frozen Benchmark Path):** Maximum sequence length $L \le 1024$; attention chunking frozen to `chunk_size = 128` (memory exhaustion treated as infrastructure failure; chunk size 64 classified as diagnostic).
   - **Fixed Screening Seed:** Fixed integer seed = 42 (`seed = 42`).
   - **Output & Metrics:** Predicted 3D atomic coordinates; 1-to-1 $C_\alpha$ correspondence to native backbone; Kabsch-aligned scRMSD; sequence-mean pLDDT $\in [0, 100]$.
 - **Operational Screening Thresholds:**

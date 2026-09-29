@@ -241,6 +241,26 @@ This document chronologically logs all major architectural, methodological, and 
 - **Rationale:** Strict pre-registration requires elimination of all ambiguities and exact correspondence between code, tests, manifests, and documentation before experimental execution.
 - **Consequences:** All 78 collected unit and governance tests passing. Full repository consistency achieved across all documentation and code.
 
+---
+
+## [DEC-018] Final Pre-E1 Closure & Anti-Loop Audit: Primary Comparator Invariant, Confirmatory Sample Size ($N=50$), ESMFold Path Freeze, and Code Implementation Reconciliation
+- **Date:** 2026-09-29
+- **Status:** FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE
+- **Decider:** Protocol Consistency & Anti-Loop Audit Gate (Authorization Boundary: Human Review/Merge on PR #1)
+- **Decision:**
+  1. **Authoritative Primary Comparator Invariant:** Confirmed that the primary confirmatory statistical comparison is strictly the target-level paired difference between Hybrid selection and MPNN-only selection:
+     $$d_t = \overline{\text{scTM}}_{\text{hybrid}}(t) - \overline{\text{scTM}}_{\text{MPNN-only}}(t) \quad \text{for } t = 1, \dots, N$$
+     The phrase "Best Single Model" must NEVER appear as the primary confirmatory comparator definition; any multi-model post-hoc comparisons are classified strictly as exploratory sensitivity analyses. Guarded by automated test `test_primary_comparison_and_sample_size_invariants`.
+  2. **Primary Sample Size Hierarchy ($N=50$ Confirmatory vs. $N_{\text{dev}}=20$ Development):** Enforced strict separation between the development/tuning set ($N_{\text{dev}} = 20$ CATH 4.2 validation backbones) and the primary confirmatory benchmark ($N = 50$ TS50 targets). The de novo test set ($N = 15$) remains stratified and reported separately. Conflation of $N=20$ with the confirmatory benchmark is strictly prohibited.
+  3. **Confirmatory Screening Oracle Execution Path (ESMFold):** Eliminated execution ambiguity by freezing the confirmatory benchmark path strictly to `float16` (`fp16`) on GPU (CUDA) with `chunk_size = 128` (Meta AI `esm` v2.0.0 / HF `facebook/esmfold_v1`, `esmfold_v1` 3B checkpoint, sequence-only, 4 recycles, seed 42, $L \le 1024$ length guard). If CUDA is unavailable or GPU OOM occurs, it must be treated as `INFRASTRUCTURE_FAILURE` under the frozen retry and failure policy, NEVER silently falling back to CPU or alternative chunk sizes. CPU `float32` and `chunk_size = 64` are classified strictly as non-confirmatory local diagnostic / smoke-test modes only.
+  4. **Hydrophobic Core Fraction ($f_{\text{core}}$) Code Reconciliation:** Reconciled `compute_hydrophobic_core_fraction` in `src/hybrid/selection.py` to match the pre-registered mathematical definition: denominator is strictly the total count of project-defined hydrophobic residues in the sequence (V, L, I, F, M, W), returning 0.0 if zero hydrophobic residues are present. Reconciled unit test `test_hydrophobic_core_fraction_calculation` in `tests/test_scientific_protocol.py` to test `compute_hydrophobic_core_fraction` directly.
+  5. **Governance Learning & Anti-Loop Protections:** Recorded proposed governance lessons L-007 through L-011 in `governance/data/lessons.json` (protocol authority order, sample size hierarchy, primary comparator invariant, single frozen oracle path, core fraction definition) under lifecycle `PROPOSED`, preserving human review/merge as the mandatory authorization boundary.
+- **Context:** Comprehensive pre-E1 closure pass (V4) resolving all remaining implementation/document mismatches, comparator wording ambiguities, and execution degrees of freedom across the entire repository.
+- **Alternatives Considered:** Allowing CPU fallback during confirmatory benchmark (rejected: introduces numerical floating-point variance and alters viability cutoffs across hardware); defining primary comparator as Best Single Model (rejected: introduces post-hoc selection bias); allowing sequence length L as denominator in core fraction (rejected: contradicts pre-registered definition).
+- **Rationale:** Absolute reproducibility requires bitwise clarity, exact alignment between code and documentation, and elimination of every hidden researcher degree of freedom before experimental benchmark data is collected.
+- **Consequences:** All unit and governance tests passing (79 collected tests across 4 test modules). Full repository consistency verified.
+
+
 
 
 

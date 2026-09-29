@@ -235,5 +235,205 @@
       "external",
       "clean"
     ]
+  },
+  {
+    "id": "L-007",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Current scientific protocol authority hierarchy",
+    "what_happened": "Past reports and draft logs drifted from authoritative pre-registration and actual manifest artifacts, creating conflicting target lists and comparator definitions.",
+    "lesson": "Current scientific protocol authority order is strictly: 1. Actual committed code/manifests, 2. science/PREREGISTRATION.md, 3. DECISION_LOG.md, 4. PROJECT_STATE.md, 5. Specifications, 6. Reports/summaries as derived artifacts. Reports never override pre-registration.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Any protocol reconciliation, reporting, or state update",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "Observed during pre-E1 reconciliation audit passes",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "DECISION_LOG.md",
+      "PROJECT_STATE.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting",
+        "protocol"
+      ]
+    },
+    "keywords": [
+      "authority",
+      "hierarchy",
+      "preregistration",
+      "reports",
+      "derived"
+    ]
+  },
+  {
+    "id": "L-008",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Development N=20 and Confirmatory N=50 sample sizes must never be conflated",
+    "what_happened": "Reports and draft notes repeatedly conflated the development/tuning split (N_dev=20 CATH 4.2 validation backbones) with the primary confirmatory test set (N=50 TS50 targets).",
+    "lesson": "N=20 is strictly reserved for development hyperparameter selection (T*, lambda*, gamma*). The primary confirmatory hypothesis test operates strictly on N=50 TS50 targets. Stratified de novo set is N=15.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Statistical testing specification or target reporting",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "Observed in pre-E1 reconciliation reports and audit findings",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "science/evaluation_protocol.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "sample-size",
+      "development",
+      "confirmatory",
+      "TS50",
+      "N=50",
+      "N=20"
+    ]
+  },
+  {
+    "id": "L-009",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Primary confirmatory comparator is strictly Hybrid vs MPNN-only",
+    "what_happened": "The phrase 'Best Single Model' was inadvertently used in draft summaries to describe the primary comparison, creating ambiguity about post-hoc model selection.",
+    "lesson": "The authoritative confirmatory comparison is strictly d_t = scTM_hybrid(t) - scTM_MPNN-only(t). 'Best Single Model' must NEVER appear as the definition of the primary confirmatory comparator unless explicitly designated as a separate exploratory analysis.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Specifying primary hypothesis tests or benchmark comparisons",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "Identified in V4 pre-E1 audit checks",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "science/evaluation_protocol.md",
+      "science/metrics.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "comparator",
+      "primary-comparison",
+      "MPNN-only",
+      "hybrid",
+      "wilcoxon"
+    ]
+  },
+  {
+    "id": "L-010",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Confirmatory benchmark screening requires a single frozen execution path",
+    "what_happened": "Documentation contained potential degrees of freedom allowing silent CPU fallback and multiple chunk sizes (128 vs 64) for ESMFold screening.",
+    "lesson": "The confirmatory benchmark must follow one and only one frozen execution path: GPU float16 with chunk_size=128. If GPU is unavailable or OOM occurs, it must be logged as INFRASTRUCTURE_FAILURE, never silently switching precision or chunk size. CPU float32 and chunk size 64 are non-confirmatory diagnostics only.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Structural oracle configuration and screening execution",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "Audited in ESMFold configuration closure pass",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "science/evaluation_protocol.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "screening",
+        "evaluation"
+      ]
+    },
+    "keywords": [
+      "ESMFold",
+      "oracle",
+      "precision",
+      "chunk-size",
+      "determinism"
+    ]
+  },
+  {
+    "id": "L-011",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Hydrophobic core fraction denominator must be total hydrophobic residues",
+    "what_happened": "Implementation in src/hybrid/selection.py used sequence length L as the denominator while protocol documentation used total hydrophobic residues.",
+    "lesson": "Hydrophobic core fraction is formally f_core = (hydrophobic residues with RSA < 0.20) / (total hydrophobic residues in {V, L, I, F, M, W}). If total hydrophobic residues is 0, return 0.0. It must never be described as 'hydrophobic-core density'.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Physicochemical secondary metric computation",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Identified and fixed in src/hybrid/selection.py and unit-tested in tests/test_scientific_protocol.py",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "src/hybrid/selection.py",
+      "science/metrics.md",
+      "science/PREREGISTRATION.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "metrics"
+      ]
+    },
+    "keywords": [
+      "hydrophobic-core",
+      "fraction",
+      "RSA",
+      "denominator",
+      "secondary-metrics"
+    ]
   }
 ]

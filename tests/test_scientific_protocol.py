@@ -245,9 +245,9 @@ def test_hydrophobic_core_fraction():
     # F (0.05 < 0.20) -> buried hydrophobic (3)
     # K (0.10 < 0.20) -> buried charged (not in hydrophobic set)
     # Total buried hydrophobic = 3
-    # Total length = 8 -> 3 / 8 = 0.375
+    # Total hydrophobic residues = 4 (V, L, I, F) -> 3 / 4 = 0.75
     core_frac = compute_hydrophobic_core_fraction(sequence, rsa_values, rsa_threshold=0.20)
-    assert core_frac == pytest.approx(3.0 / 8.0)
+    assert core_frac == pytest.approx(3.0 / 4.0)
 
 
 def test_target_level_paired_difference():
@@ -744,32 +744,60 @@ def test_statistical_wilcoxon_edge_cases():
 
 def test_hydrophobic_core_fraction_calculation():
     """Verifies reconciled hydrophobic core fraction definition: core hydrophobic / total hydrophobic."""
-    hydrophobic_set = set("VLIFMW")
-
-    def compute_f_core(sequence: str, rsa_values: list) -> tuple:
-        assert len(sequence) == len(rsa_values)
-        total_hydrophobic = sum(1 for aa in sequence if aa in hydrophobic_set)
-        if total_hydrophobic == 0:
-            return 0.0, True  # f_core = 0.0, denominator_zero = True
-        core_hydrophobic = sum(
-            1 for aa, rsa in zip(sequence, rsa_values)
-            if aa in hydrophobic_set and rsa < 0.20
-        )
-        return float(core_hydrophobic) / float(total_hydrophobic), False
-
     # Case 1: Sequence with known hydrophobics: V (pos 2) with RSA 0.10, L (pos 3) with RSA 0.50 -> 1 core / 2 total = 0.5
     seq = "AGVLGA"
     rsa = [0.5, 0.4, 0.10, 0.50, 0.7, 0.8]  # V has 0.10 (<0.20), L has 0.50 (>=0.20)
-    f_core, den_zero = compute_f_core(seq, rsa)
+    f_core = compute_hydrophobic_core_fraction(seq, rsa)
     assert f_core == 0.5  # 1 core / 2 total = 0.5
-    assert den_zero is False
 
     # Case 2: Zero hydrophobic residues edge case (e.g. all-charged sequence)
     seq_no_hydro = "GGGKRRKGG"
     rsa_no_hydro = [0.5] * len(seq_no_hydro)
-    f_core_zero, den_zero_flag = compute_f_core(seq_no_hydro, rsa_no_hydro)
+    f_core_zero = compute_hydrophobic_core_fraction(seq_no_hydro, rsa_no_hydro)
     assert f_core_zero == 0.0
-    assert den_zero_flag is True
+
+    # Case 3: All hydrophobic residues buried: V (RSA 0.10) and I (RSA 0.05) -> 2 / 2 = 1.0
+    seq_all_core = "AVAI"
+    rsa_all_core = [0.6, 0.10, 0.5, 0.05]
+    f_core_all = compute_hydrophobic_core_fraction(seq_all_core, rsa_all_core)
+    assert f_core_all == 1.0
+
+
+def test_primary_comparison_and_sample_size_invariants():
+    """Verifies that primary comparison is strictly Hybrid vs MPNN-only and N=50 is confirmatory.
+
+    Rules:
+    1. The primary confirmatory comparator is strictly MPNN-only.
+    2. 'Best Single Model' must NEVER appear as the primary comparator.
+    3. Confirmatory sample size is strictly N=50 (TS50).
+    4. N=20 is strictly the development/tuning set.
+    """
+    from pathlib import Path
+
+    doc_paths = [
+        Path("science/PREREGISTRATION.md"),
+        Path("science/evaluation_protocol.md"),
+        Path("science/metrics.md"),
+        Path("docs/PROJECT_TRUTH.md"),
+        Path("PROJECT_STATE.md"),
+    ]
+
+    for p in doc_paths:
+        if not p.exists():
+            continue
+        content = p.read_text(encoding="utf-8")
+        assert "Best Single Model" not in content, (
+            f"Prohibited 'Best Single Model' phrase found in {p}"
+        )
+        assert "best single model" not in content.lower() or "exploratory" in content.lower(), (
+            f"'best single model' found without exploratory qualification in {p}"
+        )
+
+    # Check PREREGISTRATION.md specifics
+    prereg = Path("science/PREREGISTRATION.md").read_text(encoding="utf-8")
+    assert "d_t = \\overline{\\text{scTM}}_{\\text{hybrid}}(t) - \\overline{\\text{scTM}}_{\\text{MPNN-only}}(t)" in prereg
+    assert "$N = 50$ TS50 targets" in prereg
+    assert "Development / Tuning Set ($N = 20$)" in prereg
 
 
 if __name__ == "__main__":

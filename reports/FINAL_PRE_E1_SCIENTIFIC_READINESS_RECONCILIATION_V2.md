@@ -160,7 +160,7 @@ Each structural metric is linked to an explicit folding oracle:
 
 ## H. Statistical Reproducibility Protocol
 
-- **Primary Statistical Test:** Two-sided paired Wilcoxon signed-rank test on target-level paired differences in mean scTM ($N=20$).
+- **Primary Statistical Test:** Two-sided paired Wilcoxon signed-rank test on target-level paired differences in mean scTM across the primary TS50 confirmatory benchmark ($N=50$). (Development hyperparameter optimization uses $N_{\text{dev}}=20$ validation backbones).
 - **Software:** SciPy v1.17.1.
 - **Parameters:** `zero_method='wilcox'`, `correction=True`, `alternative='two-sided'`.
 - **Significance Threshold:** $\alpha = 0.01$.
