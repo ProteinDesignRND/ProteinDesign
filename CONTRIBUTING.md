@@ -4,12 +4,14 @@
 
 | Branch Pattern | Purpose | Example |
 | :--- | :--- | :--- |
-| `research/ai-research-bootstrap` | Main working branch (current) | — |
+| `main` | Stable integration branch | — |
 | `feature/<name>` | New capabilities or infrastructure | `feature/proteinmpnn-baseline` |
 | `experiment/<id>` | Experimental runs and analysis | `experiment/exp010-proteinmpnn-1n5u` |
 | `research/<topic>` | Research investigations | `research/training-set-audit` |
 | `fix/<issue>` | Bug fixes and corrections | `fix/scatter-compatibility` |
-| `foundation/<version>` | Handoff/milestone branches | `foundation/team-handoff-v0.1` |
+| `foundation/<version>` | Historical milestone branches | `foundation/team-handoff-v0.1` |
+| `governance/<task>` | Governance development and release branches | `governance/final-acceptance-redteam-v1` |
+| `research/ai-research-bootstrap` | Historical bootstrap branch | — |
 
 ## Commit Messages
 
@@ -28,9 +30,14 @@ refactor: extract shared graph construction utilities
 1. **Clear description** of what changed and why.
 2. **Experiment PRs** must include complete `metrics.json` and `run_log.txt`.
 3. **No force-pushing.** History must be preserved.
-4. **No direct pushes** to the main working branch without review.
-5. **Regression check**: if you modify compatibility shims, verify the baseline still passes:
+4. **No direct pushes** to the `main` branch without review.
+5. **Governance preflight**: Before running experiments or reporting, evaluate governance rules:
    ```powershell
+   .\environment\proteinsolver-original\Scripts\python.exe governance/preflight_cli.py --stage evaluation
+   ```
+6. **Regression check**: verify all tests pass:
+   ```powershell
+   uv run --python environment/proteinsolver-original/Scripts/python.exe pytest tests/
    .\environment\proteinsolver-original\Scripts\python.exe test_original_execution.py
    ```
 

@@ -1,0 +1,2 @@
+# Enforce LF endings on manifest files to preserve bitwise checksums across platforms
+data/manifests/*.txt text eol=lf

@@ -59,4 +59,7 @@ This document specifies all training corpora, independent validation resources, 
 ## 4. Data Leakage Prevention Rules
 1. **Homology Exclusion:** When testing on CATH 4.2 or TS50, verify that test targets do not belong to the 1,029 Gene3D training superfamilies of ProteinSolver.
 2. **Structural Overlap Checks:** Run TM-align between test backbones and ProteinSolver training domain exemplars if ambiguous.
-3. **No Retrospective Tuning:** Hyperparameters for ensembling ($\lambda$) or candidate selection ($k$, Pareto weights) must be tuned strictly on the validation split, never on the final test set.
+3. **No Retrospective Tuning:** All hyperparameters ($T^*, \lambda^*, \gamma^*$) must be selected strictly on the frozen development manifest (`data/manifests/development_20_cath42.txt`, canonical LF SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`, $N_{\text{dev}}=20$ from Ingraham/Dauparas CATH 4.2 validation split) maximizing scalar objective $J$ and frozen prior to any test set evaluation (PREREGISTRATION Section 8), never on the final test set.
+4. **TS50 Manifest Pre-Test Dependency:** The TS50 exact target manifest is a pre-test dependency that must be frozen prior to TS50 benchmark execution. Development tuning (E1) is not blocked by TS50 manifest preparation.
+
+

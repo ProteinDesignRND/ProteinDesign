@@ -98,6 +98,21 @@ experiments/EXP_NNN_NAME/
 ### 20. Project identity must never be mixed with another project
 This repository is **Protein Design**. It is not Ocean Sentinel or any other project. Do not import architecture, terminology, assumptions, datasets, or decisions from other projects.
 
+### 21. Run governance preflight before experiments
+Before starting any experiment or reporting any result, run `python -c "from governance.store import GovernanceStore; from governance.preflight import run_preflight, format_preflight; print(format_preflight(run_preflight(GovernanceStore(), {'pipeline_stage': 'YOUR_STAGE', 'model_family': 'YOUR_MODEL'})))"`. Check MUST rules.
+
+### 22. Fix related issues together in one pass
+When you find a problem, search the entire repository for the same pattern. Fix all instances in one coherent pass instead of fixing one and leaving others for future sessions to rediscover.
+
+### 23. Never report a diagnostic as an evaluation
+If native residues were visible during inference (e.g., via `data.y`), the output is diagnostic scoring. If you write "sequence recovery" anywhere in a report, verify the setup was truly all-masked.
+
+### 24. Do not create governance complexity without demonstrated need
+Every lesson, rule, or check must address a real problem that already happened or is concretely likely. Do not invent governance infrastructure preemptively.
+
+### 25. AI agents may propose lessons but cannot promote them
+Submit new lessons as `governance_lifecycle="PROPOSED"`. Only human review can change a lesson to ACTIVE or promote it into a rule. See `governance/ARCHITECTURE.md`.
+
 ---
 
 ## Error Recovery Rules
@@ -141,3 +156,19 @@ This project uses multiple AI systems with distinct roles:
 2. **Gemini inside Antigravity is NOT an independent reviewer.** It is the executor. Independent review comes from Claude, ChatGPT, or Perplexity.
 3. **Do not duplicate all work across AI systems.** Each system has a specific role. Use the right tool for the right task.
 4. **Independent AI systems challenge conclusions.** The executor proposes; the reviewers critique.
+
+---
+
+## Durable Principles (Permanent Governance Memory)
+
+1. **Unit-tested != Integrated**: A requirement is not integrated simply because a unit test passes. Production workflows (e.g. experiment runners, reporting pipelines) must actively invoke the governance checks.
+2. **Documented != Enforced**: Writing a rule or policy in markdown does not enforce it. Rules require explicit machine evaluation (`run_preflight`, `verify_integrity`, `evaluate_claim`) or automated checks.
+3. **Diagnostic != Evaluation**: When native residues are visible to the model (e.g. via `data.y` or partial masks), the run is a diagnostic score, NOT sequence recovery. Valid inverse-folding recovery strictly requires all positions masked (`data.x = 20`, `data.y = None`).
+4. **One Target != Benchmark**: A result on a single structure (such as 41.30% on 1n5uA03) is a single-target integration result. It must never be described as benchmark performance, generalization, or fold-representative.
+5. **Unknown Membership != Held-Out**: When training corpus data cannot be directly queried, membership is "NOT VERIFIABLE FROM ACCESSIBLE METADATA". Never describe a target as "held-out" or "unseen" without direct corpus proof.
+6. **Modern Compatibility != Historical Equivalence**: Functional reproduction on a modern Python/PyTorch stack does not prove numerical equivalence to historical Linux/PyG 1.3 runs. Always claim "FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION".
+7. **Detected != Prevented (Direct-File Mutation)**: Directly editing JSON files (`lessons.json`, `rules.json`) bypasses store API logic. The store maintains repository-level integrity validation (`store.verify_integrity()`) to DETECT unauthorized mutations, deleted safety rules, or improper escalations at preflight and test time. However, application-level Python code does not physically PREVENT raw filesystem writes; the repository relies on integrity detection and verification, not illusory physical write prevention.
+8. **AI Cannot Self-Promote**: AI agents may propose lessons and surface conflicts, but can NEVER autonomously promote lessons to ACTIVE rules, escalate priority (SHOULD -> MUST), or override blockers.
+9. **Unknown Context Must Be Visible**: Incomplete context must never silently mean "no rules apply". Missing context dimensions and novel context values must be surfaced visibly as review warnings.
+10. **Negative Validation Matters**: A failed check or contradicted hypothesis is essential project knowledge. Negative validation events (`RULE_FAILED`, `LESSON_CONTRADICTED`) must be preserved in the append-only event log.
+11. **Recurring Failures Must Update Existing Knowledge**: When a known failure repeats, link it to the existing lesson or rule (`find_potential_duplicates`), update its recurrence record, or supersede it—do not create disconnected duplicate lessons.

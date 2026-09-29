@@ -6,7 +6,7 @@ Welcome to the Protein Design research project. This document gives you everythi
 
 ## 1. What the project is
 
-This is a computational biology research project investigating whether an older protein sequence design model (ProteinSolver, 2020) can complement modern state-of-the-art models (ProteinMPNN, 2022) to produce better or more diverse protein sequences.
+This is a computational biology research project investigating whether an older protein sequence design model (ProteinSolver, 2020) can complement modern inverse-folding models such as ProteinMPNN (Dauparas et al. 2022) to produce better or more diverse protein sequences.
 
 We are NOT building a product. We are conducting a controlled scientific investigation.
 
@@ -20,10 +20,10 @@ Modern models like ProteinMPNN do this well (~51% native sequence recovery on st
 
 ProteinSolver (Strokach et al., Cell Systems 2020) is a graph neural network that treats sequence design as a constraint satisfaction problem (CSP). It uses a different architecture and different input features than ProteinMPNN:
 
-- **ProteinSolver**: pairwise heavy-atom distances (< 12 Å), masked-token BERT-style prediction, iterative unmasking
-- **ProteinMPNN**: backbone atom coordinates (N, CA, C, O), autoregressive left-to-right prediction with random order
+- **ProteinSolver**: graph neural network, pairwise heavy-atom distance edges (< 12 Å), masked residue conditional prediction, iterative constraint-satisfaction unmasking
+- **ProteinMPNN**: message-passing neural network, backbone atom coordinates (N, CA, C, O), autoregressive decoding conditioned on arbitrary or random residue permutation orders
 
-These differences mean their errors might be uncorrelated — which is the hypothesis we're testing.
+The architectural differences motivate testing whether the models provide complementary signals — which is the research hypothesis under investigation.
 
 ## 4. Current research question
 
@@ -40,7 +40,7 @@ Combining ProteinSolver scores with ProteinMPNN outputs through multi-objective 
 - ProteinSolver's historical source code has been cloned and verified (commit `69ef0965`). The working tree is 100% clean.
 - The published 567,060-parameter checkpoint loads correctly under `strict=True` after a documented key prefix mapping.
 - On one test structure (CATH domain 1n5uA03, 92 amino acids), ProteinSolver's all-masked CSP design achieves 41.30% native sequence identity (38/92 residues).
-- The model is 100% mask-invariant: hidden labels have zero effect on logits when all residues are masked.
+- In the tested all-masked mask-invariance experiment (EXP004), changing hidden/native labels produced a maximum absolute logit difference of 0.0.
 - An earlier "100% recovery" result was correctly identified as an information leak bug in the evaluation setup (not a model bug).
 - A cleanroom Biopython-based graph extractor produces tensors identical to the original repo pipeline on the tested target.
 
@@ -82,6 +82,16 @@ Protein Design/
 │   ├── EXP001_PROTEINSOLVER_INFERENCE/
 │   └── EXP004_MASK_INVARIANCE/
 ├── reports/                       # Analysis reports and audit documents
+├── governance/                    # Lesson/Rule/Event governance system
+│   ├── ARCHITECTURE.md           # How the governance system works
+│   ├── data/                     # Lessons, rules, events (JSON/JSONL)
+│   ├── preflight.py              # Preflight check logic
+│   ├── preflight_cli.py          # Preflight CLI tool
+│   ├── context.py                # Context derivation (DERIVED vs DECLARED)
+│   ├── claim.py                  # Claim evaluation & extrapolation detection
+│   └── store.py                  # Storage & integrity validation
+├── tests/
+│   └── test_governance.py        # Governance test suite (25 pytest suites, 109 assertions)
 ├── research/                      # Literature review and paper audits
 ├── science/                       # Evaluation protocol, datasets docs
 ├── architecture/                  # Architecture documentation
@@ -152,10 +162,12 @@ Copy `experiments/TEMPLATE/` to start a new experiment.
 
 ## 14. Git workflow
 
-- **Main branch**: `research/ai-research-bootstrap` (current working branch)
+- **Integration branch**: `main` (stable integration branch)
 - **Feature branches**: `feature/<descriptive-name>` for new capabilities
 - **Experiment branches**: `experiment/<exp-id>` for experimental runs
 - **Fix branches**: `fix/<issue-description>` for bug fixes
+- **Integration path**: Pull requests targeting `main` (direct unreviewed pushes to `main` are prohibited)
+- *Note on branch history*: `research/ai-research-bootstrap` and `foundation/team-handoff-v0.1` served as historical bootstrap/handoff branches. Governance hardening and foundation freeze were completed on `governance/final-acceptance-redteam-v1`.
 - See `CONTRIBUTING.md` for full details.
 
 ## 15. Branch naming
@@ -192,12 +204,12 @@ research/training-set-audit
 
 ## 19. Current workstreams
 
-See `docs/TEAM_WORKSTREAMS.md` for the full breakdown. Summary:
-- **A**: Research lead / integration (project lead)
-- **B**: Modern inverse-folding baselines (ProteinMPNN integration)
-- **C**: Structural validation (AlphaFold/ESMFold self-consistency)
-- **D**: Candidate selection / multi-objective analysis
-- **E**: Evaluation / statistics / visualization
+Workstreams B through E represent conceptual planning tracks for future expansion. At present, the lead AI developer/integrator is the sole active operator in the repository; human teammates have not yet been assigned individual technical roles. See `docs/TEAM_WORKSTREAMS.md` for full breakdown:
+- **A**: Research lead / integration (sole active operator currently)
+- **B**: Modern inverse-folding baselines (ProteinMPNN integration - queued next phase)
+- **C**: Structural validation (AlphaFold/ESMFold self-consistency - future)
+- **D**: Candidate selection / multi-objective analysis (future)
+- **E**: Evaluation / statistics / visualization (future)
 
 ## 20. How to hand work back to the lead
 

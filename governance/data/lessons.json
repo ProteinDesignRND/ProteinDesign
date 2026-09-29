@@ -1,0 +1,640 @@
+[
+  {
+    "id": "L-001",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Native sequence visibility produces false 100% recovery",
+    "what_happened": "First ProteinSolver run showed 100% sequence recovery. Investigation revealed data.y contained the native sequence, and protein_design.py copied it position-by-position via strategy='ref'.",
+    "lesson": "A native-sequence-visible run is NOT valid all-masked inverse-folding recovery. Always distinguish diagnostic scoring (natives visible) from true recovery (all residues masked).",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Any experiment reporting sequence recovery metrics",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Demonstrated on 1n5uA03 via EXP004 mask invariance test",
+    "governance_lifecycle": "ACTIVE",
+    "source": "EXP004_MASK_INVARIANCE",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.603849",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP004_MASK_INVARIANCE"
+    ],
+    "related_files": [],
+    "related_claims": [
+      "V-14"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "inference",
+        "design"
+      ]
+    },
+    "keywords": [
+      "recovery",
+      "leakage",
+      "mask",
+      "native",
+      "diagnostic",
+      "data.y",
+      "information-leak"
+    ]
+  },
+  {
+    "id": "L-002",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "PyG Data vs Batch interface mismatch crashes design_sequence",
+    "what_happened": "ProteinSolver's design_sequence expected data.batch attribute (from PyG Batch). In PyG 2.x, plain Data objects have data.batch=None, causing 'NoneType has no attribute max' crash.",
+    "lesson": "Always use Batch.from_data_list([data]) before calling functions that expect batch-level attributes. Check interface contracts before passing data between components.",
+    "type": "BUG_ENVIRONMENT",
+    "scope": "proteinsolver",
+    "trigger": "Using PyG Data objects with functions expecting Batch",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Observed and fixed during ProteinSolver integration",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Phase 1 integration",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.609837",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [
+      "V-12"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "model_family": "proteinsolver",
+      "framework": "pytorch-geometric"
+    },
+    "keywords": [
+      "batch",
+      "data",
+      "pyg",
+      "crash",
+      "interface",
+      "proteinsolver"
+    ]
+  },
+  {
+    "id": "L-003",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Modern runtime != historical runtime equivalence",
+    "what_happened": "Initial reports described ProteinSolver execution as 'reproduced'. Hardening review identified this overclaimed historical numerical equivalence that was never tested.",
+    "lesson": "Use 'FUNCTIONALLY REPRODUCED WITH MODERN COMPATIBILITY ADAPTATION'. Never claim historical runtime equivalence without actually comparing outputs against the original Python 3.6 / PyG 1.3 / Linux stack.",
+    "type": "DATA_PROVENANCE",
+    "scope": "project-wide",
+    "trigger": "Any claim about reproduction fidelity",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Hardening pass identified multiple instances across project docs",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Scientific hardening pass",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.631368",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [
+      "V-12",
+      "V-13"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "reproduction",
+      "equivalence",
+      "historical",
+      "fidelity",
+      "compatibility"
+    ]
+  },
+  {
+    "id": "L-004",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Single-target result is not a benchmark",
+    "what_happened": "41.30% recovery on 1n5uA03 (one 92-AA CATH domain) was at risk of being described as benchmark performance.",
+    "lesson": "A single-target result is a 'single-target all-masked inverse-folding integration result'. It is NOT benchmark accuracy, generalization performance, or representative of average behavior across folds.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Reporting evaluation results from fewer than a representative benchmark set",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "1n5uA03 result established in EXP000/EXP001",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Scientific hardening pass",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.655378",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP000_PROTEINSOLVER_SMOKETEST",
+      "EXP001_PROTEINSOLVER_INFERENCE"
+    ],
+    "related_files": [],
+    "related_claims": [
+      "V-13"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "benchmark",
+      "single-target",
+      "generalization",
+      "1n5uA03"
+    ]
+  },
+  {
+    "id": "L-005",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Training set membership is not verifiable from accessible metadata",
+    "what_happened": "Author's notebook checked '1.10.246.10' in cath_ids (False), but the full 72M training Parquet corpus is on an external cluster, not in git.",
+    "lesson": "Do not call 1n5uA03 'guaranteed held-out' or 'unseen'. Classify as 'NOT VERIFIABLE FROM ACCESSIBLE METADATA' unless full training data is directly queried.",
+    "type": "DATA_PROVENANCE",
+    "scope": "proteinsolver",
+    "trigger": "Any claim about training/test membership of a structure",
+    "evidence_status": "NOT_VERIFIABLE",
+    "evidence_scope": "Author's notebook check is suggestive but not definitive",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Provenance audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.674530",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [
+      "NV-01"
+    ],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "model_family": "proteinsolver",
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "training",
+      "membership",
+      "held-out",
+      "contamination",
+      "1n5uA03",
+      "provenance"
+    ]
+  },
+  {
+    "id": "L-006",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Historical source repository must remain preserved and clean",
+    "what_happened": "All six compatibility issues (fcntl, kmtools, scatter_, Batch, key mapping, CPU placement) were resolved without modifying external/proteinsolver-original/.",
+    "lesson": "Never commit changes to external/proteinsolver-original/. All compatibility work belongs in external wrappers. Check git -C external/proteinsolver-original status before every project commit.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Any modification near external/ or compatibility shims",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Verified clean at commit 69ef0965",
+    "governance_lifecycle": "ACTIVE",
+    "source": "Phase 1 integration",
+    "owner": "project-lead",
+    "created_at": "2026-09-24T23:48:56.694023",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "external/proteinsolver-original/"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "development",
+        "commit"
+      ]
+    },
+    "keywords": [
+      "historical",
+      "source",
+      "preservation",
+      "external",
+      "clean"
+    ]
+  },
+  {
+    "id": "L-007",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Current scientific protocol authority hierarchy",
+    "what_happened": "Past reports and draft logs drifted from authoritative pre-registration and actual manifest artifacts, creating conflicting target lists and comparator definitions.",
+    "lesson": "Current scientific protocol authority order is strictly: 1. Actual committed code/manifests, 2. science/PREREGISTRATION.md, 3. DECISION_LOG.md, 4. PROJECT_STATE.md, 5. Specifications, 6. Reports/summaries as derived artifacts. Reports never override pre-registration.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Any protocol reconciliation, reporting, or state update",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "Observed during pre-E1 reconciliation audit passes",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "DECISION_LOG.md",
+      "PROJECT_STATE.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting",
+        "protocol"
+      ]
+    },
+    "keywords": [
+      "authority",
+      "hierarchy",
+      "preregistration",
+      "reports",
+      "derived"
+    ]
+  },
+  {
+    "id": "L-008",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Development N=20 and Confirmatory N=50 sample sizes must never be conflated",
+    "what_happened": "Reports and draft notes repeatedly conflated the development/tuning split (N_dev=20 CATH 4.2 validation backbones) with the primary confirmatory test set (N=50 TS50 targets).",
+    "lesson": "N=20 is strictly reserved for development hyperparameter selection (T*, lambda*, gamma*). The primary confirmatory hypothesis test operates strictly on N=50 TS50 targets. Stratified de novo set is N=15.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Statistical testing specification or target reporting",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "Observed in pre-E1 reconciliation reports and audit findings",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "science/evaluation_protocol.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "sample-size",
+      "development",
+      "confirmatory",
+      "TS50",
+      "N=50",
+      "N=20"
+    ]
+  },
+  {
+    "id": "L-009",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Primary confirmatory comparator is strictly Hybrid vs MPNN-only",
+    "what_happened": "The phrase 'Best Single Model' was inadvertently used in draft summaries to describe the primary comparison, creating ambiguity about post-hoc model selection.",
+    "lesson": "The authoritative confirmatory comparison is strictly d_t = scTM_hybrid(t) - scTM_MPNN-only(t). 'Best Single Model' must NEVER appear as the definition of the primary confirmatory comparator unless explicitly designated as a separate exploratory analysis.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Specifying primary hypothesis tests or benchmark comparisons",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "Identified in V4 pre-E1 audit checks",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "science/evaluation_protocol.md",
+      "science/metrics.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "reporting"
+      ]
+    },
+    "keywords": [
+      "comparator",
+      "primary-comparison",
+      "MPNN-only",
+      "hybrid",
+      "wilcoxon"
+    ]
+  },
+  {
+    "id": "L-010",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Confirmatory benchmark screening requires a single frozen execution path",
+    "what_happened": "Documentation contained potential degrees of freedom allowing silent CPU fallback and multiple chunk sizes (128 vs 64) for ESMFold screening.",
+    "lesson": "The confirmatory benchmark must follow one and only one frozen execution path: GPU float16 with chunk_size=128. If GPU is unavailable or OOM occurs, it must be logged as INFRASTRUCTURE_FAILURE, never silently switching precision or chunk size. CPU float32 and chunk size 64 are non-confirmatory diagnostics only.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Structural oracle configuration and screening execution",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "Audited in ESMFold configuration closure pass",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "science/evaluation_protocol.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "screening",
+        "evaluation"
+      ]
+    },
+    "keywords": [
+      "ESMFold",
+      "oracle",
+      "precision",
+      "chunk-size",
+      "determinism"
+    ]
+  },
+  {
+    "id": "L-011",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Hydrophobic core fraction denominator must be total hydrophobic residues",
+    "what_happened": "Implementation in src/hybrid/selection.py used sequence length L as the denominator while protocol documentation used total hydrophobic residues.",
+    "lesson": "Hydrophobic core fraction is formally f_core = (hydrophobic residues with RSA < 0.20) / (total hydrophobic residues in {V, L, I, F, M, W}). If total hydrophobic residues is 0, return 0.0. It must never be described as 'hydrophobic-core density'.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Physicochemical secondary metric computation",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Identified and fixed in src/hybrid/selection.py and unit-tested in tests/test_scientific_protocol.py",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Closure V4 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T06:55:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "src/hybrid/selection.py",
+      "science/metrics.md",
+      "science/PREREGISTRATION.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "metrics"
+      ]
+    },
+    "keywords": [
+      "hydrophobic-core",
+      "fraction",
+      "RSA",
+      "denominator",
+      "secondary-metrics"
+    ]
+  },
+  {
+    "id": "L-012",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Differentiate audit-start HEAD from final committed HEAD in reports",
+    "what_happened": "Previous pre-E1 closure reports labelled ancestor commit SHAs as 'Current HEAD' while also describing them as 'prior to this commit'.",
+    "lesson": "In closure and readiness reports, always record audit-start HEAD separately from the final committed HEAD produced by the repair pass. 'Current HEAD' must never refer to an ancestor.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Audit reporting and Git state verification",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Identified in V4 closure report and corrected in V5",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_CLOSURE_REPORT.md",
+      "reports/AG_LIVE_PROGRESS.md",
+      "reports/AG_RUN_STATE.json"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "reporting",
+        "governance"
+      ]
+    },
+    "keywords": [
+      "git",
+      "HEAD",
+      "reporting",
+      "commit-sha",
+      "provenance"
+    ]
+  },
+  {
+    "id": "L-013",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Project Truth authority is scoped to verified facts and limitations, not protocol",
+    "what_happened": "docs/PROJECT_TRUTH.md contained a blanket claim that all project documents defer to it on conflict, creating a potential authority collision with science/PREREGISTRATION.md.",
+    "lesson": "PROJECT_TRUTH.md is the authoritative record of verified implementation facts, evidence status, and known limitations. Scientific protocol authority is strictly science/PREREGISTRATION.md, and chronological decision provenance is DECISION_LOG.md.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Source-of-truth hierarchy reconciliation",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Reconciled in docs/PROJECT_TRUTH.md and unit-tested in tests/test_scientific_protocol.py",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "docs/PROJECT_TRUTH.md",
+      "science/PREREGISTRATION.md",
+      "DECISION_LOG.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "reporting",
+        "documentation",
+        "governance"
+      ]
+    },
+    "keywords": [
+      "source-of-truth",
+      "hierarchy",
+      "authority",
+      "preregistration",
+      "project-truth"
+    ]
+  },
+  {
+    "id": "L-014",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Statistical implementation defaults must be explicitly frozen",
+    "what_happened": "Protocol specified asymptotic normal approximation with continuity correction for Wilcoxon test, but raw scipy.stats.wilcoxon call omitted method='asymptotic', relying on implicit SciPy defaults.",
+    "lesson": "Always explicitly pass all statistical parameters (method='asymptotic', zero_method='wilcox', correction=True, alternative='two-sided') in code and validate finite inputs (rejecting NaN/inf) to eliminate runtime variance.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Statistical hypothesis testing implementation",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Implemented in src/hybrid/statistics.py and verified in tests/test_scientific_protocol.py",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "src/hybrid/statistics.py",
+      "science/PREREGISTRATION.md",
+      "tests/test_scientific_protocol.py"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "analysis"
+      ]
+    },
+    "keywords": [
+      "wilcoxon",
+      "statistics",
+      "asymptotic",
+      "scipy",
+      "reproducibility"
+    ]
+  },
+  {
+    "id": "L-015",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Retry semantics must strictly preserve identical frozen configuration",
+    "what_happened": "Vague phrasing 'retry under clean execution parameters' left open whether precision, device, chunking, or seeds could be altered upon runtime failure.",
+    "lesson": "A retry is defined strictly as retrying exactly once with the identical frozen model, checkpoint, version, precision, device, chunk size, seed, input, timeout, and protocol configuration. Only process restart and resource cleanup are permitted.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Infrastructure runtime exception handling",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Codified across PREREGISTRATION.md, evaluation_protocol.md, and metrics.md",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "science/evaluation_protocol.md",
+      "science/metrics.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "screening",
+        "evaluation"
+      ]
+    },
+    "keywords": [
+      "retry",
+      "infrastructure",
+      "runtime",
+      "identical-config",
+      "determinism"
+    ]
+  },
+  {
+    "id": "L-016",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Development oracle infrastructure failures require J = -infinity ineligibility",
+    "what_happened": "Distinction between candidate-level screening failure and development AF2 validation failure needed formal specification for objective J calculation.",
+    "lesson": "Development objective J requires complete M=10 validated library on all 20 dev targets. If an AF2 validation fails for infrastructure reasons, retry once; if unresolved, target cannot produce complete M=10 set, assigning J = -infinity (ineligible for argmax). Never assign scTM=0.0 or regenerate.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Development hyperparameter optimization failure handling",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Implemented in compute_development_target_sctm_mean in src/hybrid/optimization.py",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "src/hybrid/optimization.py",
+      "science/PREREGISTRATION.md",
+      "tests/test_development_hyperparameter_selection.py"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "optimization",
+        "evaluation"
+      ]
+    },
+    "keywords": [
+      "development-objective",
+      "infeasibility",
+      "alphafold2",
+      "infrastructure-failure",
+      "optimization"
+    ]
+  }
+]

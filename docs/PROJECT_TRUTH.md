@@ -1,9 +1,9 @@
-# Project Truth — Single Source of Truth
+# Project Truth — Record of Verified Facts and Limitations
 
-**Last Updated:** 2026-09-24  
+**Last Updated:** 2026-09-29  
 **Maintained By:** Project Lead  
 
-This document is the single authoritative reference for what has been verified, what is assumed, what remains untested, and what is known to be limited. All other project documents defer to this one when there is a conflict.
+This document is the authoritative record of verified implementation facts, evidence status, known limitations, untested status, and current implementation truth. Scientific protocol authority is strictly governed by `science/PREREGISTRATION.md`, and chronological historical decision provenance is governed by `DECISION_LOG.md`.
 
 ---
 
@@ -18,7 +18,7 @@ These claims are supported by direct inspection, execution, or primary literatur
 - Edge connectivity: all residue pairs with minimum heavy-atom distance < 12.0 Å. `[VERIFIED]`
 
 ### Checkpoint & Repository
-- Historical repository: `external/proteinsolver-original`, commit `69ef0965a3fc3bf191804035b539720a06e58ba6`, branch `master`, working tree clean (zero modifications). `[VERIFIED]`
+- Historical repository: `external/proteinsolver-original`, commit `69ef0965a3fc3bf191804035b539720a06e58ba6`, branch `master`, working tree clean (zero modifications). Independent nested Git repository clone, NOT a git submodule (no `.gitmodules` exists). `[VERIFIED]`
 - This commit is **the upstream repository revision tested in this study**. It is NOT confirmed to be the exact source state at the time of the 2020 Cell Systems publication. `[VERIFIED — with limitation]`
 - Published checkpoint: `e53-s1952148-d93703104.state` (SHA-256: `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727`). `[VERIFIED]`
 - Checkpoint loads under `strict=True` with 0 missing keys, 0 unexpected keys, 45/45 tensor shapes matching, 567,060 parameters. `[VERIFIED]`
@@ -35,7 +35,7 @@ These claims are supported by direct inspection, execution, or primary literatur
 - It is NOT benchmark accuracy, generalization accuracy, or full ProteinSolver benchmark reproduction. `[EXPLICIT LIMITATION]`
 
 ### Mask Invariance (EXP004)
-- When all residues are masked (`x = 20`, `y = None`), logits are 100% mask-invariant across different hidden label sets: max absolute logit difference = 0.00000000e+00. `[VERIFIED]`
+- In the tested all-masked mask-invariance experiment (EXP004, `x = 20`, `y = None`), changing hidden/native labels produced a maximum absolute logit difference of 0.00000000e+00. `[VERIFIED]`
 - Designed sequences under identical seeds are bitwise identical regardless of hidden labels. `[VERIFIED]`
 - When `data.y` is supplied, `protein_design.py` copies reference labels via `strategy="ref"`, producing an information leak. This is NOT valid sequence recovery. `[VERIFIED]`
 
@@ -75,6 +75,8 @@ These claims are supported by direct inspection, execution, or primary literatur
 
 7. **Upstream commit dating.** Commit `69ef0965` dates to December 2021 (post-publication). The paper was published October 2020. Whether this commit introduces post-publication changes relative to the exact paper submission state is unknown.
 
+8. **GPU Determinism Boundary.** Fixed random seeds control framework stochasticity, but bitwise GPU determinism across differing CUDA kernels, cuBLAS algorithms, or hardware architectures cannot be guaranteed.
+
 ---
 
 ## Current Hypotheses
@@ -90,14 +92,33 @@ These claims are supported by direct inspection, execution, or primary literatur
 
 ---
 
+### Protocol & Hyperparameter Optimization Framework
+- Development optimization objective $J$ is frozen as the mean over $N_{\text{dev}} = 20$ CATH 4.2 validation targets of target-level mean fixed-correspondence scTM across the selected $M = 10$ library evaluated by AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode, no templates, 3 recycles, fp16 GPU, fixed inference seed = 42, Amber disabled). `[VERIFIED SPECIFICATION]`
+- Development targets are frozen in immutable manifest `data/manifests/development_20_cath42.txt` (canonical LF SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`), derived deterministically from the canonical Ingraham/Dauparas CATH 4.2 validation split across 20 distinct CATH topologies. Target `4bdx.A` duplicates topology `2.10.25` of `1f7e.A` and is correctly bypassed, selecting `3hxi.A` as target 20. `[VERIFIED SPECIFICATION]`
+- Development Infeasibility Rule ($J = -\infty$): Every configuration must produce $M=10$ unique viable candidates on ALL 20 development targets. If any target is `SELECTION_INFEASIBLE_LT_M`, or if any candidate suffers an unresolved infrastructure failure during AlphaFold2 validation, the configuration receives $J = -\infty$ and is ineligible for argmax. If all configurations in an arm are infeasible, stop that tuning arm and classify the stage as `DEVELOPMENT_TUNING_STAGE_INFEASIBLE`. `[VERIFIED SPECIFICATION]`
+- Screening oracle ESMFold is frozen: Applies to all registered benchmark stages using ESMFold (including E1 development tuning and TS50 primary evaluation). Meta AI `esm` v2.0.0 / Hugging Face `facebook/esmfold_v1`, `esmfold_v1` (3B parameters), sequence-only, 4 recycles, strictly `fp16` GPU with chunk size 128 for confirmatory benchmark (CPU float32 and chunk size 64 classified strictly as non-confirmatory diagnostics; GPU OOM treated as infrastructure failure), max sequence length 1024 (preflight rejection for $L > 1024$), seed 42, operational screening cutoffs $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ and $\text{pLDDT}_{\text{screen}} \ge 80.0$. `[VERIFIED SPECIFICATION]`
+- Deterministic Retry Policy: Failed jobs are retried exactly once using the identical frozen model, checkpoint, version, precision, device, chunk size, seed, input, timeout, and protocol configuration. Only process restart/resource cleanup is permitted; changing scientific or inference parameters during retry is strictly prohibited. `[VERIFIED SPECIFICATION]`
+- Development generation reuse (caching) is permitted and enforced: Candidate pools at temperature $T$ are generated once, screened once with ESMFold, and scored once, then reused across all $\gamma$ values (and across all 35 $(\lambda, \gamma)$ combinations for hybrid on $U_t$). `[VERIFIED SPECIFICATION]`
+- Parameter selection searches complete Cartesian grids:
+  - MPNN-only: $T_{\text{MPNN}} \times \gamma$ ($5 \times 5 = 25$ combinations). `[VERIFIED SPECIFICATION]`
+  - ProteinSolver E0-B: $T_{\text{PS}} \times \gamma$ ($3 \times 5 = 15$ combinations). `[VERIFIED SPECIFICATION]`
+  - Primary Hybrid: $\lambda \times \gamma$ ($7 \times 5 = 35$ combinations), with $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ strictly enforced via Common Candidate Universe $U_t$. `[VERIFIED SPECIFICATION]`
+- Selection order: 1. $(T^*_{\text{MPNN}}, \gamma^*_{\text{MPNN}})$ $\to$ 2. $(T^*_{\text{PS}}, \gamma^*_{\text{PS}})$ $\to$ 3. $(\lambda^*, \gamma^*_{\text{hybrid}})$ $\to$ 4. Freeze ALL parameters $\to$ 5. TS50 execution authorized. Ties resolved deterministically via ascending lexicographical grid order. `[VERIFIED SPECIFICATION]`
+- Fixed-Correspondence scTM Methodological Boundary: scTM fixes residue correspondence ($i \mapsto i$) and performs rigid-body Kabsch superposition without dynamic programming alignment; does NOT inherit the classical 0.5 "same fold" threshold. `[VERIFIED SPECIFICATION]`
+- Scoped Leakage Boundary: No native-sequence conditioning leakage was detected in the tested ProteinSolver/ProteinMPNN integration paths or counterfactual audits. ProteinSolver historical training-set membership for benchmark targets remains NOT VERIFIABLE FROM ACCESSIBLE METADATA. `[VERIFIED]`
+- Pre-Test Dependency: The TS50 exact target manifest is a pre-test dependency and must be frozen before TS50 benchmark execution. `[VERIFIED SPECIFICATION]`
+- Statistical Reproducibility: Confirmatory p-value computed using two-sided paired Wilcoxon signed-rank test under asymptotic normal approximation with continuity correction (`zero_method='wilcox'`, `correction=True`, `method='asymptotic'`). `[VERIFIED SPECIFICATION]`
+
+---
+
 ## Not Yet Tested
 
-- ProteinMPNN baseline execution and integration
-- Multi-target benchmark evaluation (CATH 4.2 / TS50 / CAMEO)
+- Development hyperparameter selection execution ($K=100$ candidate generation, ESMFold screening, and AlphaFold2 validation across 20 dev targets)
+- ProteinMPNN baseline benchmark execution on TS50 ($K=500$ at $T^*_{\text{MPNN}}$)
+- Multi-target benchmark evaluation (TS50 / RFdiffusion de novo)
 - Head-to-head comparison: ProteinSolver vs. ProteinMPNN on shared targets
 - Complementarity analysis: whether ProteinSolver logits correlate with orthogonal biophysical properties
-- Structural validation pipeline (AlphaFold2 / ESMFold self-consistency)
-- Ensemble / hybrid candidate selection
+- Primary hybrid benchmark execution and candidate selection on TS50
 - Statistical significance of any observed differences
 - Training set membership of any benchmark target beyond 1n5uA03
 - Historical runtime numerical equivalence (Python 3.6 / PyG 1.3)
