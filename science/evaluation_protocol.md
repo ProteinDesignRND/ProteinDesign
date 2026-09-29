@@ -107,14 +107,16 @@ The **PRIMARY HYBRID METHOD** normalizes scores to scale-free within-pool percen
 ### Experiment E3: Structural Screening & Viability Filtering (Stage 1)
 - **Goal:** Filter raw generated candidates through an initial high-throughput screening oracle (ESMFold) to eliminate folding failures.
 - **Screening Oracle Configuration (ESMFold):**
+  - **Applicability Scope:** Frozen ESMFold execution path applies to all registered benchmark pipeline stages that use ESMFold, including E1 development tuning and TS50 primary evaluation.
   - **Implementation:** Meta AI `esm` (v2.0.0) / Hugging Face `transformers` `facebook/esmfold_v1`.
   - **Checkpoint:** `esmfold_v1` (3B parameters).
   - **Mode:** Sequence-only input mode (zero MSA search, zero homologous templates).
   - **Recycles:** Exactly 4 recycles (`num_recycles = 4`).
-  - **Device & Precision (Frozen Benchmark Path):** Strictly GPU CUDA, `float16` (`fp16`). If CUDA is unavailable or GPU OOM occurs, classify as `INFRASTRUCTURE_FAILURE` (retried once, then logged as unvalidated); CPU `float32` execution is strictly non-confirmatory diagnostic mode.
-  - **Length & Chunking (Frozen Benchmark Path):** Maximum sequence length $L \le 1024$; attention chunking frozen to `chunk_size = 128` (memory exhaustion treated as infrastructure failure; chunk size 64 classified as diagnostic).
+  - **Device & Precision (Frozen Benchmark Path):** Strictly GPU CUDA, `float16` (`fp16`). If CUDA is unavailable or GPU OOM occurs, classify as `INFRASTRUCTURE_FAILURE` (retried exactly once using the identical frozen configuration, then logged as unvalidated if unresolvable); CPU `float32` execution is strictly non-confirmatory diagnostic mode.
+  - **Length & Chunking (Frozen Benchmark Path):** Maximum sequence length $L \le 1024$ (targets with $L > 1024$ rejected at preflight); attention chunking frozen to `chunk_size = 128` (memory exhaustion treated as infrastructure failure; chunk size 64 classified as diagnostic).
   - **Fixed Screening Seed:** Fixed integer seed = 42 (`seed = 42`).
   - **Output & Metrics:** Predicted 3D atomic coordinates; 1-to-1 $C_\alpha$ correspondence to native backbone; Kabsch-aligned scRMSD; sequence-mean pLDDT $\in [0, 100]$.
+
 - **Operational Screening Thresholds:**
   - Viable candidates satisfy:
     $$\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA} \quad \text{AND} \quad \text{pLDDT}_{\text{screen}} \ge 80.0$$
@@ -196,15 +198,20 @@ Individual generated candidates ($K = 100$ or $500$) and selected candidates ($M
 ### 2. Primary Hypothesis Test
 - **Comparison:** Target-level paired difference between primary hybrid selection and ProteinMPNN-only selection:
   $$d_t = \overline{\text{scTM}}_{\text{hybrid}}(t) - \overline{\text{scTM}}_{\text{MPNN-only}}(t) \quad \text{for } t = 1, \dots, N$$
-- **Primary Test:** Two-sided paired Wilcoxon signed-rank test on $\{d_t\}_{t=1}^N$ (`scipy.stats.wilcoxon(..., zero_method='wilcox', correction=True, alternative='two-sided')`).
+- **Primary Test:** Two-sided paired Wilcoxon signed-rank test on $\{d_t\}_{t=1}^N$ (`scipy.stats.wilcoxon(..., zero_method='wilcox', correction=True, alternative='two-sided', method='asymptotic')`). Confirmatory p-value computed using asymptotic normal approximation with continuity correction. Requires finite numeric inputs (NaN/inf rejected; $N \ge 2$ required).
 - **Significance Level:** Pre-registered confirmatory threshold $\alpha = 0.01$.
 - **Effect Size:** Hodges-Lehmann median paired difference and paired Cohen's $d_z$.
-- **Confidence Intervals:** 95% and 99% bootstrap confidence intervals computed over **10,000 resamples of target-level differences $d_t$** ($N=50$). Never bootstrap candidates.
+- **Confidence Intervals:** 95% and 99% bootstrap confidence intervals computed over **10,000 resamples of target-level differences $d_t$** ($N=50$, seed 42). Never bootstrap candidates.
 - **Three-State Target Outcome Taxonomy:**
   1. *Missing Primary Endpoint (`SELECTION_INFEASIBLE_LT_M`):* Arm produces $< 10$ unique viable candidates. Primary endpoint missing/undefined in complete-case analysis; reported under conservative zero-quality sensitivity.
   2. *Scientific / Model Folding Failure:* Biological failure (non-physical coordinates, steric clash collapse, pLDDT < 10.0); assigned $\text{scTM} = 0.0$, included in $\{d_t\}$.
-  3. *Infrastructure / Runtime Failure:* Hardware/system exception (OOM, timeout >600s, software crash); NEVER assigned $\text{scTM} = 0.0$; retried once; if unresolvable, marked `INFRASTRUCTURE_FAILURE_UNVALIDATED` and excluded from $\{d_t\}$. If $>10\%$ fail due to infrastructure crashes, benchmark is declared INVALID / INCONCLUSIVE.
+  3. *Infrastructure / Runtime Failure:* Hardware/system exception (OOM, timeout >600s, software crash); NEVER assigned $\text{scTM} = 0.0$.
+     - Retry Policy: Retried exactly once using the identical frozen model, checkpoint, version, precision, device, chunk size, seed, input, timeout, and protocol configuration. Only process restart/resource cleanup permitted.
+     - Confirmatory TS50: If unresolvable on target $t$, marked `INFRASTRUCTURE_FAILURE_UNVALIDATED` and excluded from complete-case $\{d_t\}$. If $>10\%$ fail due to infrastructure crashes, benchmark is declared INVALID / INCONCLUSIVE.
+     - Candidate-Level Screening (ESMFold): If a candidate fails screening due to infrastructure error, retry once. If unresolved, mark as infrastructure-unvalidated, exclude from viable set (never assign 0.0, never regenerate), and let $M=10$ feasibility rule govern target eligibility.
+     - Development Tuning (AF2): Objective $J$ requires complete $M=10$ validated library on all 20 dev targets. If an AF2 validation fails due to infrastructure, retry once; if unresolved, never assign $\text{scTM} = 0.0$, do not regenerate or substitute sequences. Configuration is declared INELIGIBLE and assigned $J = -\infty$.
 - **Stratification:** Primary analysis is performed on the TS50 natural test set ($N=50$). The RFdiffusion de novo test set ($N=15$) is analyzed and reported separately.
+
 
 ---
 

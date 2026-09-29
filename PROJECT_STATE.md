@@ -83,7 +83,8 @@
   - `DIVERSITY SPECIFICATION`: Three distinct stages codified (Raw, Viable, Selected library) with exact pairwise Hamming distance formulations.
   - `SCIENTIFIC WORDING AUDITED`: Scoped mask-invariance to EXP004 tested evidence; removed uncalibrated SOTA claims; corrected ProteinMPNN permutation decoding order.
 - [x] **Milestone 2.7: Scientific Protocol Pre-Registration & Micro-Freeze Audit Hardening**
-  - `PROTOCOL PRE-REGISTERED`: Created `science/PREREGISTRATION.md` freezing all 24 study parameters prior to experimentation.
+  - `PROTOCOL PRE-REGISTERED`: Created `science/PREREGISTRATION.md` freezing all currently registered protocol elements under Amendment A1 prior to experimentation.
+
   - `PRIMARY HYBRID FORMULATION`: Scale-free within-pool percentile rank normalization ($H = \lambda p_{\text{MPNN}} + (1-\lambda) p_{\text{PS}}$) implemented in `src/hybrid/scoring.py`.
   - `COMMON CANDIDATE UNIVERSE`: Primary hybrid scoring operates strictly on identical candidate sequences ($U_t$, $|U_t|=K$) scored by both models, preventing asymmetric rank leakage.
   - `PRIMARY ENDPOINT FROZEN`: Target-level mean fixed-correspondence scTM across the $M=10$ library evaluated by AlphaFold2 (v2.3.2).
@@ -101,7 +102,8 @@
   - `GREEDY INITIALIZATION & TIE BREAKING`: Frozen first selection on empty $S'$ to candidate with maximum primary score; deterministic tie breaking by ascending candidate ID.
   - `DUPLICATE ACCOUNTING & UNIQUE SELECTION`: Exact duplicates retained in raw accounting and reported separately; selection operates strictly on UNIQUE viable sequences; duplicates contribute 0 distance; no silent regeneration.
   - `INSUFFICIENT VIABLE CANDIDATES POLICY`: If unique viable candidates $< 10$, arm is marked `SELECTION_INFEASIBLE_LT_M`; undefined in complete-case paired comparison; evaluated under conservative zero sensitivity.
-  - `STATISTICAL IMPLEMENTATION`: Two-sided paired Wilcoxon signed-rank test on $\{d_t\}_{t=1}^N$ with $\alpha = 0.01$ (`zero_method='wilcox'`, `correction=True`); 10,000 bootstrap resamples on target-level paired differences $d_t$.
+  - `STATISTICAL IMPLEMENTATION`: Two-sided paired Wilcoxon signed-rank test on $\{d_t\}_{t=1}^N$ with $\alpha = 0.01$ (`zero_method='wilcox'`, `correction=True`, `method='asymptotic'`); 10,000 bootstrap resamples on target-level paired differences $d_t$.
+
   - `TEST SUITE EXPANSION`: 52/52 pytest suites passing (25 governance + 27 scientific protocol).
   - `DECISION LOGGED`: Appended `[DEC-014]`.
 - [x] **Milestone 3A: Official ProteinMPNN Cleanroom Integration: COMPLETE**
@@ -133,11 +135,24 @@
   - Reconciled hydrophobic core fraction definition ($f_{\text{core}} = \text{core hydrophobic} / \text{total hydrophobic}$, $\text{RSA} < 0.20$), with $0.0$ edge-case handling.
   - Explicitly attributed secondary structural metrics to folding oracles (ESMFold for screening, AF2 for selected library, Boltz-1 for sensitivity).
   - Frozen ProteinMPNN scoring permutation (generation-time decoding permutation retained and reused during scoring).
-  - Frozen statistical reproducibility details: SciPy v1.17.1, two-sided paired Wilcoxon (`zero_method='wilcox'`, `correction=True`), 10,000 target-level paired bootstrap resamples with seed 42, percentile method, Hodges-Lehmann effect size.
+  - Frozen statistical reproducibility details: SciPy v1.17.1, two-sided paired Wilcoxon (`zero_method='wilcox'`, `correction=True`, `method='asymptotic'`), 10,000 target-level paired bootstrap resamples with seed 42, percentile method, Hodges-Lehmann effect size.
   - Replaced "submodule" with "independent nested Git repository clone" throughout.
+  - Authorization status: `FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE` on PR #1.
+- [x] **Milestone 3A.4: Final Pre-E1 Scientific Readiness & Anti-Loop Closure V5: COMPLETE**
+  - Confirmed primary comparator invariant: strictly $d_t = \overline{\text{scTM}}_{\text{hybrid}}(t) - \overline{\text{scTM}}_{\text{MPNN-only}}(t)$ (guarded by automated invariant test; single-best-model comparator strictly prohibited as primary comparator).
+  - Confirmed sample size hierarchy: strictly $N=50$ for confirmatory TS50 benchmark; $N_{\text{dev}}=20$ strictly for development/tuning.
+  - Frozen ESMFold execution path across all registered benchmark stages (E1 development tuning and TS50 primary evaluation): strictly GPU (`cuda`) `float16`, `chunk_size = 128`, seed 42, max sequence length $L \le 1024$ with preflight manifest validation.
+  - Codified deterministic retry semantics: retried exactly once with identical frozen configuration; only process restart/cleanup permitted; no parameter alteration.
+  - Codified development AF2 infrastructure failure policy: if an AF2 validation fails due to infrastructure, target cannot produce complete $M=10$ endpoint set; configuration receives $J = -\infty$ (ineligible for argmax).
+  - Codified candidate-level screening failure policy: excluded from viable set, never assigned 0.0, never regenerated; reported under screening infrastructure failure count.
+  - Scoped Project Truth authority to verified facts and limitations, deferring to PREREGISTRATION.md for protocol.
+  - Excised bitwise determinism overclaims.
+  - Recorded proposed governance lessons L-007 through L-016 and logged DEC-018 and DEC-019.
+  - Verification: 80+ collected tests passing across 4 modules; governance preflight passing; historical clone untouched.
   - Authorization status: `FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE` on PR #1.
 - [ ] **Milestone 3B: ProteinMPNN Baseline Benchmark Execution (E1 / TS50): NOT STARTED**
   - Execute controlled benchmark baselines under frozen protocol (`science/evaluation_protocol.md`).
+
 - [ ] **Milestone 4: Research Question Freezing & Human Review**
   - Present literature audit and E0 baseline findings to Human Principal Investigator.
   - Decide whether to retain, refine, or pivot the provisional hypothesis based on audit evidence.

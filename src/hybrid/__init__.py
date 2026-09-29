@@ -35,6 +35,7 @@ from .selection import (
     ValidationOutcomeType,
     ValidationOutcome,
     evaluate_validation_outcome,
+    validate_target_sequence_length,
 )
 from .budget import (
     PROTEINMPNN_DEV_ALLOCATION,
@@ -56,12 +57,20 @@ from .optimization import (
     get_proteinsolver_tuning_grid,
     get_hybrid_tuning_grid,
     compute_target_sctm_mean,
+    compute_development_target_sctm_mean,
     compute_development_objective,
     compute_configuration_infeasibility_rate,
     select_optimal_temperature_and_gamma,
     select_optimal_lambda_and_gamma,
     DevelopmentHyperparameterState,
 )
+from .statistics import (
+    WilcoxonResult,
+    compute_hodges_lehmann_estimator,
+    compute_paired_wilcoxon_test,
+    compute_paired_bootstrap_ci,
+)
+
 
 __all__ = [
     "compute_percentile_ranks",
@@ -83,6 +92,7 @@ __all__ = [
     "ValidationOutcomeType",
     "ValidationOutcome",
     "evaluate_validation_outcome",
+    "validate_target_sequence_length",
     "PROTEINMPNN_DEV_ALLOCATION",
     "PROTEINSOLVER_DEV_ALLOCATION",
     "PRIMARY_TEST_SEED_ALLOCATION_500",
@@ -100,10 +110,17 @@ __all__ = [
     "get_proteinsolver_tuning_grid",
     "get_hybrid_tuning_grid",
     "compute_target_sctm_mean",
+    "compute_development_target_sctm_mean",
+
     "compute_development_objective",
     "compute_configuration_infeasibility_rate",
     "select_optimal_temperature_and_gamma",
     "select_optimal_lambda_and_gamma",
     "DevelopmentHyperparameterState",
+    "WilcoxonResult",
+    "compute_hodges_lehmann_estimator",
+    "compute_paired_wilcoxon_test",
+    "compute_paired_bootstrap_ci",
 ]
+
 

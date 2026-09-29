@@ -26,6 +26,34 @@ class Candidate:
     scrmsd_val: Optional[float] = None
     plddt_val: Optional[float] = None
     sctm_val: Optional[float] = None
+    is_screening_infrastructure_failure: bool = False
+
+
+def validate_target_sequence_length(
+    sequence: str,
+    target_id: str = "",
+    max_length: int = 1024,
+) -> None:
+    """Preflight validation enforcing frozen oracle maximum sequence length L <= 1024.
+
+    If sequence length exceeds max_length, raises ValueError to trigger preflight rejection.
+    Silent truncation, chunking modification, or oracle substitution is strictly prohibited.
+
+    Args:
+        sequence: Amino acid sequence string.
+        target_id: Optional target identifier for error reporting.
+        max_length: Maximum allowed sequence length (default 1024).
+
+    Raises:
+        ValueError: If sequence length exceeds max_length.
+    """
+    if len(sequence) > max_length:
+        target_info = f" for target '{target_id}'" if target_id else ""
+        raise ValueError(
+            f"Sequence length L={len(sequence)}{target_info} exceeds frozen oracle maximum L<={max_length}. "
+            "Target must be rejected at preflight time; silent truncation, chunk switching, or oracle substitution is strictly prohibited."
+        )
+
 
 
 def filter_viable_candidates(

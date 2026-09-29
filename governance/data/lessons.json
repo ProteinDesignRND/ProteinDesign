@@ -435,5 +435,206 @@
       "denominator",
       "secondary-metrics"
     ]
+  },
+  {
+    "id": "L-012",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Differentiate audit-start HEAD from final committed HEAD in reports",
+    "what_happened": "Previous pre-E1 closure reports labelled ancestor commit SHAs as 'Current HEAD' while also describing them as 'prior to this commit'.",
+    "lesson": "In closure and readiness reports, always record audit-start HEAD separately from the final committed HEAD produced by the repair pass. 'Current HEAD' must never refer to an ancestor.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Audit reporting and Git state verification",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Identified in V4 closure report and corrected in V5",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_CLOSURE_REPORT.md",
+      "reports/AG_LIVE_PROGRESS.md",
+      "reports/AG_RUN_STATE.json"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "reporting",
+        "governance"
+      ]
+    },
+    "keywords": [
+      "git",
+      "HEAD",
+      "reporting",
+      "commit-sha",
+      "provenance"
+    ]
+  },
+  {
+    "id": "L-013",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Project Truth authority is scoped to verified facts and limitations, not protocol",
+    "what_happened": "docs/PROJECT_TRUTH.md contained a blanket claim that all project documents defer to it on conflict, creating a potential authority collision with science/PREREGISTRATION.md.",
+    "lesson": "PROJECT_TRUTH.md is the authoritative record of verified implementation facts, evidence status, and known limitations. Scientific protocol authority is strictly science/PREREGISTRATION.md, and chronological decision provenance is DECISION_LOG.md.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Source-of-truth hierarchy reconciliation",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Reconciled in docs/PROJECT_TRUTH.md and unit-tested in tests/test_scientific_protocol.py",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "docs/PROJECT_TRUTH.md",
+      "science/PREREGISTRATION.md",
+      "DECISION_LOG.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "reporting",
+        "documentation",
+        "governance"
+      ]
+    },
+    "keywords": [
+      "source-of-truth",
+      "hierarchy",
+      "authority",
+      "preregistration",
+      "project-truth"
+    ]
+  },
+  {
+    "id": "L-014",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Statistical implementation defaults must be explicitly frozen",
+    "what_happened": "Protocol specified asymptotic normal approximation with continuity correction for Wilcoxon test, but raw scipy.stats.wilcoxon call omitted method='asymptotic', relying on implicit SciPy defaults.",
+    "lesson": "Always explicitly pass all statistical parameters (method='asymptotic', zero_method='wilcox', correction=True, alternative='two-sided') in code and validate finite inputs (rejecting NaN/inf) to eliminate runtime variance.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Statistical hypothesis testing implementation",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Implemented in src/hybrid/statistics.py and verified in tests/test_scientific_protocol.py",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "src/hybrid/statistics.py",
+      "science/PREREGISTRATION.md",
+      "tests/test_scientific_protocol.py"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "evaluation",
+        "analysis"
+      ]
+    },
+    "keywords": [
+      "wilcoxon",
+      "statistics",
+      "asymptotic",
+      "scipy",
+      "reproducibility"
+    ]
+  },
+  {
+    "id": "L-015",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Retry semantics must strictly preserve identical frozen configuration",
+    "what_happened": "Vague phrasing 'retry under clean execution parameters' left open whether precision, device, chunking, or seeds could be altered upon runtime failure.",
+    "lesson": "A retry is defined strictly as retrying exactly once with the identical frozen model, checkpoint, version, precision, device, chunk size, seed, input, timeout, and protocol configuration. Only process restart and resource cleanup are permitted.",
+    "type": "PROCESS_TEAM",
+    "scope": "project-wide",
+    "trigger": "Infrastructure runtime exception handling",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Codified across PREREGISTRATION.md, evaluation_protocol.md, and metrics.md",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "science/PREREGISTRATION.md",
+      "science/evaluation_protocol.md",
+      "science/metrics.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "screening",
+        "evaluation"
+      ]
+    },
+    "keywords": [
+      "retry",
+      "infrastructure",
+      "runtime",
+      "identical-config",
+      "determinism"
+    ]
+  },
+  {
+    "id": "L-016",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Development oracle infrastructure failures require J = -infinity ineligibility",
+    "what_happened": "Distinction between candidate-level screening failure and development AF2 validation failure needed formal specification for objective J calculation.",
+    "lesson": "Development objective J requires complete M=10 validated library on all 20 dev targets. If an AF2 validation fails for infrastructure reasons, retry once; if unresolved, target cannot produce complete M=10 set, assigning J = -infinity (ineligible for argmax). Never assign scTM=0.0 or regenerate.",
+    "type": "METHOD_SCIENCE",
+    "scope": "project-wide",
+    "trigger": "Development hyperparameter optimization failure handling",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "Implemented in compute_development_target_sctm_mean in src/hybrid/optimization.py",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-Merge Closure V5 Audit",
+    "owner": "project-lead",
+    "created_at": "2026-09-29T07:45:00.000000",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "src/hybrid/optimization.py",
+      "science/PREREGISTRATION.md",
+      "tests/test_development_hyperparameter_selection.py"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {
+      "pipeline_stage": [
+        "optimization",
+        "evaluation"
+      ]
+    },
+    "keywords": [
+      "development-objective",
+      "infeasibility",
+      "alphafold2",
+      "infrastructure-failure",
+      "optimization"
+    ]
   }
-]
+]

@@ -46,16 +46,18 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 - **Significance Level:** $\alpha = 0.01$ (two-tailed, pre-registered confirmatory threshold).
 - **Exact Implementation Details:**
   - Software & Library: Python 3.11 with SciPy v1.17.1 reference (`scipy.stats.wilcoxon`).
-  - Function call: `scipy.stats.wilcoxon(x, y, zero_method='wilcox', correction=True, alternative='two-sided')`.
-  - Approximation method: Normal approximation with continuity correction (`correction=True`), standard for $N \ge 25$.
+  - Function call: `scipy.stats.wilcoxon(d_t, zero_method='wilcox', correction=True, alternative='two-sided', method='asymptotic')`.
+  - Approximation method: The confirmatory p-value is computed with the pre-registered asymptotic/normal approximation and continuity correction (`method='asymptotic'`, `correction=True`).
   - Zero-difference policy: zero differences ($d_t = 0$) are handled using the Wilcox convention (discards zeros from ranking).
   - Tie handling in $|d_t|$: average rank assignment (`method='average'`).
   - Continuity correction: enabled (`correction=True`).
 - **Effect Sizes:**
   - Hodges-Lehmann paired median difference estimator (median of all pairwise Walsh averages $(d_i + d_j)/2$).
   - Paired Cohen's $d_z = \bar{d} / s_d$.
-- **Edge Cases:**
-  - If all $d_t = 0$: $p = 1.0$, Hodges-Lehmann effect size = $0.0$.
+- **Edge Cases & Input Validation:**
+  - Finite Numeric Validation: All input paired differences must be finite real numbers. Inputs containing NaN or infinite values raise an explicit validation error and are rejected rather than silently omitted.
+  - Sample Size Requirement: Requires at least $N \ge 2$ paired observations.
+  - If all $d_t = 0$: $p = 1.0$, Hodges-Lehmann effect size = $0.0$, Cohen's $d_z = 0.0$.
   - Zero standard deviation ($s_d = 0$): $d_z = 0.0$.
   - Insufficient valid target pairs: exclusions reported explicitly with reasons.
 - **Confidence Intervals & Bootstrap Estimands:**
@@ -71,10 +73,12 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
   2. **Scientific / Model Folding Failure:** Validation oracle completes inference normally, but the predicted structure is biologically non-physical (steric clash collapse, NaN/inf coordinates, disjoint C$\alpha$ trace) or confidence is below structural definition ($\text{pLDDT} < 10.0$). Assigned $\text{scTM} = 0.0$, included in $\{d_t\}$.
   3. **Infrastructure / Runtime Failure:** Oracle fails due to hardware or runtime exceptions (GPU OOM, process timeout > 600s/target, driver/CUDA crash, environment failure, missing/corrupted file).
      - Infrastructure failures are **NEVER assigned $\text{scTM} = 0.0$**.
-     - Failed jobs are retried exactly once under clean execution parameters.
+     - **Deterministic Retry Policy:** Retry exactly once using the identical frozen model, checkpoint, version, precision, device, chunk size, seed, input, timeout, and protocol configuration. Only process restart/resource cleanup is permitted. No scientific or inference parameter may be changed during the retry.
      - If unresolvable on target $t$, target $t$ is marked as `INFRASTRUCTURE_FAILURE_UNVALIDATED` and excluded from complete-case paired comparison $\{d_t\}$.
      - Target-level infrastructure failure rate $F_{\text{infra}} = N_{\text{infra}} / N_{\text{total}}$ is strictly tracked.
      - If $F_{\text{infra}} > 10\%$ (e.g. $> 5$ of 50 TS50 targets), the benchmark run is automatically declared **INVALID / INCONCLUSIVE** (Criterion 5 of Section 24), halting evaluation.
+     - **Candidate-Level Screening Infrastructure Failure (ESMFold):** If an individual candidate fails ESMFold screening for infrastructure reasons, retry exactly once with the identical frozen configuration. If it still fails, mark candidate as infrastructure-unvalidated (never assign viability 0.0, never regenerate). Exclude it from the viable candidate set because screening status is unknown. Continue processing remaining fixed $K$ candidates; the existing $M=10$ viability/infeasibility rule determines whether the target remains eligible. Report the count of screening-infrastructure failures.
+     - **Development-Time AF2 Infrastructure Failure:** For development hyperparameter optimization, the objective $J$ requires all 20 development targets to produce complete $M=10$ validated endpoints. If a selected candidate fails AF2 validation for infrastructure reasons, retry once with the identical frozen configuration. If still failing, never assign $\text{scTM} = 0.0$, do not regenerate or substitute another sequence. The configuration cannot produce the required complete $M=10$ endpoint set; classify the configuration as INELIGIBLE and assign $J = -\infty$ for argmax selection.
 - **Stratification:** Primary hypothesis testing is evaluated on natural targets ($N = 50$, TS50). The de novo test set ($N = 15$, RFdiffusion) is evaluated and reported as a separate stratified analysis.
 
 
@@ -193,9 +197,10 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
   - Prohibited Criteria: No tie-breaking may use amino acid recovery (AAR), computational latency, sequence diversity, model perplexity/pseudo-perplexity, visual inspection, implementation convenience, or anticipated test behavior.
 - **Development Failure & Missing Data Handling:**
   Reuses the existing frozen failure taxonomy:
-  - Generative biological folding failure: Assigned $\text{scTM} = 0.0$.
-  - Infrastructure failure: Retried once; if unresolved, excluded from objective computation; benchmark declared invalid if $>10\%$ fail.
+  - Generative biological folding failure: Assigned $\text{scTM} = 0.0$ and included in target mean.
+  - Infrastructure failure (AF2 validation): Retried exactly once using the identical frozen configuration. If unresolvable on any selected candidate, never assign $\text{scTM} = 0.0$, do not regenerate or substitute sequences. The target cannot produce the required complete $M=10$ endpoint set; classify the configuration as INELIGIBLE and assign $J = -\infty$ for argmax selection.
   - Insufficient unique viable candidates ($< 10$): Target classified as `SELECTION_INFEASIBLE_LT_M`. For development hyperparameter optimization, the configuration receives $J = -\infty$ (ineligible for argmax). For confirmatory test-set analysis, missing in complete-case analysis, and assigned 0.0 under conservative sensitivity analysis.
+
 
 ---
 
@@ -228,12 +233,13 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
 ---
 
 ## 11. Screening Oracle Configuration & Thresholds (ESMFold)
+- **Applicability Scope:** The frozen ESMFold execution path applies to all registered benchmark pipeline stages that use ESMFold, including E1 development tuning and TS50 primary evaluation.
 - **Exact Oracle Implementation:** Meta AI `esm` (v2.0.0) / Hugging Face `transformers` `facebook/esmfold_v1`.
 - **Model Checkpoint:** `esmfold_v1` (3B parameters; pinned to canonical Meta AI / Hugging Face release artifact).
 - **Inference Mode:** Sequence-only input mode (zero MSA search, zero homologous templates).
 - **Recycle Count:** Exactly 4 recycles (`num_recycles = 4`, canonical default).
-- **Precision & Device (Frozen Benchmark Path):** Strictly `float16` (`fp16`) on GPU (CUDA). If CUDA is unavailable or a GPU out-of-memory error occurs, it is classified as `INFRASTRUCTURE_FAILURE` (retried once, then logged as unvalidated if unresolvable), NEVER silently falling back to CPU or alternative precisions. CPU `float32` execution is classified strictly as a non-confirmatory local diagnostic / smoke-test mode and is prohibited from producing confirmatory benchmark evidence.
-- **Sequence Length Guard:** Maximum sequence length $L \le 1024$ residues (candidates exceeding 1024 are rejected).
+- **Precision & Device (Frozen Benchmark Path):** Strictly `float16` (`fp16`) on GPU (CUDA). If CUDA is unavailable or a GPU out-of-memory error occurs, it is classified as `INFRASTRUCTURE_FAILURE` (retried exactly once using the identical frozen configuration, then logged as unvalidated if unresolvable), NEVER silently falling back to CPU or alternative precisions. CPU `float32` execution is classified strictly as a non-confirmatory local diagnostic / smoke-test mode and is prohibited from producing confirmatory benchmark evidence.
+- **Sequence Length Guard:** Maximum sequence length $L \le 1024$ residues. Target manifests must be validated for this constraint before E1 or TS50 execution; targets with $L > 1024$ are rejected at preflight time (silent truncation, chunking alteration, or oracle substitution is strictly prohibited).
 - **Internal Tensor Chunking (Frozen Benchmark Path):** Attention/trunk chunking frozen to `model.set_chunk_size(128)`. If chunk size 128 fails due to memory exhaustion, it is treated as an infrastructure failure, not a silent parameter change. Alternative chunk sizes (such as 64) are classified strictly as non-confirmatory diagnostic modes. Internal chunk size is distinct from sequence length.
 - **Screening Seed:** Fixed integer seed = 42 (`seed = 42`).
 - **Output & Metric Extraction:**
@@ -245,7 +251,8 @@ Individual generated candidates ($K = 500$) and selected library members ($M = 1
   $$\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA} \quad \text{AND} \quad \text{pLDDT}_{\text{screen}} \ge 80.0$$
   - Candidates satisfying both criteria enter $S_{\text{viable}}$.
   - Candidates failing either criterion are classified as structural folding failures and excluded from $S_{\text{viable}}$.
-  - If a sequence cannot be evaluated due to memory error, library crash, or invalid character, it is classified as `INFRASTRUCTURE_FAILURE`.
+  - If a sequence cannot be evaluated due to memory error, library crash, or runtime exception, it is retried exactly once under the identical frozen configuration. If still failing, it is classified as `INFRASTRUCTURE_FAILURE`, excluded from the viable candidate set (never assigned viability 0.0, never regenerated), and reported in the screening infrastructure failure count.
+
 
 ---
 

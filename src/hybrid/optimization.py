@@ -65,6 +65,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 import numpy as np
 
 from .budget import GAMMA_SEARCH_GRID, LAMBDA_SEARCH_GRID
+from .selection import ValidationOutcome, ValidationOutcomeType
 
 
 DEVELOPMENT_TARGET_COUNT: int = 20
@@ -110,6 +111,55 @@ def compute_target_sctm_mean(
         if val < 0.0 or val > 1.0:
             raise ValueError(f"scTM value out of valid [0.0, 1.0] bounds: {val}")
     return float(np.mean(sctm_values))
+
+
+def compute_development_target_sctm_mean(
+    candidate_outcomes: Sequence[ValidationOutcome],
+    expected_m: int = SELECTION_LIBRARY_SIZE,
+) -> Optional[float]:
+    """Computes target-level mean scTM for development hyperparameter optimization.
+
+    Development AF2 Failure Policy (DEC-019 / Pre-Registration):
+        If any selected candidate in the M=10 library suffers an unresolved infrastructure failure
+        (status == INFRASTRUCTURE_FAILURE):
+        - scTM=0 is NEVER assigned.
+        - No candidate regeneration or sequence substitution is permitted.
+        - The target cannot produce the required complete M=10 endpoint set.
+        - Returns None, which causes compute_development_objective() to mark the
+          configuration as INELIGIBLE and assign J = -infinity.
+        If a candidate suffers a SCIENTIFIC_FAILURE (biological/generative failure, pLDDT < 10):
+        - Assigned scTM = 0.0 and included in the mean.
+        If all candidates are VALID:
+        - Uses their evaluated scTM values in the mean.
+
+    Args:
+        candidate_outcomes: Sequence of ValidationOutcome objects for the M selected candidates.
+        expected_m: Expected library size (default 10).
+
+    Returns:
+        Target-level mean scTM if all M candidates have valid/scientific endpoints,
+        or None if any candidate suffered an infrastructure failure or if fewer than
+        expected_m outcomes are supplied.
+    """
+    if len(candidate_outcomes) != expected_m:
+        return None
+
+    clean_sctms = []
+    for outcome in candidate_outcomes:
+        if outcome.status == ValidationOutcomeType.INFRASTRUCTURE_FAILURE:
+            # Infrastructure failure: never assign 0.0, target is missing full M=10 endpoint
+            return None
+        elif outcome.status == ValidationOutcomeType.SCIENTIFIC_FAILURE:
+            clean_sctms.append(0.0)
+        elif outcome.status == ValidationOutcomeType.VALID:
+            if outcome.sctm is None or outcome.sctm < 0.0 or outcome.sctm > 1.0:
+                return None
+            clean_sctms.append(float(outcome.sctm))
+        else:
+            return None
+
+    return float(np.mean(clean_sctms))
+
 
 
 def compute_development_objective(

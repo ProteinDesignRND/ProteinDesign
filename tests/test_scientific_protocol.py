@@ -712,34 +712,67 @@ def test_prohibited_sctm_fold_threshold_wording():
 def test_statistical_wilcoxon_edge_cases():
     """Verifies two-sided paired Wilcoxon signed-rank test and bootstrap edge cases under frozen SciPy protocol."""
     import scipy.stats as stats
+    from src.hybrid.statistics import (
+        compute_paired_wilcoxon_test,
+        compute_paired_bootstrap_ci,
+        compute_hodges_lehmann_estimator,
+    )
 
     # 1. Standard valid paired differences (N=50)
     rng = np.random.default_rng(42)
     d_t = rng.normal(loc=0.03, scale=0.05, size=50)
-    res = stats.wilcoxon(d_t, zero_method="wilcox", correction=True, alternative="two-sided")
+    res = compute_paired_wilcoxon_test(d_t)
     assert res.pvalue is not None
     assert 0.0 <= res.pvalue <= 1.0
+    assert res.method == "asymptotic"
+    assert res.zero_method == "wilcox"
+    assert res.correction is True
+    assert res.alternative == "two-sided"
+    assert res.n_total == 50
+    assert res.n_non_zero > 0
 
-    # 2. All zero differences: with zero_method='wilcox', all zeros are discarded
-    import warnings
+    # Verify direct scipy call with frozen parameters matches
+    scipy_res = stats.wilcoxon(d_t, zero_method="wilcox", correction=True, alternative="two-sided", method="asymptotic")
+    assert res.statistic == pytest.approx(float(scipy_res.statistic))
+    assert res.pvalue == pytest.approx(float(scipy_res.pvalue))
+
+    # 2. All zero differences: with zero_method='wilcox', all zeros are discarded -> p=1.0, HL=0.0, d_z=0.0
     d_zeros = np.zeros(50)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", RuntimeWarning)
-        res_zeros = stats.wilcoxon(d_zeros, zero_method="wilcox", correction=True, alternative="two-sided")
-    # Discarding all observations yields nan in SciPy; protocol defines p=1.0, HL=0.0
-    assert np.isnan(res_zeros.pvalue)
+    res_zeros = compute_paired_wilcoxon_test(d_zeros)
+    assert res_zeros.pvalue == 1.0
+    assert res_zeros.hodges_lehmann == 0.0
+    assert res_zeros.cohens_dz == 0.0
+    assert res_zeros.n_non_zero == 0
 
     # 3. Constant non-zero differences (s_d = 0)
     d_const = np.full(50, 0.05)
-    res_const = stats.wilcoxon(d_const, zero_method="wilcox", correction=True, alternative="two-sided")
-    assert res_const.pvalue < 1e-5  # Highly significant all positive difference
+    res_const = compute_paired_wilcoxon_test(d_const)
+    assert res_const.pvalue < 1e-5  # Highly significant all-positive differences
+    assert res_const.hodges_lehmann == pytest.approx(0.05)
+    assert res_const.cohens_dz == 0.0  # Zero standard deviation
 
-    # 4. Bootstrap reproducibility with fixed seed 42
-    rng1 = np.random.default_rng(42)
-    boot1 = [np.mean(rng1.choice(d_t, size=50, replace=True)) for _ in range(100)]
-    rng2 = np.random.default_rng(42)
-    boot2 = [np.mean(rng2.choice(d_t, size=50, replace=True)) for _ in range(100)]
-    np.testing.assert_allclose(boot1, boot2)
+    # 4. Explicit input validation: reject NaN or inf
+    d_nan = np.array([0.02, np.nan, 0.04])
+    with pytest.raises(ValueError, match="NaN or infinite"):
+        compute_paired_wilcoxon_test(d_nan)
+
+    d_inf = np.array([0.02, np.inf, 0.04])
+    with pytest.raises(ValueError, match="NaN or infinite"):
+        compute_paired_wilcoxon_test(d_inf)
+
+    # 5. Insufficient paired observations
+    with pytest.raises(ValueError, match="Insufficient paired observations"):
+        compute_paired_wilcoxon_test([0.05])
+
+    # 6. Bootstrap reproducibility with fixed seed 42
+    ci1 = compute_paired_bootstrap_ci(d_t, n_resamples=1000, seed=42)
+    ci2 = compute_paired_bootstrap_ci(d_t, n_resamples=1000, seed=42)
+    assert ci1[0.95][0] == pytest.approx(ci2[0.95][0])
+    assert ci1[0.95][1] == pytest.approx(ci2[0.95][1])
+    assert ci1[0.99][0] == pytest.approx(ci2[0.99][0])
+    assert ci1[0.99][1] == pytest.approx(ci2[0.99][1])
+    assert ci1[0.95][0] < ci1[0.95][1]
+
 
 
 def test_hydrophobic_core_fraction_calculation():
@@ -798,6 +831,76 @@ def test_primary_comparison_and_sample_size_invariants():
     assert "d_t = \\overline{\\text{scTM}}_{\\text{hybrid}}(t) - \\overline{\\text{scTM}}_{\\text{MPNN-only}}(t)" in prereg
     assert "$N = 50$ TS50 targets" in prereg
     assert "Development / Tuning Set ($N = 20$)" in prereg
+
+
+def test_sequence_length_guard_and_oracle_failure_invariants():
+    """Verifies sequence length guard (L <= 1024) and development-time oracle failure handling."""
+    from src.hybrid.selection import (
+        validate_target_sequence_length,
+        ValidationOutcome,
+        ValidationOutcomeType,
+    )
+    from src.hybrid.optimization import (
+        compute_development_target_sctm_mean,
+        compute_development_objective,
+    )
+
+    # 1. Sequence length guard tests
+    validate_target_sequence_length("A" * 100, target_id="test_100")
+    validate_target_sequence_length("A" * 1024, target_id="test_1024")
+    with pytest.raises(ValueError, match="exceeds frozen oracle maximum"):
+        validate_target_sequence_length("A" * 1025, target_id="test_1025")
+
+    # 2. Development target scTM mean under complete valid library (M=10)
+    valid_outcomes = [
+        ValidationOutcome(status=ValidationOutcomeType.VALID, sctm=0.80, scrmsd=1.2, plddt=85.0)
+        for _ in range(10)
+    ]
+    mean_val = compute_development_target_sctm_mean(valid_outcomes)
+    assert mean_val == pytest.approx(0.80)
+
+    # 3. Scientific folding failure (biological non-physical structure, pLDDT < 10) -> scTM = 0.0 included
+    mixed_outcomes = [
+        ValidationOutcome(status=ValidationOutcomeType.VALID, sctm=0.80, scrmsd=1.2, plddt=85.0)
+        for _ in range(9)
+    ] + [
+        ValidationOutcome(status=ValidationOutcomeType.SCIENTIFIC_FAILURE, sctm=0.0, scrmsd=None, plddt=8.0)
+    ]
+    mixed_mean = compute_development_target_sctm_mean(mixed_outcomes)
+    assert mixed_mean == pytest.approx((0.80 * 9 + 0.0) / 10.0)
+
+    # 4. Infrastructure failure on a selected candidate -> returns None (never assign scTM=0.0)
+    infra_outcomes = [
+        ValidationOutcome(status=ValidationOutcomeType.VALID, sctm=0.80, scrmsd=1.2, plddt=85.0)
+        for _ in range(9)
+    ] + [
+        ValidationOutcome(status=ValidationOutcomeType.INFRASTRUCTURE_FAILURE, sctm=None, scrmsd=None, plddt=None)
+    ]
+    infra_mean = compute_development_target_sctm_mean(infra_outcomes)
+    assert infra_mean is None
+
+    # 5. Objective J under development target infrastructure failure -> J = -infinity (ineligible)
+    dev_means_with_infra = [0.80] * 19 + [None]
+    j_val = compute_development_objective(dev_means_with_infra)
+    assert j_val == float("-inf")
+
+
+def test_project_truth_authority_scope():
+    """Verifies that docs/PROJECT_TRUTH.md authority is properly scoped and defers to PREREGISTRATION for protocol."""
+    from pathlib import Path
+    pt_path = Path("docs/PROJECT_TRUTH.md")
+    assert pt_path.exists(), "docs/PROJECT_TRUTH.md must exist"
+    content = pt_path.read_text(encoding="utf-8")
+
+    assert "authoritative record of verified implementation facts" in content.lower()
+    assert "evidence status" in content.lower()
+    assert "known limitations" in content.lower()
+    assert "untested status" in content.lower()
+    assert "science/preregistration.md" in content.lower()
+    assert "decision_log.md" in content.lower()
+    # Must NOT claim that all other documents defer to it universally for protocol
+    assert "all other project documents defer to this one when there is a conflict" not in content.lower()
+
 
 
 if __name__ == "__main__":

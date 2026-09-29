@@ -1,9 +1,9 @@
-# Project Truth — Single Source of Truth
+# Project Truth — Record of Verified Facts and Limitations
 
-**Last Updated:** 2026-09-28  
+**Last Updated:** 2026-09-29  
 **Maintained By:** Project Lead  
 
-This document is the single authoritative reference for what has been verified, what is assumed, what remains untested, and what is known to be limited. All other project documents defer to this one when there is a conflict.
+This document is the authoritative record of verified implementation facts, evidence status, known limitations, untested status, and current implementation truth. Scientific protocol authority is strictly governed by `science/PREREGISTRATION.md`, and chronological historical decision provenance is governed by `DECISION_LOG.md`.
 
 ---
 
@@ -75,6 +75,8 @@ These claims are supported by direct inspection, execution, or primary literatur
 
 7. **Upstream commit dating.** Commit `69ef0965` dates to December 2021 (post-publication). The paper was published October 2020. Whether this commit introduces post-publication changes relative to the exact paper submission state is unknown.
 
+8. **GPU Determinism Boundary.** Fixed random seeds control framework stochasticity, but bitwise GPU determinism across differing CUDA kernels, cuBLAS algorithms, or hardware architectures cannot be guaranteed.
+
 ---
 
 ## Current Hypotheses
@@ -93,8 +95,9 @@ These claims are supported by direct inspection, execution, or primary literatur
 ### Protocol & Hyperparameter Optimization Framework
 - Development optimization objective $J$ is frozen as the mean over $N_{\text{dev}} = 20$ CATH 4.2 validation targets of target-level mean fixed-correspondence scTM across the selected $M = 10$ library evaluated by AlphaFold2 (v2.3.2, monomodel weights `model_1_ptm`, single-sequence mode, no templates, 3 recycles, fp16 GPU, fixed inference seed = 42, Amber disabled). `[VERIFIED SPECIFICATION]`
 - Development targets are frozen in immutable manifest `data/manifests/development_20_cath42.txt` (canonical LF SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`), derived deterministically from the canonical Ingraham/Dauparas CATH 4.2 validation split across 20 distinct CATH topologies. Target `4bdx.A` duplicates topology `2.10.25` of `1f7e.A` and is correctly bypassed, selecting `3hxi.A` as target 20. `[VERIFIED SPECIFICATION]`
-- Development Infeasibility Rule ($J = -\infty$): Every configuration must produce $M=10$ unique viable candidates on ALL 20 development targets. If any target is `SELECTION_INFEASIBLE_LT_M`, the configuration receives $J = -\infty$ and is ineligible for argmax. If all configurations in an arm are infeasible, stop that tuning arm and classify the stage as `DEVELOPMENT_TUNING_STAGE_INFEASIBLE`. `[VERIFIED SPECIFICATION]`
-- Screening oracle ESMFold is frozen: Meta AI `esm` v2.0.0 / Hugging Face `facebook/esmfold_v1`, `esmfold_v1` (3B parameters), sequence-only, 4 recycles, strictly `fp16` GPU with chunk size 128 for confirmatory benchmark (CPU float32 and chunk size 64 classified strictly as non-confirmatory diagnostics; GPU OOM treated as infrastructure failure), max sequence length 1024, seed 42, operational screening cutoffs $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ and $\text{pLDDT}_{\text{screen}} \ge 80.0$. `[VERIFIED SPECIFICATION]`
+- Development Infeasibility Rule ($J = -\infty$): Every configuration must produce $M=10$ unique viable candidates on ALL 20 development targets. If any target is `SELECTION_INFEASIBLE_LT_M`, or if any candidate suffers an unresolved infrastructure failure during AlphaFold2 validation, the configuration receives $J = -\infty$ and is ineligible for argmax. If all configurations in an arm are infeasible, stop that tuning arm and classify the stage as `DEVELOPMENT_TUNING_STAGE_INFEASIBLE`. `[VERIFIED SPECIFICATION]`
+- Screening oracle ESMFold is frozen: Applies to all registered benchmark stages using ESMFold (including E1 development tuning and TS50 primary evaluation). Meta AI `esm` v2.0.0 / Hugging Face `facebook/esmfold_v1`, `esmfold_v1` (3B parameters), sequence-only, 4 recycles, strictly `fp16` GPU with chunk size 128 for confirmatory benchmark (CPU float32 and chunk size 64 classified strictly as non-confirmatory diagnostics; GPU OOM treated as infrastructure failure), max sequence length 1024 (preflight rejection for $L > 1024$), seed 42, operational screening cutoffs $\text{scRMSD}_{\text{screen}} \le 2.0\text{ \AA}$ and $\text{pLDDT}_{\text{screen}} \ge 80.0$. `[VERIFIED SPECIFICATION]`
+- Deterministic Retry Policy: Failed jobs are retried exactly once using the identical frozen model, checkpoint, version, precision, device, chunk size, seed, input, timeout, and protocol configuration. Only process restart/resource cleanup is permitted; changing scientific or inference parameters during retry is strictly prohibited. `[VERIFIED SPECIFICATION]`
 - Development generation reuse (caching) is permitted and enforced: Candidate pools at temperature $T$ are generated once, screened once with ESMFold, and scored once, then reused across all $\gamma$ values (and across all 35 $(\lambda, \gamma)$ combinations for hybrid on $U_t$). `[VERIFIED SPECIFICATION]`
 - Parameter selection searches complete Cartesian grids:
   - MPNN-only: $T_{\text{MPNN}} \times \gamma$ ($5 \times 5 = 25$ combinations). `[VERIFIED SPECIFICATION]`
@@ -104,6 +107,7 @@ These claims are supported by direct inspection, execution, or primary literatur
 - Fixed-Correspondence scTM Methodological Boundary: scTM fixes residue correspondence ($i \mapsto i$) and performs rigid-body Kabsch superposition without dynamic programming alignment; does NOT inherit the classical 0.5 "same fold" threshold. `[VERIFIED SPECIFICATION]`
 - Scoped Leakage Boundary: No native-sequence conditioning leakage was detected in the tested ProteinSolver/ProteinMPNN integration paths or counterfactual audits. ProteinSolver historical training-set membership for benchmark targets remains NOT VERIFIABLE FROM ACCESSIBLE METADATA. `[VERIFIED]`
 - Pre-Test Dependency: The TS50 exact target manifest is a pre-test dependency and must be frozen before TS50 benchmark execution. `[VERIFIED SPECIFICATION]`
+- Statistical Reproducibility: Confirmatory p-value computed using two-sided paired Wilcoxon signed-rank test under asymptotic normal approximation with continuity correction (`zero_method='wilcox'`, `correction=True`, `method='asymptotic'`). `[VERIFIED SPECIFICATION]`
 
 ---
 
@@ -119,4 +123,3 @@ These claims are supported by direct inspection, execution, or primary literatur
 - Training set membership of any benchmark target beyond 1n5uA03
 - Historical runtime numerical equivalence (Python 3.6 / PyG 1.3)
 - General kmbio/Biopython parser equivalence across diverse structures
-
