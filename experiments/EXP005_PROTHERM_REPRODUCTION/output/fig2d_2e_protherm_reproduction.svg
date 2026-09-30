@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="420" viewBox="0 0 850 420" font-family="Arial, sans-serif">
+<rect width="850" height="420" fill="#ffffff" />
+<text x="425.0" y="28" font-size="16" font-weight="bold" text-anchor="middle" fill="#111111">Cell Systems 2020 Figure 2D-E: ProTherm DeltaDeltaG Correlation Reproduction</text>
+<text x="225.0" y="55" font-size="13" font-weight="bold" text-anchor="middle" fill="#222222">Figure 2D: All Mutations (N=3,471)</text>
+<line x1="200" y1="70" x2="200" y2="350" stroke="#888888" stroke-width="1.5" />
+<line x1="200" y1="350" x2="390" y2="350" stroke="#888888" stroke-width="1.5" />
+<line x1="200.0" y1="70" x2="200.0" y2="350" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="3,3" />
+<text x="200.0" y="368" font-size="10" text-anchor="middle" fill="#555555">0.0</text>
+<line x1="254.28571428571428" y1="70" x2="254.28571428571428" y2="350" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="3,3" />
+<text x="254.28571428571428" y="368" font-size="10" text-anchor="middle" fill="#555555">0.2</text>
+<line x1="308.57142857142856" y1="70" x2="308.57142857142856" y2="350" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="3,3" />
+<text x="308.57142857142856" y="368" font-size="10" text-anchor="middle" fill="#555555">0.4</text>
+<line x1="362.8571428571429" y1="70" x2="362.8571428571429" y2="350" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="3,3" />
+<text x="362.8571428571429" y="368" font-size="10" text-anchor="middle" fill="#555555">0.6</text>
+<text x="295.0" y="388" font-size="11" text-anchor="middle" fill="#333333">Pearson Correlation (R)</text>
+<text x="192" y="112.66666666666667" font-size="10" text-anchor="end" fill="#222222">ProteinSolver</text>
+<rect x="200" y="96.66666666666667" width="120.5" height="24" fill="#1f77b4" rx="3" />
+<line x1="313.7" y1="108.66666666666667" x2="327.0" y2="108.66666666666667" stroke="#111111" stroke-width="1.5" />
+<line x1="313.7" y1="104.66666666666667" x2="313.7" y2="112.66666666666667" stroke="#111111" stroke-width="1.5" />
+<line x1="327.0" y1="104.66666666666667" x2="327.0" y2="112.66666666666667" stroke="#111111" stroke-width="1.5" />
+<text x="333.0" y="112.66666666666667" font-size="10" font-weight="bold" fill="#111111">R=0.444</text>
+<text x="192" y="163.33333333333334" font-size="10" text-anchor="end" fill="#222222">Ingraham et al.</text>
+<rect x="200" y="147.33333333333334" width="115.0" height="24" fill="#8c8c8c" rx="3" />
+<line x1="308.1" y1="159.33333333333334" x2="321.7" y2="159.33333333333334" stroke="#111111" stroke-width="1.5" />
+<line x1="308.1" y1="155.33333333333334" x2="308.1" y2="163.33333333333334" stroke="#111111" stroke-width="1.5" />
+<line x1="321.7" y1="155.33333333333334" x2="321.7" y2="163.33333333333334" stroke="#111111" stroke-width="1.5" />
+<text x="327.7" y="163.33333333333334" font-size="10" font-weight="bold" fill="#111111">R=0.424</text>
+<text x="192" y="214.0" font-size="10" text-anchor="end" fill="#222222">Rosetta (score)</text>
+<rect x="200" y="198.0" width="22.4" height="24" fill="#8c8c8c" rx="3" />
+<line x1="215.0" y1="210.0" x2="230.0" y2="210.0" stroke="#111111" stroke-width="1.5" />
+<line x1="215.0" y1="206.0" x2="215.0" y2="214.0" stroke="#111111" stroke-width="1.5" />
+<line x1="230.0" y1="206.0" x2="230.0" y2="214.0" stroke="#111111" stroke-width="1.5" />
+<text x="236.0" y="214.0" font-size="10" font-weight="bold" fill="#111111">R=0.083</text>
+<text x="192" y="264.6666666666667" font-size="10" text-anchor="end" fill="#222222">Rosetta (ddg_monomer)</text>
+<rect x="200" y="248.66666666666669" width="86.0" height="24" fill="#8c8c8c" rx="3" />
+<line x1="278.4" y1="260.6666666666667" x2="293.4" y2="260.6666666666667" stroke="#111111" stroke-width="1.5" />
+<line x1="278.4" y1="256.6666666666667" x2="278.4" y2="264.6666666666667" stroke="#111111" stroke-width="1.5" />
+<line x1="293.4" y1="256.6666666666667" x2="293.4" y2="264.6666666666667" stroke="#111111" stroke-width="1.5" />
+<text x="299.4" y="264.6666666666667" font-size="10" font-weight="bold" fill="#111111">R=0.317</text>
+<text x="192" y="315.33333333333337" font-size="10" text-anchor="end" fill="#222222">Rosetta (cartesian_ddg)</text>
+<rect x="200" y="299.33333333333337" width="160.5" height="24" fill="#8c8c8c" rx="3" />
+<line x1="354.7" y1="311.33333333333337" x2="366.1" y2="311.33333333333337" stroke="#111111" stroke-width="1.5" />
+<line x1="354.7" y1="307.33333333333337" x2="354.7" y2="315.33333333333337" stroke="#111111" stroke-width="1.5" />
+<line x1="366.1" y1="307.33333333333337" x2="366.1" y2="315.33333333333337" stroke="#111111" stroke-width="1.5" />
+<text x="372.1" y="315.33333333333337" font-size="10" font-weight="bold" fill="#111111">R=0.591</text>
+<text x="625.0" y="55" font-size="13" font-weight="bold" text-anchor="middle" fill="#222222">Figure 2E: Restricted Core Mutations</text>
+<line x1="600" y1="70" x2="600" y2="350" stroke="#888888" stroke-width="1.5" />
+<line x1="600" y1="350" x2="790" y2="350" stroke="#888888" stroke-width="1.5" />
+<line x1="600.0" y1="70" x2="600.0" y2="350" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="3,3" />
+<text x="600.0" y="368" font-size="10" text-anchor="middle" fill="#555555">0.0</text>
+<line x1="654.2857142857143" y1="70" x2="654.2857142857143" y2="350" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="3,3" />
+<text x="654.2857142857143" y="368" font-size="10" text-anchor="middle" fill="#555555">0.2</text>
+<line x1="708.5714285714286" y1="70" x2="708.5714285714286" y2="350" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="3,3" />
+<text x="708.5714285714286" y="368" font-size="10" text-anchor="middle" fill="#555555">0.4</text>
+<line x1="762.8571428571429" y1="70" x2="762.8571428571429" y2="350" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="3,3" />
+<text x="762.8571428571429" y="368" font-size="10" text-anchor="middle" fill="#555555">0.6</text>
+<text x="695.0" y="388" font-size="11" text-anchor="middle" fill="#333333">Pearson Correlation (R)</text>
+<text x="592" y="112.66666666666667" font-size="10" text-anchor="end" fill="#222222">ProteinSolver</text>
+<rect x="600" y="96.66666666666667" width="149.6" height="24" fill="#2ca02c" rx="3" />
+<line x1="724.9" y1="108.66666666666667" x2="770.1" y2="108.66666666666667" stroke="#111111" stroke-width="1.5" />
+<line x1="724.9" y1="104.66666666666667" x2="724.9" y2="112.66666666666667" stroke="#111111" stroke-width="1.5" />
+<line x1="770.1" y1="104.66666666666667" x2="770.1" y2="112.66666666666667" stroke="#111111" stroke-width="1.5" />
+<text x="776.1" y="112.66666666666667" font-size="10" font-weight="bold" fill="#111111">R=0.551</text>
+<text x="592" y="163.33333333333334" font-size="10" text-anchor="end" fill="#222222">Ingraham et al.</text>
+<rect x="600" y="147.33333333333334" width="109.2" height="24" fill="#8c8c8c" rx="3" />
+<line x1="679.4" y1="159.33333333333334" x2="736.2" y2="159.33333333333334" stroke="#111111" stroke-width="1.5" />
+<line x1="679.4" y1="155.33333333333334" x2="679.4" y2="163.33333333333334" stroke="#111111" stroke-width="1.5" />
+<line x1="736.2" y1="155.33333333333334" x2="736.2" y2="163.33333333333334" stroke="#111111" stroke-width="1.5" />
+<text x="742.2" y="163.33333333333334" font-size="10" font-weight="bold" fill="#111111">R=0.402</text>
+<text x="592" y="214.0" font-size="10" text-anchor="end" fill="#222222">Rosetta (score)</text>
+<rect x="600" y="198.0" width="115.7" height="24" fill="#8c8c8c" rx="3" />
+<line x1="685.5" y1="210.0" x2="743.0" y2="210.0" stroke="#111111" stroke-width="1.5" />
+<line x1="685.5" y1="206.0" x2="685.5" y2="214.0" stroke="#111111" stroke-width="1.5" />
+<line x1="743.0" y1="206.0" x2="743.0" y2="214.0" stroke="#111111" stroke-width="1.5" />
+<text x="749.0" y="214.0" font-size="10" font-weight="bold" fill="#111111">R=0.426</text>
+<text x="592" y="264.6666666666667" font-size="10" text-anchor="end" fill="#222222">Rosetta (ddg_monomer)</text>
+<rect x="600" y="248.66666666666669" width="90.7" height="24" fill="#8c8c8c" rx="3" />
+<line x1="657.2" y1="260.6666666666667" x2="722.3" y2="260.6666666666667" stroke="#111111" stroke-width="1.5" />
+<line x1="657.2" y1="256.6666666666667" x2="657.2" y2="264.6666666666667" stroke="#111111" stroke-width="1.5" />
+<line x1="722.3" y1="256.6666666666667" x2="722.3" y2="264.6666666666667" stroke="#111111" stroke-width="1.5" />
+<text x="728.3" y="264.6666666666667" font-size="10" font-weight="bold" fill="#111111">R=0.334</text>
+<text x="592" y="315.33333333333337" font-size="10" text-anchor="end" fill="#222222">Rosetta (cartesian_ddg)</text>
+<rect x="600" y="299.33333333333337" width="125.8" height="24" fill="#8c8c8c" rx="3" />
+<line x1="695.5" y1="311.33333333333337" x2="752.8" y2="311.33333333333337" stroke="#111111" stroke-width="1.5" />
+<line x1="695.5" y1="307.33333333333337" x2="695.5" y2="315.33333333333337" stroke="#111111" stroke-width="1.5" />
+<line x1="752.8" y1="307.33333333333337" x2="752.8" y2="315.33333333333337" stroke="#111111" stroke-width="1.5" />
+<text x="758.8" y="315.33333333333337" font-size="10" font-weight="bold" fill="#111111">R=0.463</text>
+</svg>

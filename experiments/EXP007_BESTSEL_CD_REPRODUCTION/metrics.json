@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP007_BESTSEL_CD_REPRODUCTION",
+  "status": "RECONSTRUCTION_FROM_PRESERVED_BESTSEL_OUTPUTS",
+  "primary_provenance": "Author notebook 07_protein_analysis_bestsel.ipynb Cells 15-24; STAR Protocols 2021 Step 19 (BeStSel protocol).",
+  "note_on_figure_attribution": "STAR Protocols Figure 2B depicts sequence logos without pairwise interactions, not BeStSel. BeStSel deconvolution supports protocol Step 19 and Cell Systems experimental validation.",
+  "targets": [
+    "1n5u",
+    "4beu"
+  ],
+  "elements_evaluated": [
+    "Helix1",
+    "Helix2",
+    "Anti1",
+    "Anti2",
+    "Anti3",
+    "Para",
+    "Turn",
+    "Others"
+  ],
+  "n5u_total_alpha_helix_ref": 0.29696666666666666,
+  "n5u_total_alpha_helix_des": 0.29883333333333334,
+  "beu4_total_beta_strand_ref": 0.32760000000000006,
+  "beu4_total_beta_strand_des": 0.2051,
+  "hypothesis_testing": {
+    "1n5u_no_statistically_significant_difference_detected": true,
+    "1n5u_min_pvalue": 0.1599058841263103,
+    "4beu_inferential_test": "Not performed: N=1 observation per group (reference vs design) precludes two-sample t-testing."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "experiment_id": "EXP007_BESTSEL_CD_REPRODUCTION",
+  "date": "2026-09-30",
+  "description": "Reconstruction of circular dichroism secondary structure deconvolution from preserved BeStSel outputs (1n5u and 4beu).",
+  "status": "RECONSTRUCTION_FROM_PRESERVED_BESTSEL_OUTPUTS",
+  "provenance": "Preserved BeStSel deconvolution data from author notebook 07_protein_analysis_bestsel.ipynb cells 15-24, supporting STAR Protocols Step 19 and Cell Systems experimental validation.",
+  "targets": ["1n5u", "4beu"],
+  "notes": "Removes erroneous attribution to STAR Protocols Figure 2B (which depicts sequence logos for non-interacting topologies). Reclassifies from exact end-to-end recreation since raw CD spectra were not rerun through BeStSel web server."
+}

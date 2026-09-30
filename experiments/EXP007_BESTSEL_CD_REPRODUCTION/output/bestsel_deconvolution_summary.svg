@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="750" height="380" viewBox="0 0 750 380" font-family="Arial, sans-serif">
+<rect width="750" height="380" fill="#ffffff" />
+<text x="375.0" y="26" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">CD Secondary Structure Deconvolution (BeStSel Preserved Outputs)</text>
+<text x="210.0" y="58" font-size="11" font-weight="bold" text-anchor="middle" fill="#222222">Serum albumin (1n5u, N=3 replicates)</text>
+<line x1="80" y1="70" x2="80" y2="290" stroke="#888888" stroke-width="1.2" />
+<line x1="80" y1="290" x2="340" y2="290" stroke="#888888" stroke-width="1.2" />
+<line x1="80" y1="290.0" x2="340" y2="290.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="72" y="294.0" font-size="9" text-anchor="end" fill="#555555">0%</text>
+<line x1="80" y1="241.11111111111111" x2="340" y2="241.11111111111111" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="72" y="245.11111111111111" font-size="9" text-anchor="end" fill="#555555">10%</text>
+<line x1="80" y1="192.22222222222223" x2="340" y2="192.22222222222223" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="72" y="196.22222222222223" font-size="9" text-anchor="end" fill="#555555">20%</text>
+<line x1="80" y1="143.33333333333334" x2="340" y2="143.33333333333334" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="72" y="147.33333333333334" font-size="9" text-anchor="end" fill="#555555">30%</text>
+<line x1="80" y1="94.44444444444443" x2="340" y2="94.44444444444443" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="72" y="98.44444444444443" font-size="9" text-anchor="end" fill="#555555">40%</text>
+<rect x="130" y="196.45925925925926" width="40" height="93.54074074074074" fill="#3182bd" stroke="#ffffff" stroke-width="0.5" />
+<rect x="230" y="198.5125925925926" width="40" height="91.4874074074074" fill="#3182bd" stroke="#ffffff" stroke-width="0.5" />
+<rect x="130" y="144.8162962962963" width="40" height="51.64296296296296" fill="#6baed6" stroke="#ffffff" stroke-width="0.5" />
+<rect x="230" y="143.9037037037037" width="40" height="54.60888888888889" fill="#6baed6" stroke="#ffffff" stroke-width="0.5" />
+<rect x="130" y="139.4059259259259" width="40" height="5.410370370370371" fill="#31a354" stroke="#ffffff" stroke-width="0.5" />
+<rect x="230" y="142.02962962962962" width="40" height="1.8740740740740738" fill="#31a354" stroke="#ffffff" stroke-width="0.5" />
+<rect x="130" y="114.55407407407407" width="40" height="24.85185185185185" fill="#74c476" stroke="#ffffff" stroke-width="0.5" />
+<rect x="230" y="111.44148148148147" width="40" height="30.58814814814815" fill="#74c476" stroke="#ffffff" stroke-width="0.5" />
+<rect x="130" y="69.03851851851852" width="40" height="45.51555555555556" fill="#a1d99b" stroke="#ffffff" stroke-width="0.5" />
+<rect x="230" y="71.2385185185185" width="40" height="40.202962962962964" fill="#a1d99b" stroke="#ffffff" stroke-width="0.5" />
+<rect x="130" y="50.297777777777775" width="40" height="18.74074074074074" fill="#e6550d" stroke="#ffffff" stroke-width="0.5" />
+<rect x="230" y="48.16296296296295" width="40" height="23.075555555555553" fill="#e6550d" stroke="#ffffff" stroke-width="0.5" />
+<rect x="130" y="-15.164444444444435" width="40" height="65.46222222222221" fill="#756bb1" stroke="#ffffff" stroke-width="0.5" />
+<rect x="230" y="-15.115555555555552" width="40" height="63.2785185185185" fill="#756bb1" stroke="#ffffff" stroke-width="0.5" />
+<text x="150.0" y="306" font-size="9" text-anchor="middle" fill="#333333">Ref</text>
+<text x="250.0" y="306" font-size="9" text-anchor="middle" fill="#333333">Design</text>
+<text x="550.0" y="58" font-size="11" font-weight="bold" text-anchor="middle" fill="#222222">Alanine racemase (4beu, N=1 unreplicated)</text>
+<line x1="420" y1="70" x2="420" y2="290" stroke="#888888" stroke-width="1.2" />
+<line x1="420" y1="290" x2="680" y2="290" stroke="#888888" stroke-width="1.2" />
+<line x1="420" y1="290.0" x2="680" y2="290.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="412" y="294.0" font-size="9" text-anchor="end" fill="#555555">0%</text>
+<line x1="420" y1="241.11111111111111" x2="680" y2="241.11111111111111" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="412" y="245.11111111111111" font-size="9" text-anchor="end" fill="#555555">10%</text>
+<line x1="420" y1="192.22222222222223" x2="680" y2="192.22222222222223" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="412" y="196.22222222222223" font-size="9" text-anchor="end" fill="#555555">20%</text>
+<line x1="420" y1="143.33333333333334" x2="680" y2="143.33333333333334" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="412" y="147.33333333333334" font-size="9" text-anchor="end" fill="#555555">30%</text>
+<line x1="420" y1="94.44444444444443" x2="680" y2="94.44444444444443" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="412" y="98.44444444444443" font-size="9" text-anchor="end" fill="#555555">40%</text>
+<rect x="470" y="239.84" width="40" height="50.16" fill="#3182bd" stroke="#ffffff" stroke-width="0.5" />
+<rect x="570" y="250.9377777777778" width="40" height="39.06222222222222" fill="#3182bd" stroke="#ffffff" stroke-width="0.5" />
+<rect x="470" y="211.33777777777777" width="40" height="28.50222222222222" fill="#6baed6" stroke="#ffffff" stroke-width="0.5" />
+<rect x="570" y="209.13777777777779" width="40" height="41.8" fill="#6baed6" stroke="#ffffff" stroke-width="0.5" />
+<rect x="470" y="179.65777777777777" width="40" height="31.680000000000003" fill="#31a354" stroke="#ffffff" stroke-width="0.5" />
+<rect x="570" y="199.9466666666667" width="40" height="9.191111111111109" fill="#31a354" stroke="#ffffff" stroke-width="0.5" />
+<rect x="470" y="119.76888888888888" width="40" height="59.888888888888886" fill="#74c476" stroke="#ffffff" stroke-width="0.5" />
+<rect x="570" y="158.88000000000002" width="40" height="41.06666666666667" fill="#74c476" stroke="#ffffff" stroke-width="0.5" />
+<rect x="470" y="72.10222222222221" width="40" height="47.66666666666667" fill="#a1d99b" stroke="#ffffff" stroke-width="0.5" />
+<rect x="570" y="108.86666666666669" width="40" height="50.013333333333335" fill="#a1d99b" stroke="#ffffff" stroke-width="0.5" />
+<rect x="470" y="51.17777777777776" width="40" height="20.924444444444447" fill="#e6550d" stroke="#ffffff" stroke-width="0.5" />
+<rect x="570" y="108.86666666666669" width="40" height="0.0" fill="#e6550d" stroke="#ffffff" stroke-width="0.5" />
+<rect x="470" y="-11.008888888888904" width="40" height="62.18666666666667" fill="#756bb1" stroke="#ffffff" stroke-width="0.5" />
+<rect x="570" y="26.293333333333365" width="40" height="82.57333333333332" fill="#756bb1" stroke="#ffffff" stroke-width="0.5" />
+<text x="490.0" y="306" font-size="9" text-anchor="middle" fill="#333333">Ref</text>
+<text x="590.0" y="306" font-size="9" text-anchor="middle" fill="#333333">Design</text>
+<rect x="80" y="335" width="10" height="10" fill="#3182bd" />
+<text x="94" y="344" font-size="8.5" fill="#333333">Helix1</text>
+<rect x="165" y="335" width="10" height="10" fill="#6baed6" />
+<text x="179" y="344" font-size="8.5" fill="#333333">Helix2</text>
+<rect x="250" y="335" width="10" height="10" fill="#31a354" />
+<text x="264" y="344" font-size="8.5" fill="#333333">Anti1</text>
+<rect x="335" y="335" width="10" height="10" fill="#74c476" />
+<text x="349" y="344" font-size="8.5" fill="#333333">Anti2</text>
+<rect x="420" y="335" width="10" height="10" fill="#a1d99b" />
+<text x="434" y="344" font-size="8.5" fill="#333333">Anti3</text>
+<rect x="505" y="335" width="10" height="10" fill="#e6550d" />
+<text x="519" y="344" font-size="8.5" fill="#333333">Para</text>
+<rect x="590" y="335" width="10" height="10" fill="#756bb1" />
+<text x="604" y="344" font-size="8.5" fill="#333333">Turn</text>
+</svg>

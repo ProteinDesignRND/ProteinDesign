@@ -1,0 +1,10 @@
+{
+  "experiment_id": "EXP006_ROCKLIN_STABILITY_REPRODUCTION",
+  "date": "2026-09-30",
+  "description": "Reconstruction of Cell Systems 2020 Figure 2F from preserved notebook statistics: Miniprotein protease stability score correlation across 4 topologies and 4 design rounds.",
+  "target_figure": "Cell Systems Figure 2F",
+  "status": "RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS",
+  "target_topologies": ["HHH", "HEEH", "EHEE", "EEHEE"],
+  "comparison_methods": ["ProteinSolver", "Rosetta (talaris2013)", "Ingraham et al."],
+  "notes": "Reconstructs published statistics from Notebook 06 Cell 53 and Notebook 07 Cell 102. Raw per-design network score tensors were not preserved in git repository. Highlights EEHEE Round 4 negative correlation exception where Rosetta talaris2013 rho ~ -0.40 and ProteinSolver rho ~ -0.14."
+}

@@ -1,0 +1,33 @@
+{
+  "experiment_id": "EXP005_PROTHERM_REPRODUCTION",
+  "cell_systems_figure": "Figure 2D",
+  "status": "RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS",
+  "provenance_notes": {
+    "rosetta_baseline": "RAW_DATA_RECOMPUTED (10,000 bootstrap iterations from local protherm_design_wt_RUE.csv)",
+    "proteinsolver_score": "PRESERVED_NOTEBOOK_STATISTIC (from upstream 07_protein_analysis_figures.ipynb Cell 72; raw per-mutation network scores protherm_wresults.torch are absent from git)",
+    "correlation_type": "Spearman rank correlation (rho), NOT Pearson R",
+    "figure_mapping_clarification": "Cell Systems Figure 2D is the ProTherm panel (rho=0.444). The rho=0.551 core subset is an internal exploratory analysis from Notebook 07 Cell 72, NOT Figure 2E."
+  },
+  "recomputed_rosetta_metrics": {
+    "spearman_rho": 0.00799787545559069,
+    "pvalue": 0.6376163176168534,
+    "bootstrap_ci90": [
+      -0.020029981869497643,
+      0.03600907254674914
+    ]
+  },
+  "preserved_proteinsolver_metrics": {
+    "all_mutations_spearman_rho": 0.443801,
+    "all_mutations_pvalue": 1.783294e-167,
+    "all_mutations_ci90": [
+      0.418884,
+      0.467848
+    ],
+    "core_subset_spearman_rho": 0.551231,
+    "core_subset_pvalue": 1.286834e-15,
+    "core_subset_ci90": [
+      0.460245,
+      0.626613
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "experiment_id": "EXP006_ROCKLIN_STABILITY_REPRODUCTION",
+  "cell_systems_figure": "Figure 2F",
+  "status": "RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS",
+  "provenance_notes": {
+    "figure_mapping": "Figure 2F presents whole-protein stability correlations for Rosetta-designed proteins across 4 topologies. Figure 2E is the single-mutation Rocklin dataset.",
+    "data_status": "Reconstructed from author notebook 06 Cell 53 & notebook 07 Cell 102. Raw per-design network score tensors were not tracked in git.",
+    "eehee_round4_exception": "In EEHEE Round 4, both methods exhibit negative correlations: Rosetta talaris2013 rho \u2248 -0.40 and ProteinSolver rho \u2248 -0.14. Method performance varies across topologies; no universal method superiority exists."
+  },
+  "max_spearman_rho_by_topology": {
+    "HHH_alpha_alpha_alpha": 0.422,
+    "HEEH_alpha_beta_beta_alpha": 0.313,
+    "EHEE_beta_alpha_beta_beta": 0.245,
+    "EEHEE_beta_beta_alpha_beta_beta": 0.145
+  },
+  "eehee_round4_metrics": {
+    "proteinsolver_rho": -0.1421,
+    "rosetta_talaris2013_rho": -0.4012
+  }
+}

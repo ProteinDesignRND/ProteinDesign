@@ -1,0 +1,54 @@
+{
+  "experiment_id": "EXP008_FOUR_TARGET_INTEGRATION_FIXTURE",
+  "status": "INTEGRATION_FIXTURE_VERIFIED",
+  "generation_scale_classification": "REGENERATION_REQUIRED_BUT_EXPENSIVE",
+  "paper_generation_scale": "600,000+ sequences per fold across 4 folds (>2,400,000 sequences total)",
+  "regeneration_cost_status": "Exact current regeneration cost not yet benchmarked.",
+  "integration_targets_tested": 4,
+  "results": [
+    {
+      "target_id": "1n5uA03",
+      "protein_name": "Serum albumin domain 3",
+      "length": 92,
+      "recovery_pct": 41.3,
+      "runtime_seconds": 1.7,
+      "native_pi": 5.38,
+      "designed_pi": 8.52,
+      "native_gravy": -0.4489,
+      "designed_gravy": 0.8457
+    },
+    {
+      "target_id": "4beuA02",
+      "protein_name": "Alanine racemase domain 2",
+      "length": 217,
+      "recovery_pct": 41.94,
+      "runtime_seconds": 7.99,
+      "native_pi": 6.59,
+      "designed_pi": 8.07,
+      "native_gravy": -0.1415,
+      "designed_gravy": 0.5594
+    },
+    {
+      "target_id": "4unuA00",
+      "protein_name": "Formyl-CoA transferase",
+      "length": 109,
+      "recovery_pct": 43.12,
+      "runtime_seconds": 1.92,
+      "native_pi": 5.11,
+      "designed_pi": 5.43,
+      "native_gravy": -0.3495,
+      "designed_gravy": 0.0092
+    },
+    {
+      "target_id": "4z8jA00",
+      "protein_name": "Translation initiation factor IF-3",
+      "length": 96,
+      "recovery_pct": 46.88,
+      "runtime_seconds": 1.44,
+      "native_pi": 9.3,
+      "designed_pi": 4.51,
+      "native_gravy": -0.0573,
+      "designed_gravy": 0.1396
+    }
+  ]
+}

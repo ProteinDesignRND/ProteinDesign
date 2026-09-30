@@ -636,5 +636,262 @@
       "infrastructure-failure",
       "optimization"
     ]
+  },
+  {
+    "id": "L-017",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Notebook presence or filenames are not proof of execution",
+    "what_happened": "Early literature summaries inferred experimental coverage from notebook filenames without verifying whether notebook cells had been executed or contained real outputs.",
+    "lesson": "Never use notebook presence or filenames as proof of execution - inspect cell execution counts and actual outputs to verify whether a notebook was executed or merely authored.",
+    "type": "DATA_PROVENANCE",
+    "scope": "global",
+    "trigger": "INSPECTION",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "documentation",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1 Master Reproduction Audit",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-09-30T20:37:47.030571",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": [
+      "notebook",
+      "execution",
+      "provenance"
+    ]
+  },
+  {
+    "id": "L-018",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Separate published-checkpoint reproduction from retraining",
+    "what_happened": "Early planning discussions repeatedly raised retraining the 72M model from scratch, even though all published paper figures, designs, and biophysical evaluations used the published pretrained checkpoint.",
+    "lesson": "Always separate published-checkpoint reproduction from retraining - the published checkpoint reproduces all inference, generation, biophysical scoring, and design validation; retraining is only required for training loss trajectories and is forbidden by default under DEC-004.",
+    "type": "METHOD_SCIENCE",
+    "scope": "global",
+    "trigger": "PLANNING",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "architecture",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1 Master Reproduction Audit",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-09-30T20:37:47.052129",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": [
+      "checkpoint",
+      "retraining",
+      "dec-004"
+    ]
+  },
+  {
+    "id": "L-019",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Map paper figures to actual code and data provenance",
+    "what_happened": "Earlier reports conflated passing a single-target 1n5uA03 integration fixture with reproducing the paper's multi-target, mutational, and biophysical benchmarks.",
+    "lesson": "Always map paper figures to actual code and data provenance rather than inferring coverage from integration test fixtures.",
+    "type": "METHOD_SCIENCE",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "documentation",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1 Master Reproduction Audit",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-09-30T20:37:47.072651",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": [
+      "matrix",
+      "provenance",
+      "figures"
+    ]
+  },
+  {
+    "id": "L-020",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Never silently substitute modern tools for historical baselines",
+    "what_happened": "Proposals were made to replace historical QUARK ab initio folding and Rosetta FastRelax with ESMFold/AlphaFold2 without noting the change in scientific scoring potentials.",
+    "lesson": "Never silently substitute a modern tool (e.g. ESMFold/AlphaFold2 for QUARK/Rosetta/Modeller) without explicitly classifying it as MODERN_EQUIVALENT_NOT_EXACT_HISTORICAL_REPRODUCTION.",
+    "type": "METHOD_SCIENCE",
+    "scope": "global",
+    "trigger": "PROTOCOL",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "science",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1 Master Reproduction Audit",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-09-30T20:37:47.097652",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": [
+      "modern-equivalent",
+      "fidelity",
+      "substitution"
+    ]
+  },
+  {
+    "id": "L-021",
+    "title": "Final published-paper figure numbering must be treated as independent from preprint/protocol/notebook numbering",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "what_happened": "During initial provenance audits, internal notebook figure names and protocol figure numbers were erroneously assumed to match final Cell Systems published paper figure panels, leading to incorrect figure crosswalks.",
+    "lesson": "Final published-paper figure panels must always be verified directly against the published journal PDF, completely independent of preprint, companion protocol, or internal notebook numbering.",
+    "type": "DATA_PROVENANCE",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "documentation",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1.2 Scientific Provenance Repair",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-01T00:03:21.720560",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP005",
+      "EXP006",
+      "EXP007",
+      "EXP008"
+    ],
+    "related_files": [
+      "reports/PROTEINSOLVER_MASTER_REPRODUCTION_AUDIT_R1.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "evt-L-021-created",
+    "applicability": {},
+    "keywords": [
+      "figure-crosswalk",
+      "provenance",
+      "paper-reproduction"
+    ]
+  },
+  {
+    "id": "L-022",
+    "title": "Reconcile executed command and input data paths against final report evidence descriptions before declaring reproduction complete",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "what_happened": "In earlier audit reports, documentation cited non-existent or differently named datasets (e.g. protherm_wresults.parquet N=3,524) while the actual executed script consumed a different local file (protherm_design_wt_RUE.csv N=3,471).",
+    "lesson": "Always verify that every dataset filename, path, and row count cited in documentation corresponds exactly to the raw file and script that actually executed before registering reproduction status.",
+    "type": "DATA_PROVENANCE",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "documentation",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1.2.1 Forensic Reconciliation",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-01T00:26:47.817415",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP005",
+      "EXP006"
+    ],
+    "related_files": [
+      "experiments/EXP005_PROTHERM_REPRODUCTION/run.py"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "evt-L-022-created",
+    "applicability": {},
+    "keywords": [
+      "dataset-reconciliation",
+      "row-counts",
+      "provenance"
+    ]
+  },
+  {
+    "id": "L-023",
+    "title": "A non-significant p-value (p > 0.05) indicates failure to detect a difference, never proof of structural equivalence",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "what_happened": "Early CD deconvolution reproduction reports asserted that because two-sample t-tests yielded p > 0.05, structural equivalence was rigorously confirmed.",
+    "lesson": "Never report p > 0.05 as proof of structural equivalence - report strictly that no statistically significant difference was detected under the tested experimental and analytical conditions.",
+    "type": "METHOD_SCIENCE",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "science",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1.2.1 Forensic Reconciliation",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-01T00:26:47.817415",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP007"
+    ],
+    "related_files": [
+      "experiments/EXP007_BESTSEL_CD_REPRODUCTION/run.py"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "evt-L-023-created",
+    "applicability": {},
+    "keywords": [
+      "statistical-significance",
+      "hypothesis-testing",
+      "equivalence"
+    ]
+  },
+  {
+    "id": "L-024",
+    "title": "Internally consistent reports can be globally false if assumptions are not verified against primary publications and source code",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "what_happened": "In phases R1.0 through R1.2, cross-AI reports maintained internal consistency while propagating critical errors (hallucinating main Figures 3-5, positive EEHEE round 4 correlations, NMR structure determination, and ungrounded 4.4M sequence counts) because audits summarized prior AI reports rather than checking the primary Cell Systems publication and historical code.",
+    "lesson": "Always verify architectural specifications, dataset sizes, statistical values, and figure numbers directly against primary source code and published peer-reviewed PDFs; never infer primary facts from AI report consensus or notebook naming.",
+    "type": "DATA_PROVENANCE",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "documentation",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1.2.2 Final Evidence Closure",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-01T01:23:43.931933",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP005",
+      "EXP006",
+      "EXP007",
+      "EXP008"
+    ],
+    "related_files": [
+      "science/original_proteinsolver.md",
+      "reports/PROTEINSOLVER_R1_2_2_FINAL_EVIDENCE_CLOSURE.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "evt-L-024-created",
+    "applicability": {},
+    "keywords": [
+      "primary-verification",
+      "evidence-graph",
+      "ai-hallucination",
+      "provenance"
+    ]
   }
-]
+]

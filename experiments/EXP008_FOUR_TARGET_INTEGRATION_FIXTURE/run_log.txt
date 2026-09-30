@@ -1,0 +1,34 @@
+======================================================================
+EXP008: Four-Target Inverse Folding Integration Fixture & ProtParam
+Cell Systems 2020 Figure 3 Targets (1n5u, 4beu, 4unu, 4z8j)
+======================================================================
+Using device: cpu
+Pretrained checkpoint loaded successfully under strict=True.
+
+--- Processing Target: 1n5uA03 (Serum albumin domain 3 | All-alpha (4-helix bundle)) ---
+  Length: 92 AA | Runtime: 1.70 s
+  Native:   KFGERAFKAWAVARLSQRFPKAEFAEVSKLVTDLTKVHTE... (MW=10404.74, pI=5.38, GRAVY=-0.4489)
+  Designed: MAGLDAFLAEAVARLSARFPGASAAELARLTALETLTRLC... (MW=9183.74, pI=8.52, GRAVY=0.8457)
+  Recovery: 41.30% (38/92 residues matching)
+
+--- Processing Target: 4beuA02 (Alanine racemase domain 2 | Alpha/Beta (barrel)) ---
+  Length: 217 AA | Runtime: 7.99 s
+  Native:   LGQFQSNIEQFKSHMNANTKICAIMKADAYGNGIRGLMPT... (MW=23350.47, pI=6.59, GRAVY=-0.1415)
+  Designed: LAAFAAALRAFRAALDAGTRLCALLLSSARARGLEALLPL... (MW=22373.73, pI=8.07, GRAVY=0.5594)
+  Recovery: 41.94% (91/217 residues matching)
+
+--- Processing Target: 4unuA00 (Formyl-CoA transferase | Rossmann fold) ---
+  Length: 109 AA | Runtime: 1.92 s
+  Native:   SALTQPPSASGSLGQSVTISCTGTSSDVGGYNYVSWYQQH... (MW=11372.25, pI=5.11, GRAVY=-0.3495)
+  Designed: GTFTNPAGSTGTPGSTVTVACTGSSATVGGHSTITWYRTK... (MW=10365.11, pI=5.43, GRAVY=0.0092)
+  Recovery: 43.12% (47/109 residues matching)
+
+--- Processing Target: 4z8jA00 (Translation initiation factor IF-3 | Two-layer alpha/beta sandwich) ---
+  Length: 96 AA | Runtime: 1.44 s
+  Native:   SPRVVRIVKSESGYGFNVRGQVSEGGQLRSINGELYAPLQ... (MW=10159.45, pI=9.3, GRAVY=-0.0573)
+  Designed: APRTVTLKKTKDGFGLTVAGRTEYDGAPVKVNGEPFGPVQ... (MW=9702.87, pI=4.51, GRAVY=0.1396)
+  Recovery: 46.88% (45/96 residues matching)
+
+Saved results table to: D:\Projects\Protein Design\experiments\EXP008_FOUR_TARGET_INTEGRATION_FIXTURE\output\four_target_integration_results.csv
+Saved metrics to: D:\Projects\Protein Design\experiments\EXP008_FOUR_TARGET_INTEGRATION_FIXTURE\metrics.json
+EXP008 completed successfully.

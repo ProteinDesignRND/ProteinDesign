@@ -1,0 +1,12 @@
+{
+  "experiment_id": "EXP005_PROTHERM_REPRODUCTION",
+  "date": "2026-09-30",
+  "description": "Reconstruction of Cell Systems 2020 Figure 2D: ProTherm single-point mutation DeltaDeltaG Spearman correlation across 3,471 mutations.",
+  "target_figure": "Cell Systems Figure 2D",
+  "status_classification": "RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS",
+  "rosetta_baseline_status": "RAW_DATA_RECOMPUTED",
+  "proteinsolver_score_status": "PRESERVED_NOTEBOOK_STATISTIC",
+  "correlation_type": "Spearman rank correlation (rho)",
+  "bootstrap_iterations": 10000,
+  "notes": "Rosetta REU baseline is recomputed directly from raw local CSV with 10,000 bootstrap iterations. ProteinSolver per-mutation network scores (protherm_wresults.torch) were not bundled in git; its Spearman rho=0.444 is reconstructed from author notebook 07 Cell 72. The rho=0.551 core subset is an exploratory notebook analysis, NOT Figure 2E."
+}

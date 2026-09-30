@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360" font-family="Arial, sans-serif">
+<rect width="800" height="360" fill="#ffffff" />
+<text x="400.0" y="28" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">Cell Systems 2020 Figure 2F: De Novo Protein Stability Score Correlations by Topology</text>
+<text x="140.0" y="58" font-size="11" font-weight="bold" text-anchor="middle" fill="#222222">ααα (HHH)</text>
+<line x1="60" y1="70" x2="60" y2="280" stroke="#888888" stroke-width="1.2" />
+<line x1="60" y1="280" x2="220" y2="280" stroke="#888888" stroke-width="1.2" />
+<line x1="60" y1="280.0" x2="220" y2="280.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="52" y="284.0" font-size="9" text-anchor="end" fill="#555555">0.0</text>
+<line x1="60" y1="238.0" x2="220" y2="238.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="52" y="242.0" font-size="9" text-anchor="end" fill="#555555">0.1</text>
+<line x1="60" y1="196.0" x2="220" y2="196.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="52" y="200.0" font-size="9" text-anchor="end" fill="#555555">0.2</text>
+<line x1="60" y1="154.0" x2="220" y2="154.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="52" y="158.0" font-size="9" text-anchor="end" fill="#555555">0.3</text>
+<line x1="60" y1="112.0" x2="220" y2="112.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="52" y="116.0" font-size="9" text-anchor="end" fill="#555555">0.4</text>
+<line x1="60" y1="70.0" x2="220" y2="70.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<text x="52" y="74.0" font-size="9" text-anchor="end" fill="#555555">0.5</text>
+<text x="30" y="175.0" font-size="11" text-anchor="middle" fill="#222222" transform="rotate(-90, 30, 175.0)">Spearman's ρ</text>
+<line x1="92.0" y1="280" x2="92.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="92.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R1</text>
+<rect x="88.5" y="156.62696" width="7" height="7" fill="#1f77b4" />
+<circle cx="92.0" cy="198.30496" r="3.5" fill="#7f7f7f" />
+<line x1="124.0" y1="280" x2="124.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="124.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R2</text>
+<rect x="120.5" y="131.5496" width="7" height="7" fill="#1f77b4" />
+<line x1="156.0" y1="280" x2="156.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="156.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R3</text>
+<rect x="152.5" y="116.37332" width="7" height="7" fill="#1f77b4" />
+<line x1="188.0" y1="280" x2="188.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="188.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R4</text>
+<rect x="184.5" y="99.47" width="7" height="7" fill="#1f77b4" />
+<text x="320.0" y="58" font-size="11" font-weight="bold" text-anchor="middle" fill="#222222">αββα (HEEH)</text>
+<line x1="240" y1="70" x2="240" y2="280" stroke="#888888" stroke-width="1.2" />
+<line x1="240" y1="280" x2="400" y2="280" stroke="#888888" stroke-width="1.2" />
+<line x1="240" y1="280.0" x2="400" y2="280.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="240" y1="238.0" x2="400" y2="238.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="240" y1="196.0" x2="400" y2="196.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="240" y1="154.0" x2="400" y2="154.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="240" y1="112.0" x2="400" y2="112.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="240" y1="70.0" x2="400" y2="70.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="272.0" y1="280" x2="272.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="272.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R1</text>
+<rect x="268.5" y="216.6458" width="7" height="7" fill="#1f77b4" />
+<circle cx="272.0" cy="242.44317999999998" r="3.5" fill="#7f7f7f" />
+<line x1="304.0" y1="280" x2="304.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="304.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R2</text>
+<rect x="300.5" y="186.02696" width="7" height="7" fill="#1f77b4" />
+<line x1="336.0" y1="280" x2="336.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="336.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R3</text>
+<rect x="332.5" y="165.56959999999998" width="7" height="7" fill="#1f77b4" />
+<line x1="368.0" y1="280" x2="368.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="368.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R4</text>
+<rect x="364.5" y="145.23278" width="7" height="7" fill="#1f77b4" />
+<text x="500.0" y="58" font-size="11" font-weight="bold" text-anchor="middle" fill="#222222">βαββ (EHEE)</text>
+<line x1="420" y1="70" x2="420" y2="280" stroke="#888888" stroke-width="1.2" />
+<line x1="420" y1="280" x2="580" y2="280" stroke="#888888" stroke-width="1.2" />
+<line x1="420" y1="280.0" x2="580" y2="280.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="420" y1="238.0" x2="580" y2="238.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="420" y1="196.0" x2="580" y2="196.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="420" y1="154.0" x2="580" y2="154.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="420" y1="112.0" x2="580" y2="112.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="420" y1="70.0" x2="580" y2="70.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="452.0" y1="280" x2="452.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="452.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R1</text>
+<rect x="448.5" y="245.28224" width="7" height="7" fill="#1f77b4" />
+<circle cx="452.0" cy="280.0" r="3.5" fill="#7f7f7f" />
+<line x1="484.0" y1="280" x2="484.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="484.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R2</text>
+<rect x="480.5" y="207.02318" width="7" height="7" fill="#1f77b4" />
+<line x1="516.0" y1="280" x2="516.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="516.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R3</text>
+<rect x="512.5" y="191.85236" width="7" height="7" fill="#1f77b4" />
+<line x1="548.0" y1="280" x2="548.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="548.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R4</text>
+<rect x="544.5" y="173.5496" width="7" height="7" fill="#1f77b4" />
+<text x="680.0" y="58" font-size="11" font-weight="bold" text-anchor="middle" fill="#222222">ββαββ (EEHEE)</text>
+<line x1="600" y1="70" x2="600" y2="280" stroke="#888888" stroke-width="1.2" />
+<line x1="600" y1="280" x2="760" y2="280" stroke="#888888" stroke-width="1.2" />
+<line x1="600" y1="280.0" x2="760" y2="280.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="600" y1="238.0" x2="760" y2="238.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="600" y1="196.0" x2="760" y2="196.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="600" y1="154.0" x2="760" y2="154.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="600" y1="112.0" x2="760" y2="112.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="600" y1="70.0" x2="760" y2="70.0" stroke="#eeeeee" stroke-width="1" stroke-dasharray="2,2" />
+<line x1="632.0" y1="280" x2="632.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="632.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R1</text>
+<rect x="628.5" y="268.9148" width="7" height="7" fill="#1f77b4" />
+<circle cx="632.0" cy="254.72902" r="3.5" fill="#7f7f7f" />
+<line x1="664.0" y1="280" x2="664.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="664.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R2</text>
+<rect x="660.5" y="229.27058" width="7" height="7" fill="#1f77b4" />
+<circle cx="664.0" cy="244.24792" r="3.5" fill="#7f7f7f" />
+<line x1="696.0" y1="280" x2="696.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="696.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R3</text>
+<rect x="692.5" y="215.5496" width="7" height="7" fill="#1f77b4" />
+<line x1="728.0" y1="280" x2="728.0" y2="284" stroke="#888888" stroke-width="1" />
+<text x="728.0" y="296" font-size="8.5" text-anchor="middle" fill="#555555">R4</text>
+<rect x="724.5" y="276.5" width="7" height="7" fill="#1f77b4" />
+<circle cx="728.0" cy="280.0" r="3.5" fill="#7f7f7f" />
+<rect x="250" y="314" width="8" height="8" fill="#1f77b4" />
+<text x="265" y="322" font-size="10" fill="#222222">ProteinSolver (network_score)</text>
+<circle cx="480" cy="318" r="4" fill="#7f7f7f" />
+<text x="492" y="322" font-size="10" fill="#222222">Rosetta (talaris2013)</text>
+</svg>

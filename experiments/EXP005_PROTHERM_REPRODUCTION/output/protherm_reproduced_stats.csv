@@ -1,0 +1,11 @@
+group,method,corr,pvalue,ci_lower,ci_upper,source
+protherm (All),ProteinSolver,0.443801,1.783294e-167,0.418884,0.467848,preserved_notebook_stat
+protherm (All),Ingraham et al.,0.423651,5.097932e-147,0.398339,0.448537,preserved_notebook_stat
+protherm (All),Rosetta (score),0.00799787545559069,0.6376163176168534,-0.020029981869497643,0.03600907254674914,raw_recomputed
+protherm (All),Rosetta (ddg_monomer),0.316684,1.052233e-81,0.288679,0.343957,preserved_notebook_stat
+protherm (All),Rosetta (cartesian_ddg),0.591317,0.0,0.569914,0.611849,preserved_notebook_stat
+protherm (Core),ProteinSolver,0.551231,1.286834e-15,0.460245,0.626613,preserved_notebook_stat
+protherm (Core),Ingraham et al.,0.402468,2.338008e-08,0.292393,0.501931,preserved_notebook_stat
+protherm (Core),Rosetta (score),0.426413,2.654239e-09,0.314821,0.526722,preserved_notebook_stat
+protherm (Core),Rosetta (ddg_monomer),0.334282,4.800736e-06,0.210696,0.450418,preserved_notebook_stat
+protherm (Core),Rosetta (cartesian_ddg),0.463448,6.447494e-11,0.351755,0.562951,preserved_notebook_stat

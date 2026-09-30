@@ -1,0 +1,17 @@
+======================================================================
+EXP005: ProTherm Mutation DeltaDeltaG Correlation Reproduction
+Cell Systems 2020 Figure 2D / Upstream Notebook 07 Cell 11-16 & 70-74
+======================================================================
+Loaded raw ProTherm dataset: 3471 mutations across 3471 structures.
+[RAW RECOMPUTATION] Rosetta REU change Spearman rho: 0.007998, p=6.3762e-01
+Running 10,000 bootstrap iterations for Rosetta REU confidence interval...
+[RAW RECOMPUTATION] Rosetta REU 90% bootstrap CI: [-0.0200, 0.0360]
+
+Preserved Literature Statistics (Spearman rho):
+  Figure 2D (All 3,471 mutations):        Spearman rho = 0.444 (p = 1.78e-167), 90% CI [0.419, 0.468]
+  Exploratory Core Subset (Notebook 07):  Spearman rho = 0.551 (p = 1.29e-15), 90% CI [0.460, 0.627]
+
+Saved reproduced stats to: D:\Projects\Protein Design\experiments\EXP005_PROTHERM_REPRODUCTION\output\protherm_reproduced_stats.csv
+Generated standalone SVG figure: D:\Projects\Protein Design\experiments\EXP005_PROTHERM_REPRODUCTION\output\fig2d_protherm_reproduction.svg
+Saved metrics to: D:\Projects\Protein Design\experiments\EXP005_PROTHERM_REPRODUCTION\metrics.json
+EXP005 completed successfully.
