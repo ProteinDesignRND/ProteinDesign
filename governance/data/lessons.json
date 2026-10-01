@@ -931,5 +931,44 @@
       "primary-literature",
       "provenance"
     ]
+  },
+  {
+    "id": "L-026",
+    "title": "Never infer implementation-level tensor architecture from prose summaries; verify tensor shapes directly from primary source code",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "what_happened": "In previous audit cycles, paper prose mentioning distance and sequence separation was assumed to mean 3 input edge features and native self-loops, when primary source code in fact constructed a 2-channel normalized tensor entering an embedding MLP and explicitly stripped self-loops. Furthermore, reports declared R2_READY based on internal agreement between derived documents rather than verifying against primary code and cryptographic hashes.",
+    "lesson": "Never infer implementation-level architecture from prose summaries when exact historical source code is available. Distinguish conceptual paper attributes from implementation-level tensor representation, verify tensor shapes directly from code, and never declare evidence closure merely because current documents agree with one another without primary-source grounding.",
+    "type": "DATA_PROVENANCE",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "implementation",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1 Final Source Adjudication & Contradiction Elimination",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-01T10:27:53.399191",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP000",
+      "EXP001",
+      "EXP004",
+      "EXP008"
+    ],
+    "related_files": [
+      "science/original_proteinsolver.md",
+      "reports/PROTEINSOLVER_R1_2_2_FINAL_EVIDENCE_CLOSURE.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "evt-L-026-created",
+    "applicability": {},
+    "keywords": [
+      "tensor-architecture",
+      "edge-features",
+      "self-loops",
+      "primary-source-verification",
+      "evidence-closure"
+    ]
   }
 ]
