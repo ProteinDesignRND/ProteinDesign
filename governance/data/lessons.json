@@ -893,5 +893,43 @@
       "ai-hallucination",
       "provenance"
     ]
+  },
+  {
+    "id": "L-025",
+    "title": "Primary-paper panel inventories must be verified at individual panel level, not merely figure-number level",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "what_happened": "In previous audit cycles, figure numbers (e.g. Figure 1, Figure 2) were correctly identified, but sub-panels were misattributed (e.g. citing Figure 1A-E instead of 1A-C, describing Figure 2A as loss instead of accuracy, or inserting SEC/SDS-PAGE into panels 2G-M without paper caption confirmation).",
+    "lesson": "Primary-paper panel inventories must be verified at the individual panel level against original captions, not merely at the figure-number level, because a correct figure number can still contain an incorrect panel-to-method mapping.",
+    "type": "DATA_PROVENANCE",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "REPRODUCED",
+    "evidence_scope": "documentation",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R1 Final Surgical Correction & Release Gate",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-01T09:59:18.785929",
+    "last_reviewed": "",
+    "related_experiments": [
+      "EXP005",
+      "EXP006",
+      "EXP007",
+      "EXP008"
+    ],
+    "related_files": [
+      "science/original_proteinsolver.md",
+      "reports/PROTEINSOLVER_R1_2_2_FINAL_EVIDENCE_CLOSURE.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "evt-L-025-created",
+    "applicability": {},
+    "keywords": [
+      "panel-level-verification",
+      "figure-caption",
+      "primary-literature",
+      "provenance"
+    ]
   }
 ]

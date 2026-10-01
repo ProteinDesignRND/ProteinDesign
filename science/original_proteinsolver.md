@@ -19,9 +19,10 @@ This document records the exact, source-grounded specifications of the original 
 - **Edge Features:**
   - **Cartesian Distance Feature:** Shortest heavy-atom distance $d_{ij}$, transformed via an **affine scalar linear transformation**:
     $$d_{	ext{norm}} = rac{d_{ij} - 6.0}{12.0}$$
-    (Note: This is an empirical affine scaling, not bounded $[0, 1]$ min-max normalization; with cutoff $12.0	ext{ \AA}$, values span approximately $[-0.5, +0.5]$).
-  - **Sequence Separation Feature:** Directed sequence index offset $\Delta_{ij} = j - i$, transformed via:
+    using offset 6.0 and scale 12.0. With distance cutoff $12.0	ext{ \AA}$, values span approximately $[-0.5, +0.5]$.
+  - **Sequence Separation Feature:** Directed sequence index offset $\Delta_{ij} = j - i$ (where $i$ is source and $j$ is target), transformed via an affine linear transformation:
     $$\Delta_{	ext{norm}} = rac{\Delta_{ij} - 0.0}{68.1319}$$
+    using offset 0.0 and scale 68.1319.
   - **Edge Embedding:** Concatenated 2-channel edge tensor $[d_{	ext{norm}}, \Delta_{	ext{norm}}] \in \mathbb{R}^{E 	imes 2}$, embedded via:
     `nn.Sequential(nn.Linear(2, 128), nn.ReLU(), nn.Linear(128, 128), nn.LayerNorm(128))` into $\mathbb{R}^{128}$.
 
@@ -36,7 +37,7 @@ This document records the exact, source-grounded specifications of the original 
   - Edge MLP: `nn.Sequential(nn.Linear(384, 256), nn.ReLU(), nn.Linear(256, 128))` updating edge state.
   - Node Aggregation: Summed scatter aggregation $\sum_{j \in \mathcal{N}(i)} e_{ij}$ over incoming edges to update node state.
   - Normalization: `nn.LayerNorm(128)` applied within `EdgeConvBatch` with training `dropout = 0.2`.
-  - Non-linear Activation: Strictly **`ReLU()` / `F.relu()`** throughout all layers and inter-block transitions. (There is **no `ELU`** activation in `ProteinNet`).
+  - Non-linear Activation: Strictly **`ReLU()` / `F.relu()`** throughout all layers and inter-block transitions. (There is no `ELU` activation in `ProteinNet`).
   - Residual Connections: Additive skip connections for both nodes ($x \leftarrow x + x_{	ext{out}}$) and edges ($e \leftarrow e + e_{	ext{out}}$) after each block.
 - **Output Head:**
   - A single linear projection `self.linear_out = nn.Linear(128, 20)` mapping final residue embeddings $h_i \in \mathbb{R}^{128}$ to unnormalized raw logits for the **20 canonical amino acids**.
@@ -55,27 +56,35 @@ This document records the exact, source-grounded specifications of the original 
   - Validation masking uses the identical parameter (`frac_present_valid = 0.5`).
 - **Loss Function:** Standard categorical cross-entropy loss computed strictly over masked positions ($x_i = 20$):
   $$\mathcal{L} = -rac{1}{|\mathcal{M}|} \sum_{i \in \mathcal{M}} \log P(s_i = s_i^* \mid \mathbf{x}_{	ext{masked}}, G)$$
-- **Optimizer & Scheduler:**
-  - Optimizer: `optim.Adam(net.parameters(), lr=1e-4)` with batch size 1 (or 4).
-  - Scheduler: Strictly `optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="max", verbose=True)` tracking validation accuracy. (There is **no CosineAnnealing** in the historical training code).
+- **Optimizer, Batch Size & Scheduler:**
+  - Optimizer: `optim.Adam(net.parameters(), lr=1e-4)`.
+  - **Batch Size:** Historical training used `batch_size = 4` structure graphs per step in the default 4-layer GCN training run (`04_protein_train.ipynb`), while validation evaluation and earlier exploratory runs (e.g. `0007604c`) used `batch_size = 1`.
+  - Scheduler: Strictly `optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="max", verbose=True)` tracking validation accuracy. (There is no `CosineAnnealing` in the historical training code).
   - Pretrained Checkpoint: `e53-s1952148-d93703104.state` (trained across 53 epochs, 1.95M optimizer steps, 937M samples seen).
 
 ---
 
-## 4. Training Corpus & Data Formats
+## 4. Training Corpus Reconciliation & Data Formats
 
-- **Training Corpus Structure:**
-  - Total Training Instances: **72,464,122 sequence/adjacency-matrix pairs** (formed by pairing homologous sequences with representative structural domain graphs).
-  - Sourced from **1,373 Gene3D superfamilies** partitioned at the superfamily level:
-    - **1,029 training superfamilies** (75%)
-    - **172 validation superfamilies** (12.5%)
-    - **172 test superfamilies** (12.5%)
-  - (Clarification: The claim that ProteinSolver was trained on "~4.4 million sequences across 70,000 CATH domains" was an ungrounded conflation with external CATH-ProteinNet datasets; the authoritative primary dataset is the 72,464,122 Gene3D pairs).
-- **Data Storage Formats by Role:**
-  - **Historical Training Corpus:** Serialized as Apache Parquet (`.snappy.parquet`) and Apache Arrow (`.arrow`) tables distributed via cloud storage (`http://deep-protein-gen.data.proteinsolver.org/`).
-  - **Local Mutational Datasets (EXP005, EXP006):** CSV format (`protherm_design_wt_RUE.csv`, `GAPF_design_RUE_wt.csv`) and supplementary Parquet files (`rocklin_2017_ssm2_cartesian_ddg.parquet`, `rocklin_2017_ssm2_ddg_monomer.parquet`).
-  - **Local CD Deconvolution (EXP007):** CSV format (`bestsel_results.csv`).
-  - **Integration Targets (EXP008):** PDB format (`1n5uA03.pdb`, `4beuA02.pdb`, `4unuA00.pdb`, `4z8jA00.pdb`).
+### A. Training Corpus Layers
+To resolve past descriptive contradictions, the training corpus is reconciled across its distinct structural and sequence layers:
+
+| Layer / Quantity | Meaning | Source | Exact / Approx | Role in Study |
+|:---|:---|:---|:---:|:---|
+| **>70 Million Sequences** | Broad sequence universe mapped to structural domains | Published Cell Systems headline | Approximate | Macro headline of sequence diversity |
+| **>80,000 Structures** | PDB structural domains providing contact topologies | Published Cell Systems headline | Approximate | Macro headline of structural coverage |
+| **~72 Million Unique Domains** | Non-redundant Gene3D domain sequences from UniParc | Published Gene3D framing | Approximate | Domain sequence collection |
+| **72,464,122 Records** | Prepared sequence/adjacency structural training pairs | Upstream dataset inventory | Exact | Model training instance corpus |
+| **1,373 Gene3D Superfamilies** | Structural superfamilies partitioning the dataset | Primary paper & notebooks | Exact | Superfamily-level split basis |
+| **1,029 / 172 / 172 Split** | Superfamily partition: Train (75%), Val (12.5%), Test (12.5%) | Primary paper & notebooks | Exact | Zero-topology-leakage partition |
+
+*Canonical Phrasing:* Published paper: >70M sequences corresponding to >80k structures. The repository's prepared structural-pair inventory contains 72,464,122 records, where directly verified; these are not to be presented as a replacement for the paper's scientific headline.
+
+### B. Data Storage Formats by Role
+- **Historical Training Corpus:** Serialized as Apache Parquet (`.snappy.parquet`) and Apache Arrow (`.arrow`) tables distributed via cloud storage (`http://deep-protein-gen.data.proteinsolver.org/`).
+- **Local Mutational Datasets (EXP005, EXP006):** CSV format (`protherm_design_wt_RUE.csv`, `GAPF_design_RUE_wt.csv`) and supplementary Parquet files (`rocklin_2017_ssm2_cartesian_ddg.parquet`, `rocklin_2017_ssm2_ddg_monomer.parquet`).
+- **Local CD Deconvolution (EXP007):** CSV format (`bestsel_results.csv`).
+- **Integration Targets (EXP008):** PDB format (`1n5uA03.pdb`, `4beuA02.pdb`, `4unuA00.pdb`, `4z8jA00.pdb`).
 
 ---
 
@@ -85,32 +94,43 @@ This document records the exact, source-grounded specifications of the original 
   1. **One-Shot Generation:** All unassigned positions unmasked in a single forward pass ($x 	o 	ext{logits} 	o 	ext{argmax}$). Achieves ~27.29% native sequence recovery on test domains.
   2. **Incremental CSP Generation (Canonical Paper Method):** Iterative single-residue unmasking: at each step, the network identifies the unassigned node with highest prediction confidence, commits that amino acid, re-evaluates the graph, and repeats until all positions are filled. Achieves ~33-35% native sequence recovery.
   3. **Stochastic Sampling:** At each unmasking step, sample residues from softmax distributions scaled by temperature $T$: $P(s_i = c) \propto \exp(z_{ic} / T)$.
-  4. **Exploratory Search (Notebook Extensions):** Priority-queue A* / best-first search over partial assignments (`design_protein`).
+  4. **Exploratory Search (Notebook Extensions):** Priority-queue A* / best-first search over partial assignments (`design_protein`). This is an implementation extension, not a canonical main-paper method.
 - **Sequence Scoring & Pseudo-Log-Likelihood:**
-  - Evaluated via leave-one-out masking (`scan_with_mask` in `proteinsolver/utils/protein_design.py`). Passing fully unmasked sequences causes label leakage due to residual connections.
-  - The model masks each position $i$ individually, queries the network, and gathers log-probabilities:
+  - Evaluated via leave-one-out masking (`scan_with_mask` in `proteinsolver/utils/protein_design.py`), representing the historical implementation scoring path:
     $$	ext{PLL}(s \mid G) = \sum_{i=1}^N \log P(s_i \mid s_{\setminus i}, G)$$
   - Mutational change score: $\Delta 	ext{score} = 	ext{PLL}(s_{	ext{mut}} \mid G) - 	ext{PLL}(s_{	ext{wt}} \mid G)$.
 
 ---
 
-## 6. Primary Literature Validation & Figure Correspondence
+## 6. Primary Literature Validation & Exact Figure Correspondence
 
-- **Final Published Paper Figure Layout (Cell Systems 2020, 11(4): 402-411.e4):**
-  - **Figure 1:** Overview of ProteinSolver graph formulation, CSP analogy, network architecture, and masking.
-  - **Figure 2 (Panels A–N):** The single comprehensive results figure in the main text:
-    - *Figure 2A:* Training and validation loss trajectory across epochs.
-    - *Figure 2B:* Native sequence recovery distributions (oneshot ~27.29% vs incremental ~33-35%).
-    - *Figure 2C:* Sequence identity distributions under partial information (0%, 50%, 80% reference availability).
-    - *Figure 2D:* ProTherm single-mutation $\Delta\Delta G$ correlation ($ho = 0.444$).
-    - *Figure 2E:* Rocklin single-mutation stability correlation ($ho = 0.50$).
-    - *Figure 2F:* Whole-protein stability correlation on Rosetta de novo designs.
-    - *Figure 2G–N:* Computational design and experimental validation of Serum Albumin (1n5uA03).
-  - **Supplementary Figures S3–S5:** Computational design evaluations for the other three target folds:
-    - *Figure S3:* Alanine Racemase (4beuA02).
-    - *Figure S4:* Immunoglobulin Light Chain (4unuA00).
-    - *Figure S5:* PDZ3 Domain (4z8jA00).
-- **Experimental Validation Scope:**
-  - In vitro expression in *E. coli*, SDS-PAGE, and size-exclusion chromatography (SEC).
-  - Far-UV Circular Dichroism (CD) spectroscopy and thermal denaturation curves.
-  - **Important Provenance Correction:** The authors did **not** solve atomic structures via NMR or X-ray crystallography; experimental validation was strictly biophysical (CD and SEC).
+### A. Published Cell Systems 2020 Figure Inventory
+The published peer-reviewed article (*Cell Systems* 11(4): 402–411.e4) contains strictly **Figure 1** and **Figure 2 (Panels A–N)** in the main text, with other targets placed in **Supplementary Figures S3–S5**:
+
+- **Figure 1: Concept, Network Architecture, and CSP Formulation**
+  - **Figure 1A:** Schematic of ProteinSolver CSP approach and graph representation.
+  - **Figure 1B:** Neural network architecture (4 EdgeConv blocks with skip connections).
+  - **Figure 1C:** Network execution flow and training objective.
+  *(Note: Figure 1 contains strictly panels 1A, 1B, and 1C; it does not contain panels 1D or 1E).*
+- **Figure 2: Empirical Performance, Biophysical Correlations, and De Novo Design (Panels A–N)**
+  - **Figure 2A:** Training and validation accuracy trajectory across epochs.
+  - **Figure 2B:** Native sequence recovery distributions on Gene3D test domains (oneshot 27.29% vs incremental ~33–35%).
+  - **Figure 2C:** Sequence identity distributions under partial sequence availability (0%, 50%, 80% unmasked).
+  - **Figure 2D:** ProTherm single-point mutation stability ($\Delta\Delta G$) correlation (Spearman $ho = 0.444$).
+  - **Figure 2E:** Rocklin single-point mutation stability correlation (Spearman $ho = 0.50$).
+  - **Figure 2F:** Whole-protein stability correlation on Rosetta de novo designs across 4 topologies.
+  - **Figure 2G:** Contact map and structural geometry of serum albumin (1n5uA03).
+  - **Figure 2H:** ProteinSolver scores vs. generated-sequence identity analysis.
+  - **Figure 2I:** Sequence logo of generated designs.
+  - **Figure 2J:** Secondary-structure and topology logo.
+  - **Figure 2K:** MODELLER / Rosetta structural-energy analysis.
+  - **Figure 2L:** QUARK structural prediction and comparison.
+  - **Figure 2M:** 100-ns molecular dynamics residue fluctuation analysis.
+  - **Figure 2N:** Circular dichroism (CD) spectra.
+- **Supplementary Figures S3–S5: Target Fold Computational Designs**
+  - **Figure S3:** Alanine Racemase fold design (`4beuA02`, 217 AA domain artifact spanning residues 49 to 265 of Chain A; full biological chain in PDB 4BEU is larger).
+  - **Figure S4:** Immunoglobulin Light Chain fold design (`4unuA00`, 109 AA domain artifact).
+  - **Figure S5:** PDZ3 Domain fold design (`4z8jA00`, 96 AA domain artifact).
+
+### B. Experimental Validation Scope
+The published study reports biophysical experimental validation including circular dichroism; the paper does not report atomic structure determination by NMR/X-ray as part of this validation.

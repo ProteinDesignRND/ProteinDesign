@@ -1,43 +1,27 @@
 # Antigravity Live Progress
 
-**Task:** PROTEINSOLVER - R1.2.2 FINAL EVIDENCE-GRAPH CLOSURE  
+**Task:** PROTEINSOLVER - FINAL R1 SURGICAL CORRECTION & RELEASE GATE  
 **Agent:** Lead Scientific Reproducibility Engineer & Evidence-Governance Agent  
-**Started:** 2026-10-01T00:44:00+05:30  
-**Updated:** 2026-10-01T01:25:00+05:30  
+**Started:** 2026-10-01T09:52:00+05:30  
+**Updated:** 2026-10-01T10:00:00+05:30  
 **Status:** COMPLETE / R2_READY  
-**Current Stage:** [10/10] Final R2 readiness gate (COMPLETED)  
 
 ---
 
-## Metric Tracking
-- **Completed Stages:** 10/10
-- **Findings Count:** 12
-- **Fixes Count:** 12
-- **Blocked Count:** 0
-- **Current Action:** R1.2.2 Complete. R2_READY gate criteria A-L fully satisfied. Execution stopped.
+Completed stages: [1/7], [2/7], [3/7], [4/7], [5/7], [6/7], [7/7]
+Findings: 12 material discrepancies reconciled across literature panels, architecture, and experiments
+Fixes: 12 bounded current-authority corrections applied across science, reports, and governance
+Blocked: 0
+Current action: Final R1 closure complete; repository clean; R2_READY.
 
 ---
 
-## Explicit Audit Stages
+## Stages Progress
 
-| Stage | Name | Status | Details |
-| :---: | :--- | :---: | :--- |
-| **1** | [1/10] Safety gate + evidence graph inventory | [x] COMPLETED | Safety gates passed. Authoritative evidence hierarchy and repo boundaries verified. |
-| **2** | [2/10] Current specification audit | [x] COMPLETED | Audited science/original_proteinsolver.md against historical code. |
-| **3** | [3/10] Final-paper figure inventory reconciliation | [x] COMPLETED | Verified published Cell Systems layout (Fig 1, Fig 2A-N, Fig S3-S5); eliminated ghost Figs 3-5. |
-| **4** | [4/10] Cross-AI conflict reconciliation | [x] COMPLETED | Reconciled AG/Claude/Perplexity conflicts (parameters, formats, leakage, datasets, NMR vs CD). |
-| **5** | [5/10] Training/data/architecture spec reconciliation | [x] COMPLETED | Verified 21 vocab, affine linear (d-6)/12, self-loops removed, strictly ReLU, 72.4M Gene3D pairs. |
-| **6** | [6/10] EXP005-EXP008 evidence-path reconciliation | [x] COMPLETED | Reconciled inputs, metrics, EEHEE Rd 4 negative correlations, and target identities. |
-| **7** | [7/10] Claim-language + stale-authority sweep | [x] COMPLETED | Swept all overclaims; updated REPORT_INDEX.md with crystal-clear authority scopes. |
-| **8** | [8/10] Governance/index/lesson reconciliation | [x] COMPLETED | Added durable lesson L-024 to governance store; updated REPORT_INDEX.md. |
-| **9** | [9/10] Git/commit/integrity verification | [x] COMPLETED | Preflight passed (0 errors); 81/81 tests passed; external repos clean; commit-bound. |
-| **10** | [10/10] Final R2 readiness gate | [x] COMPLETED | Evaluated gates A-L (all passed); generated authoritative R1.2.2 report; R2_READY. |
-
----
-
-## Git & Repository State
-- **Repo:** D:\Projects\Protein Design
-- **Branch:** main
-- **Start HEAD:** 3c0639ca96ba19494bb2e82ca1f72ab9a7834ade
-- **External Clone:** external/proteinsolver-original (clean at 69ef0965a3fc3bf191804035b539720a06e58ba6, UNTOUCHED)
-- **Modern Repo:** D:\Projects\ProteinSolver (clean at 58255bc67323f5fd009ac85ae02fbf69c152c457, UNTOUCHED)
+- [x] **[1/7] Safety + current-authority inventory:** Verified exact working directory `D:\Projects\Protein Design`, branch `main`, parent commit `d961ef0b865f03d05a3df339b9f84b8f20c9ea56`. Verified external repos clean and untouched. Inventoried Tier-B authority documents.
+- [x] **[2/7] Primary-paper panel correction:** Corrected Figure 1 to strictly panels 1A, 1B, 1C (excised 1A-E). Corrected Figure 2A canonical label to "Training and validation accuracy trajectory" (eliminated "loss"). Canonicalized Figure 2G-N panel crosswalk (2G contact map, 2H scores/identity, 2I sequence logo, 2J topology logo, 2K MODELLER/Rosetta energy, 2L QUARK, 2M 100-ns MD, 2N CD spectra). Clarified target folds S3 (Alanine Racemase, 4beuA02 217 AA domain artifact vs full biological chain), S4 (Immunoglobulin, 4unuA00 109 AA), S5 (PDZ3, 4z8jA00 96 AA).
+- [x] **[3/7] Training/specification reconciliation:** Formulated 6-row training corpus reconciliation table disentangling headline (>70M seq / >80k struct), Gene3D domain sequences (~72M), and prepared pairs (72,464,122 across 1,373 superfamilies). Resolved batch size to historical batch size 4 (training) and batch size 1 (validation/eval). Reconciled edge features as affine scalar linear transformations ($d_{\text{norm}} = (d - 6.0)/12.0$ with offset 6.0 and scale 12.0; $\Delta_{\text{norm}} = (j - i)/68.1319$ preserving directionality). Confirmed 21 input tokens, 20 output logits, ReLU activations, native self-loops, Adam, and ReduceLROnPlateau.
+- [x] **[4/7] EXP005–EXP008 numerical/provenance tightening:** Tightened EXP005 classification to PARTIAL_RECOMPUTATION / RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS ($N=3,471$, differentiated raw vs normalized REU vs Cartesian ddG). Tightened EXP006 classification to RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS (preserved EEHEE Rd 4 exception: Rosetta $\rho \approx -0.401$, ProteinSolver $\rho \approx -0.142$). Tightened EXP007 classification to RECONSTRUCTION_FROM_PRESERVED_BESTSEL_OUTPUTS (calibrated $p > 0.05$ as "no statistically significant difference detected under tested conditions"). Tightened EXP008 classification to INTEGRATION_FIXTURE_VERIFIED (41.30% recovery on 1n5u as single-target MAP diagnostic; full regeneration cost unbenchmarked).
+- [x] **[5/7] Global current-authority contradiction sweep:** Audited Tier-B documents for stale overclaims, phantom panels, and contradictory texts. Applied strict epistemic standard: "No additional material contradictions were identified within the audited current-authority corpus after reconciliation."
+- [x] **[6/7] Git/tests/governance verification:** Verified preflight CLI and pytest suite (81/81 passed). Added lesson L-025 and corresponding event. Verified external repositories clean and untouched.
+- [x] **[7/7] Final R2 release gate:** Evaluated criteria A through S. Verified cleanroom boundaries. Rendered final binary release decision: R2_READY.
