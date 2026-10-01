@@ -5,7 +5,7 @@
 **Repository:** Protein Design / ProteinSolver Research Extension  
 **Branch:** `governance/final-acceptance-redteam-v1`  
 **Target Pull Request:** PR #1 (targeting `main`)  
-**Authorization State:** FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE  
+**Authorization State:** MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)
 **Operational Status:** `PROTOCOL_FROZEN`, `IMPLEMENTATION_VERIFIED`, `EXPERIMENTS_NOT_RUN`  
 
 ---
@@ -252,9 +252,9 @@ The hard scientific firewall remains 100% active and unbreached:
 ## O. Human Authorization Boundary
 
 This report, all associated protocol amendments, and code integrations are:
-**FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE**
+**MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)**
 
-The autonomous AI agent operates strictly under technical verification and audit authority. The agent cannot grant scientific approval or merge changes into `main`. Formal scientific authorization and transition to experimental execution require human review and merge of PR #1.
+The autonomous AI agent operates strictly under technical verification and audit authority. The agent cannot grant scientific approval or merge changes into `main`. PR #1 was reviewed and merged into `main` by human authorization at commit `3c0639c` (2026-09-29). Transition to experimental E1 candidate generation and execution remains strictly pending explicit human authorization.
 
 ---
 

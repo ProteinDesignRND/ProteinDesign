@@ -207,8 +207,8 @@ This document chronologically logs all major architectural, methodological, and 
 
 ## [DEC-016] Pre-E1 Scientific Readiness & Protocol Closure: Immutable Development Manifest, Development Infeasibility Rule ($J=-\infty$), Screening Oracle Freeze, and AF2 Determinism Refinement
 - **Date:** 2026-09-28
-- **Status:** FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE
-- **Decider:** Protocol Consistency Audit Gate (Authorization Boundary: Human Review/Merge on PR #1)
+- **Status:** MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)
+- **Decider:** Protocol Consistency Audit Gate (PR #1 merged into main in commit 3c0639c; E1 execution pending human authorization)
 - **Decision:**
   1. **Immutable Development Target Manifest Freeze:** Formally freeze the exact 20 development backbones in `data/manifests/development_20_cath42.txt` (canonical LF SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`). Targets are selected deterministically from the canonical Ingraham et al. (NeurIPS 2019) / Dauparas et al. (Science 2022) CATH 4.2 validation split (`chain_set_splits.json`, raw downloaded artifact SHA-256: `8e9a587a50c7f6c026e4ed00f6c1c30b106100f36f7a01de47542bdfc060adc2`) by taking the first encounter of each unique primary CATH topology code in canonical validation split order across 20 distinct topologies spanning classes 1, 2, 3, and 4 (`2e6i.A`, `2mh3.A`, `3gn4.E`, `2qg3.A`, `3abd.B`, `1z8s.A`, `5t5d.A`, `1f7e.A`, `2lg7.A`, `1h2s.A`, `1yf9.A`, `2p2e.A`, `1cel.A`, `2kil.A`, `1c52.A`, `2gmy.D`, `1nyn.A`, `2c6u.A`, `2ctt.A`, `3hxi.A`). Target `4bdx.A` (chain 11 in validation split) has primary topology `2.10.25`, which duplicates chain 8 (`1f7e.A`), and is therefore correctly bypassed by the unique-topology selection rule.
   2. **Development Infeasibility Rule ($J = -\infty$):** For development hyperparameter optimization only, every candidate hyperparameter configuration must produce an $M=10$ unique viable library on ALL 20 development targets to be eligible for the primary $J$ argmax. If any target is `SELECTION_INFEASIBLE_LT_M` ($<10$ unique viable candidates), the configuration is INELIGIBLE and receives objective $J = -\infty$. No zero-filling (0.0), target exclusion, $M$ reduction, regeneration beyond $K=100$, or threshold alteration is permitted. Configuration infeasibility rate is reported separately: $\text{infeasibility\_rate} = N_{\text{infeasible}} / N_{\text{dev}}$. If all configurations in an arm are ineligible, stop that tuning arm and classify the development tuning stage as `DEVELOPMENT_TUNING_STAGE_INFEASIBLE` rather than inventing a fallback.
@@ -226,8 +226,8 @@ This document chronologically logs all major architectural, methodological, and 
 
 ## [DEC-017] Final Pre-E1 Surgical Reconciliation: Manifest Hash Canonicalization, scTM Methodological Boundary, Hydrophobic Core Fraction Formalization, and AI Authorization Clarification
 - **Date:** 2026-09-28
-- **Status:** FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE
-- **Decider:** Protocol Consistency Audit Gate (Authorization Boundary: Human Review/Merge on PR #1)
+- **Status:** MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)
+- **Decider:** Protocol Consistency Audit Gate (PR #1 merged into main in commit 3c0639c; E1 execution pending human authorization)
 - **Decision:**
   1. **Development Manifest Canonicalization & Checksum Precision:** Confirmed that `data/manifests/development_20_cath42.txt` contains the exact 20 targets deterministically extracted from the canonical Ingraham CATH 4.2 validation split (`chain_set_splits.json`, raw downloaded artifact SHA-256: `8e9a587a50c7f6c026e4ed00f6c1c30b106100f36f7a01de47542bdfc060adc2`). Target `3hxi.A` (`3.30.760`) is target #20, while `4bdx.A` (`2.10.25`) was correctly bypassed as a duplicate topology of `1f7e.A` (#8). Corrected all documentation drafts that mistakenly listed `4bdx.A`. Added `.gitattributes` to enforce `eol=lf` on `data/manifests/*.txt`, freezing the canonical LF SHA-256 at `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069` (841 bytes, 20 lines) for both on-disk and Git blob storage. Added `test_11_development_target_manifest_integrity` to verify manifest line count, uniqueness, non-empty IDs, and checksum.
   2. **CATH Source Hash Semantics:** Explicitly distinguished raw downloaded artifact SHA-256 (`8e9a587a50c7f6c026e4ed00f6c1c30b106100f36f7a01de47542bdfc060adc2`) from normalized JSON payload SHA-256. Prohibited labeling normalized payload hashes as raw artifact hashes.
@@ -245,8 +245,8 @@ This document chronologically logs all major architectural, methodological, and 
 
 ## [DEC-018] Final Pre-E1 Closure & Anti-Loop Audit: Primary Comparator Invariant, Confirmatory Sample Size ($N=50$), ESMFold Path Freeze, and Code Implementation Reconciliation
 - **Date:** 2026-09-29
-- **Status:** FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE
-- **Decider:** Protocol Consistency & Anti-Loop Audit Gate (Authorization Boundary: Human Review/Merge on PR #1)
+- **Status:** MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)
+- **Decider:** Protocol Consistency & Anti-Loop Audit Gate (PR #1 merged into main in commit 3c0639c; E1 execution pending human authorization)
 - **Decision:**
   1. **Authoritative Primary Comparator Invariant:** Confirmed that the primary confirmatory statistical comparison is strictly the target-level paired difference between Hybrid selection and MPNN-only selection:
      $$d_t = \overline{\text{scTM}}_{\text{hybrid}}(t) - \overline{\text{scTM}}_{\text{MPNN-only}}(t) \quad \text{for } t = 1, \dots, N$$
@@ -262,8 +262,8 @@ This document chronologically logs all major architectural, methodological, and 
 
 ## [DEC-019] Pre-Merge Statistical Contract Freeze, Deterministic Retry Semantics, and Development Failure Policy (V5)
 - **Date:** 2026-09-29
-- **Status:** FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE
-- **Decider:** Pre-Merge Statistical & Provenance Audit Gate (Authorization Boundary: Human Review/Merge on PR #1)
+- **Status:** MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)
+- **Decider:** Pre-Merge Statistical & Provenance Audit Gate (PR #1 merged into main in commit 3c0639c; E1 execution pending human authorization)
 - **Decision:**
   1. **Canonical Statistical Implementation Freeze:** Implemented canonical statistical testing in `src/hybrid/statistics.py` (`compute_paired_wilcoxon_test`), explicitly specifying `method='asymptotic'`, `zero_method='wilcox'`, `correction=True`, and `alternative='two-sided'` for `scipy.stats.wilcoxon`. Added explicit input validation rejecting NaN or infinite values, enforcing sample size $N \ge 2$, and handling the all-zero differences edge case ($p=1.0$, $\text{HL}=0.0$, $d_z=0.0$).
   2. **Deterministic Retry Semantics:** Replaced all vague retry phrasing with exact deterministic wording: "Retry exactly once using the identical frozen model, checkpoint, version, precision, device, chunk size, seed, input, timeout, and protocol configuration. Only process restart/resource cleanup is permitted. No scientific or inference parameter may be changed during the retry."

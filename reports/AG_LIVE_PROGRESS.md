@@ -1,44 +1,48 @@
-# Antigravity Live Progress - Final Closure Integrity Gate
+# Antigravity Live Progress - Pre-E1 Current-State & Authorization Reconciliation
 
-**Task:** PROTEINSOLVER - FINAL CLOSURE INTEGRITY GATE
+**Task:** PROTEINSOLVER - PRE-E1 CURRENT-STATE & AUTHORIZATION RECONCILIATION
 **Agent:** Lead Scientific Reproducibility Engineer + Evidence-Governance Agent
-**Started:** 2026-10-01T14:38:11+05:30
-**Updated:** 2026-10-01T14:45:00+05:30
+**Started:** 2026-10-01T15:37:48+05:30
+**Updated:** 2026-10-01T15:53:30+05:30
 **Status:** COMPLETE
-**Current Stage:** [5/5] Final closure decision + STOP
-**Compute Mode:** Local Cleanroom Execution (RTX 3050 Laptop GPU, CUDA 12.4)
+**Current Stage:** [6/6] Readiness decision + STOP
+**Branch:** main
+**Baseline HEAD:** 7dce5d22e3ab1f19721de73a7861b2226f709e20
+**Compute Mode:** Local Cleanroom Execution
 
 ---
 
 ## Metric Tracking
-- **Current Stage:** [5/5] Final closure decision + STOP
+- **Current Stage:** [6/6] Readiness decision + STOP
+- **Elapsed Time:** ~16m
+- **Baseline Repository HEAD:** 7dce5d22e3ab1f19721de73a7861b2226f709e20
+- **Current Branch:** main
 - **Confirmed Issues:** 3
-  1. Stale recommendation in `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md` Section 18 recommending progression to downstream ProteinMPNN/ESMFold campaign upon partial completion, violating the frozen governance boundary.
-  2. Missing master index references in `reports/REPORT_INDEX.md` for `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md` and `experiments/R2_FIG2BC_REPRODUCTION/`.
-  3. Metric note clarification in `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md` Section 7 to explicitly safeguard that $\text{Identity}_{\text{all}}$ includes reference residues and cannot be used as evidence of masked reconstruction improvement.
+  1. Stale review-branch and merge-pending status in `PROJECT_STATE.md` (claimed active branch was `governance/final-acceptance-redteam-v1` pending PR #1 merge, whereas PR #1 was already merged into `main` at commit `3c0639c`).
+  2. Stale status in `DECISION_LOG.md` DEC-016 through DEC-019 (described as "FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE", whereas content is merged on `main` while E1 execution remains pending human authorization).
+  3. Stale review branch / PR #1 authorization boundary phrasing in `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md`.
 - **Repaired Issues:** 3
-  1. Replaced stale recommendation in `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md` Section 18 with explicit neutral boundary: "Phase R2/R2.1 evidence is frozen at R2_PARTIAL. Any downstream scientific campaign requires a separate explicit project decision and is not authorized by this closure artifact."
-  2. Added entries for `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md` (Section 1) and `experiments/R2_FIG2BC_REPRODUCTION/` (Section 4) to `reports/REPORT_INDEX.md`.
-  3. Added explicit clarification note on $\text{Identity}_{\text{all}}$ in Section 7 of R2 report; registered durable lesson L-029 (authorization boundary invariant) and recorded DEC-020 in `DECISION_LOG.md`.
+  1. Reconciled `PROJECT_STATE.md`: active branch is `main`, phase is Pre-E1 Scientific Readiness & Authorization Reconciliation Complete (E1 Benchmark Execution Pending Human Authorization), noted closure of Phase R1 (`R1_COMPLETE`) and Phase R2/R2.1 (`R2_PARTIAL`).
+  2. Reconciled `DECISION_LOG.md`: updated DEC-016 through DEC-019 to `MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)` with note of PR #1 merge.
+  3. Reconciled `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md`: updated Authorization State to `MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)` and added reconciliation note in Section O.
 - **Unresolved Issues:** 0
 - **Blocked Issues:** 0
 - **Exact Files Touched:**
-  - `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md`
-  - `reports/REPORT_INDEX.md`
-  - `DECISION_LOG.md`
-  - `governance/data/lessons.json`
-  - `governance/data/events.jsonl`
-  - `reports/AG_LIVE_PROGRESS.md`
-  - `reports/AG_RUN_STATE.json`
-- **Next Action:** Final verification execution (preflight, pytest, diff-check), single ordinary commit, output decision brief, and STOP.
-- **Stop Condition:** Verification passes, repository clean, commit recorded, permanent stop.
+  - DECISION_LOG.md
+  - PROJECT_STATE.md
+  - reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md
+  - reports/AG_LIVE_PROGRESS.md
+  - reports/AG_RUN_STATE.json
+- **Next Action:** Single ordinary commit, capture final HEAD, output final decision brief, STOP.
+- **Stop Condition:** Bounded readiness decision [6/6] reached; no E1 execution; permanent stop.
 
 ---
 
 ## Stages Progress
-- [x] **[0/5] Safety + live repository baseline**: Verified working directory (`D:\Projects\Protein Design`), clean baseline HEAD (`d658fa68...`), external upstream untouched (`69ef0965...`), modern implementation untouched (`58255bc6...`).
-- [x] **[1/5] Current-authority inventory**: Inspected all primary authority documents (`docs/PROJECT_TRUTH.md`, `science/original_proteinsolver.md`, `reports/PROTEINSOLVER_R1_2_2_FINAL_EVIDENCE_CLOSURE.md`, `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md`, `reports/PROTEINSOLVER_R2_FIG2BC_RESULTS.json`, `reports/REPORT_INDEX.md`, `DECISION_LOG.md`, manifests in `experiments/R2_FIG2BC_REPRODUCTION/`).
-- [x] **[2/5] Known-error sweep + targeted source verification**: Verified 567,060 parameters, 2 input edge channels `[(d-6)/12, (j-i)/68.1319]`, directed edges with reversed pairs, self-loops excluded, ReLU activations, checkpoint SHA-256 `1E8272F0...`, target crosswalks (Main Fig 2G-N, Supp Figs S3-S5), no Rossmann or two-layer sandwich misnomers, no unsupported causal speculation. Detected stale recommendation in Section 18 of R2 report.
-- [x] **[3/5] Batch repair of material current-authority defects**: Replaced Section 18 recommendation with frozen boundary enforcement, added explicit note on $\text{Identity}_{\text{all}}$, updated `reports/REPORT_INDEX.md`, recorded `DEC-020`, registered `L-029`.
-- [x] **[4/5] Verification + one-commit gate**: Verified `git diff --check`, `governance.preflight_cli` (0 conflicts), `pytest tests/` (81 passed).
-- [x] **[5/5] Final closure decision + STOP**: Executed single ordinary commit; finalized status `CLOSURE_INTEGRITY_CORRECTED`. Permanent stop.
+- [x] **[0/6] Safety + repository baseline**: Verified working directory (`D:\Projects\Protein Design`), clean baseline HEAD (`7dce5d22...`), external upstream untouched (`69ef0965...`), modern implementation untouched (`58255bc6...`).
+- [x] **[1/6] Current authority inventory**: Audited all 19 Tier B authority documents across `docs/`, `science/`, `reports/`, `governance/`, and cleanroom code/tests in `src/` and `tests/`.
+- [x] **[2/6] Phase/authority/status reconciliation**: Verified historical closure of Phase R1 and R2 (`R2_PARTIAL`), identified stale review-branch status in DEC-016 through DEC-019 and `PROJECT_STATE.md` following PR #1 merge (`3c0639c`).
+- [x] **[3/6] Pre-E1 protocol/code/test reconciliation**: Verified all 20 protocol invariants (A through T), including $N_{\text{dev}}=20$, $N=50$, $N=15$ de novo, primary comparator (Hybrid vs MPNN-only), fixed-correspondence scTM, ESMFold confirmatory path (`chunk_size=128`, CUDA fp16), development infeasibility ($J=-\infty$), candidate budgets ($K=100$ dev, $K=500$ test), common candidate universe, and hydrophobic core fraction.
+- [x] **[4/6] Targeted correction if required**: Reconciled `PROJECT_STATE.md`, `DECISION_LOG.md` (DEC-016 through DEC-019), and `FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md` to accurately state that protocol is merged on `main` and frozen, while E1 benchmark execution remains strictly pending human authorization.
+- [x] **[5/6] Final verification**: Verified `git diff --check` (0 errors), `governance.preflight_cli` (0 conflicts), and `pytest tests/ -q` (all 81 tests passed).
+- [x] **[6/6] Readiness decision + STOP**: Decision reached: `PRE_E1_CORRECTED_PENDING_HUMAN_AUTHORIZATION`. No E1 benchmark executed. Ready for single commit and stop.
