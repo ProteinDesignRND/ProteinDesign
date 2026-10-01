@@ -91,7 +91,7 @@ To resolve past descriptive contradictions, the training corpus is reconciled ac
 ## 5. Inference Algorithms & Scoring
 
 - **Inference Modes:**
-  1. **One-Shot Generation:** All unassigned positions unmasked in a single forward pass ($x 	o 	ext{logits} 	o 	ext{argmax}$). Achieves ~27.29% native sequence recovery on test domains.
+  1. **One-Shot Generation:** All unassigned positions unmasked in a single forward pass ($x 	o 	ext{logits} 	o 	ext{argmax}$). Achieves 27.29% mean native sequence recovery across 1,283 test domains.
   2. **Incremental CSP Generation (Canonical Paper Method):** Iterative single-residue unmasking: at each step, the network identifies the unassigned node with highest prediction confidence, commits that amino acid, re-evaluates the graph, and repeats until all positions are filled. Achieves ~33-35% native sequence recovery.
   3. **Stochastic Sampling:** At each unmasking step, sample residues from softmax distributions scaled by temperature $T$: $P(s_i = c) \propto \exp(z_{ic} / T)$.
   4. **Exploratory Search (Notebook Extensions):** Priority-queue A* / best-first search over partial assignments (`design_protein`). This is an implementation extension, not a canonical main-paper method.
@@ -108,16 +108,18 @@ To resolve past descriptive contradictions, the training corpus is reconciled ac
 The published peer-reviewed article (*Cell Systems* 11(4): 402–411.e4) contains strictly **Figure 1** and **Figure 2 (Panels A–N)** in the main text, with other targets placed in **Supplementary Figures S3–S5**:
 
 - **Figure 1: Concept, Network Architecture, and CSP Formulation**
-  - **Figure 1A:** Schematic of ProteinSolver CSP approach and graph representation.
-  - **Figure 1B:** Neural network architecture (4 EdgeConv blocks with skip connections).
-  - **Figure 1C:** Network execution flow and training objective.
+  - **Figure 1A:** ProteinSolver network architecture.
+  - **Figure 1B:** Training a ProteinSolver network to solve Sudoku puzzles.
+  - **Figure 1C:** Training a ProteinSolver network to reconstruct protein sequences.
   *(Note: Figure 1 contains strictly panels 1A, 1B, and 1C; it does not contain panels 1D or 1E).*
 - **Figure 2: Empirical Performance, Biophysical Correlations, and De Novo Design (Panels A–N)**
-  - **Figure 2A:** Training and validation accuracy trajectory across epochs.
-  - **Figure 2B:** Native sequence recovery distributions on Gene3D test domains (oneshot 27.29% vs incremental ~33–35%).
+  - **Figure 2A:** Training and validation accuracy trajectory across epochs (at ~100M training examples, training accuracy reaches ~22% and validation accuracy ~32% under 50% random masking).
+  - **Figure 2B:** Native sequence recovery distributions on independent Gene3D test domains (one-shot generation achieving 27.29% mean native recovery across 1,283 test domains vs. incremental ~33–35%).
   - **Figure 2C:** Sequence identity distributions under partial sequence availability (0%, 50%, 80% unmasked).
-  - **Figure 2D:** ProTherm single-point mutation stability ($\Delta\Delta G$) correlation (Spearman $ho = 0.444$).
-  - **Figure 2E:** Rocklin single-point mutation stability correlation (Spearman $ho = 0.50$).
+  - **Figure 2D:** ProTherm single-point mutation stability ($\Delta\Delta G$) correlation (Spearman $
+ho = 0.444$).
+  - **Figure 2E:** Rocklin single-point mutation stability correlation (Spearman $
+ho = 0.50$).
   - **Figure 2F:** Whole-protein stability correlation on Rosetta de novo designs across 4 topologies.
   - **Figure 2G:** Contact map and structural geometry of serum albumin (1n5uA03).
   - **Figure 2H:** ProteinSolver scores vs. generated-sequence identity analysis.

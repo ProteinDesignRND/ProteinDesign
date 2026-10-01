@@ -1,31 +1,31 @@
 # Antigravity Live Progress
 
-**Task:** PROTEINSOLVER - FINAL R1 SOURCE ADJUDICATION, CONTRADICTION ELIMINATION & HARD R2 GATE
+**Task:** PROTEINSOLVER - FINAL MICRO-CLOSURE PASS (R1 ENDGAME)
 **Agent:** Lead Scientific Reproducibility Engineer + Evidence-Governance Agent
-**Started:** 2026-10-01T10:12:30+05:30
-**Updated:** 2026-10-01T10:29:00+05:30
+**Started:** 2026-10-01T10:34:30+05:30
+**Updated:** 2026-10-01T10:49:30+05:30
 **Status:** COMPLETE / R2_READY
+**Current Stage:** [6/6] Final R2 gate
 
 ---
 
 ## Metric Tracking
-- **Completed stages:** [1/7], [2/7], [3/7], [4/7], [5/7], [6/7], [7/7]
-- **Candidate contradictions:** 17
-- **Confirmed contradictions:** 12
-- **Fixed:** 12
+- **Completed:** [6/6]
+- **Candidate issues:** 10
+- **Confirmed issues:** 10
+- **Fixed:** 10
 - **Unresolved:** 0
 - **Blocked:** 0
-- **Current action:** Final hard R2 release gate complete; repository clean; declared R2_READY.
-- **Elapsed runtime:** 16m 30s
+- **Current HEAD:** cd5d5d786f41ba64446950bc1522ee7d1edb87d9
+- **Elapsed runtime:** 15m 00s
 
 ---
 
 ## Stages Progress
 
-- [x] **[1/7] Safety + evidence inventory:** Verified exact working directory `D:\Projects\Protein Design`, branch `main`, parent commit `d961ef0b865f03d05a3df339b9f84b8f20c9ea56`, HEAD `98bc6d00a6b286563ea024cc229199db843179a3`. Verified external repositories clean and untouched (`external/proteinsolver-original` at `69ef0965...`, `D:\Projects\ProteinSolver` at `58255bc6...`).
-- [x] **[2/7] Primary-paper adjudication:** Reconciled final published *Cell Systems* paper (11(4): 402–411.e4, Oct 2020; DOI: 10.1016/j.cels.2020.08.016; PMID: 32971019) via CrossRef and preprint text. Adjudicated Figure 1 strictly as panels 1A, 1B, 1C; Figure 2A as accuracy trajectory; Figure 2B–2F panel semantics; Figure 2G–2N exact panel map; and Supplementary Figures S3–S5 target folds. Identified and corrected biological identities (1N5U = Human Serum Albumin domain 3; 4BEU = Alanine racemase; 4UNU = Immunoglobulin lambda variable; 4Z8J = SNX27 PDZ domain).
-- [x] **[3/7] Historical implementation adjudication:** Inspected historical upstream source code (`proteinsolver/datasets/protein.py`, `proteinsolver/models/proteinnet.py`, `proteinsolver/nn/edge_conv_mod.py`). Proved that graph self-loops are filtered (`row_index != col_index`), asserted absent, and stripped in `forward` via `remove_self_loops`. Proved that edge tensor entering `embed_adj` has strictly 2 channels (`adj_input_size = 2`), consisting of normalized distance and normalized sequence separation; raw distance is not fed as a 3rd channel. Established that 68.1319 is a fixed historical scaling constant. Documented batch sizes: 4 for primary GCN training, 1 for validation/eval.
-- [x] **[4/7] Experimental/provenance adjudication:** Cryptographically hashed all checkpoint files (`e53-s1952148-d93703104.state` size 2,278,071 bytes, SHA-256: `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727`); excised hallucinated hash `c830026e...`. Reconciled EXP005 ProTherm metrics ($N=3,471$, differentiated raw vs normalized REU vs Cartesian ddG). Reconciled EXP006 Rocklin stability metrics, preserving EEHEE Round 4 negative correlation exception. Calibrated EXP007 BeStSel $p > 0.05$ as failure to detect a difference under tested conditions (not structural equivalence). Bounded EXP008 as single-target MAP diagnostic fixture with unbenchmarked full regeneration cost.
-- [x] **[5/7] Global current-authority contradiction sweep:** Audited Tier-B documents for stale overclaims, phantom panels, and contradictory texts. Replaced all occurrences of `c830026e...`, `498-507`, `serum response factor`, 3 edge channels, and native self-loops in current authority.
-- [x] **[6/7] Verification + bounded repair:** Verified governance preflight CLI and pytest suite (81/81 passed). Ingested durable lesson L-026. Verified external repositories remain untouched.
-- [x] **[7/7] Final hard R2 gate:** Evaluated release criteria A through Y. Verified cleanroom boundaries. Rendered final binary release decision: R2_READY.
+- [x] **[1/6] Current-state verification:** Verified working directory `D:\Projects\Protein Design`, branch `main`, baseline HEAD `65e6d92b0f5f24a3a56db1acf652e9e25a2df050`. External repositories confirmed clean and untouched (`external/proteinsolver-original` at `69ef0965...`, `D:\Projects\ProteinSolver` at `58255bc6...`).
+- [x] **[2/6] Residual literature/documentation correction:** Corrected Figure 1 panel semantics (1A network architecture, 1B Sudoku, 1C protein reconstruction), Figure 2A value wording (training ~22%, validation ~32% under 50% masking after ~100M training examples), and Project Truth signed sequence separation `(j - i) / 68.1319` preserving directionality.
+- [x] **[3/6] Experimental/provenance cleanup:** Traced Figure 2B 27.29% provenance as mean native sequence recovery across 1,283 test domains from notebook 06 Cell 36. Established EXP005 Rosetta sign/metric reconciliation table (raw REU, normalized REU, Cartesian ddG, monomer ddG). Verified EXP006 Round 4 numeric provenance (HHH=0.422, HEEH=0.313, EHEE=0.245, EEHEE=-0.1421, Rosetta EEHEE=-0.4012). Clarified reproduction checkpoint distribution vs journal publication wording.
+- [x] **[4/6] Global contradiction sweep:** Performed exact sweep across all current Tier-B authority documents (`docs/PROJECT_TRUTH.md`, `science/original_proteinsolver.md`, `reports/PROTEINSOLVER_R1_2_2_FINAL_EVIDENCE_CLOSURE.md`, `reports/REPORT_INDEX.md`). Verified 0 active residual contradictions.
+- [x] **[5/6] Verification + one bounded commit:** Ran preflight CLI and pytest suite (81/81 passed). Executed bounded commit packaging all micro-closure corrections.
+- [x] **[6/6] Final R2 gate:** Evaluated release criteria A through Z. Verified cleanroom boundaries. Rendered final binary release decision: R2_READY.

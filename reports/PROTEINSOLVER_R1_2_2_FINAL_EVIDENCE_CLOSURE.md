@@ -37,20 +37,20 @@ Direct verification against CrossRef and the published *Cell Systems* archive es
 
 ### 2.2 Final Published Figure 1
 Direct forensic inspection of the final published *Cell Systems* paper establishes that Main Figure 1 consists strictly of three panels:
-- **Figure 1A:** Graph representation of protein structures and the graph neural network architecture (spatial distance thresholding at 12 Å, node embeddings, edge features, and message-passing layers).
-- **Figure 1B:** Training procedure formulating protein design as a masked language modeling constraint-satisfaction problem over structured graphs (stochastic masking of amino acids, cross-entropy training against native residues).
-- **Figure 1C:** Sequence generation strategies (iterative stochastic decoding, probability-guided MAP decoding, and evaluation on structural topologies).
+- **Figure 1A:** ProteinSolver network architecture.
+- **Figure 1B:** Training a ProteinSolver network to solve Sudoku puzzles.
+- **Figure 1C:** Training a ProteinSolver network to reconstruct protein sequences.
 
-*Correction Record:* Prior AI reports referenced "Figure 1A–E", incorrectly importing panel divisions from early bioRxiv preprints or internal notebook plots. In the final Cell Systems paper, panels D and E do not exist in Main Figure 1. All current authority documents have been corrected to strictly cite **Figure 1A, 1B, 1C**.
+*Correction Record:* Prior AI reports referenced "Figure 1A–E", incorrectly importing panel divisions from early bioRxiv preprints or internal notebook plots. In the final Cell Systems paper, panels D and E do not exist in Main Figure 1. Furthermore, prior draft descriptions conflated surrounding paper narrative with panel captions by describing 1B as protein masked-language-model training and 1C as sequence generation strategies. All current authority documents have been corrected to strictly cite the canonical panel captions: **Figure 1A** (network architecture), **Figure 1B** (Sudoku puzzles), and **Figure 1C** (protein sequence reconstruction).
 
 ### 2.3 Final Published Figure 2A: Training and Validation Accuracy
 Direct inspection of the final published Figure 2A confirms that its y-axis displays **accuracy** (the proportion of correctly predicted masked residues), NOT loss.
 - **Canonical Definition:** Training and validation accuracy trajectory across training iterations.
-- **Empirical Value:** Accuracy increases rapidly during initial iterations, plateauing at approximately 30–40% on heterogeneous masked validation sets.
-- **Correction Record:** All references in current-authority documents describing Figure 2A as "training loss", "validation loss", or "loss trajectory" have been eliminated. Where historical loss trajectories are referenced, they are explicitly qualified as non-paper training artifacts from `04_protein_train.ipynb`.
+- **Empirical Value:** In the published paper, under 50% random residue masking, after approximately 100 million training examples, training accuracy reaches approximately 22% and validation accuracy approximately 32%.
+- **Correction Record:** All references in current-authority documents describing Figure 2A as "training loss", "validation loss", or "loss trajectory" have been eliminated, and imprecise generic statements (e.g. "plateauing at approximately 30–40%") have been replaced with the exact published panel values (training ≈ 22%, validation ≈ 32% under 50% masking). Where historical loss trajectories are referenced, they are explicitly qualified as non-paper training artifacts from `04_protein_train.ipynb`.
 
 ### 2.4 Final Published Figure 2B–2F Semantics
-- **Figure 2B:** Native sequence recovery distributions on independent Gene3D test domains (one-shot generation achieving ~27.29% median/mean recovery).
+- **Figure 2B:** Native sequence recovery distributions on independent Gene3D test domains (one-shot generation achieving 27.29% mean native recovery across 1,283 test domains from notebook 06 Cell 36, compared to ~33–35% for incremental CSP decoding).
 - **Figure 2C:** Sequence recovery distributions under partial sequence availability / conditioning (0%, 50%, 80% unmasked).
 - **Figure 2D:** ProTherm single-point mutation stability ($\Delta\Delta G$) correlation (published ProteinSolver $\rho \approx 0.444$).
 - **Figure 2E:** Rocklin single-point mutation stability dataset ($N = 9,912$).
@@ -188,23 +188,38 @@ The historical repository utilized different batch sizes depending on operationa
 - **Evidence Classification:** `PARTIAL_RECOMPUTATION / RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS`
 - **Scientific Subject:** Main Figure 2D mutation stability correlation against experimental $\Delta\Delta G$ from the ProTherm database ($N = 3,471$ clean evaluation pairs from 3,524 raw records).
 - **ProteinSolver Metric:** Published Spearman correlation $\rho \approx 0.444$ ($p = 1.78 \times 10^{-167}$, CI [0.419, 0.468]). An exploratory core-residue subset yielding $\rho \approx 0.551$ ($p = 1.28 \times 10^{-15}$, CI [0.460, 0.627]) is preserved strictly as an exploratory notebook finding (`07_protein_analysis_figures.ipynb` Cell 72), not as the primary paper headline.
-- **Rosetta Metrics & Provenance:**
-  - Raw unnormalized Rosetta REU difference vs. $\Delta\Delta G_{\text{exp}}$: $\rho \approx +0.008$ (recomputed) / $-0.008$ (notebook Cell 72).
-  - Normalized Rosetta REU difference: $\rho = 0.0826$ in notebook (and $-0.407$ in certain inverted stability scoring).
-  - Cartesian $\Delta\Delta G$: $\rho = 0.591$.
-  - Monomer $\Delta\Delta G$: $\rho = 0.317$.
-  - *Governance Standard:* Current authority explicitly distinguishes raw REU, normalized REU, Cartesian $\Delta\Delta G$, and monomer $\Delta\Delta G$, forbidding their collapse into an ambiguous "Rosetta $\Delta\Delta G$" statistic.
+
+#### EXP005 Rosetta Metric & Sign Reconciliation Table
+To permanently resolve historical ambiguities between raw REU, normalized REU, inverted stability scoring, and Cartesian $\Delta\Delta G$, the exact mathematical definitions and source provenances are catalogued below:
+
+| Metric | Formula / Sign Convention | Value | Source | Interpretation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Raw REU difference (`rosetta_reu_change`)** | `RUE_mut - RUE_wt` (uninverted energy difference; higher = less stable) | $\rho = -0.0080$ ($p = 0.637$) | Notebook 07 Cell 30 & Cell 72 | Direct Spearman rank correlation between raw energy change and experimental $\Delta\Delta G$ (where positive = more stable). Negative correlation indicates higher energy weakly aligns with lower stability. |
+| **Raw REU stability score (`val_rosetta`)** | `-(RUE_mut - RUE_wt)` (sign-inverted stability score; higher = more stable) | $\rho = +0.0080$ ($p = 0.637$) | `experiments/EXP005/run.py` & Notebook 07 Cell 11-16 | Standard stability formulation where sign is inverted so higher score indicates higher predicted stability, yielding identical magnitude ($|\rho| \approx 0.008$) with positive sign. |
+| **Normalized REU difference (`rosetta_reu_norm_change`)** | `(RUE_mut - RUE_wt) / length` (labeled `Rosetta (score)`) | $\rho = +0.0826$ ($p = 1.09 \times 10^{-6}$) | Notebook 07 Cell 34, 72, & 74 | Per-residue normalized REU change across all 3,471 mutations; published as `Rosetta (score)` baseline in Cell 74 summary table. |
+| **Rosetta Cartesian $\Delta\Delta G$ (`cartesian_ddg`)** | `cartesian_ddg_beta_nov16_cart_1` protocol | $\rho = +0.5913$ ($p = 0.0$) | Notebook 07 Cell 72 & Cell 74 | State-of-the-art Rosetta Cartesian relax protocol; highest correlation in ProTherm benchmark. |
+| **Rosetta Monomer $\Delta\Delta G$ (`ddg_monomer`)** | `ddg_monomer_soft_rep_design_1` protocol | $\rho = +0.3167$ ($p = 1.05 \times 10^{-81}$) | Notebook 07 Cell 72 & Cell 74 | Standard Rosetta monomer protocol with soft-repulsive weights. |
+| **Prior draft artifact $\rho = -0.407$** | Erroneous draft transcription | $-0.407$ | Conflated in early AI draft (`R1_2_1` report) | Erroneous draft transcription conflating the Rocklin Round 4 Rosetta EEHEE stability score ($\rho = -0.4012$ in Notebook 07 Cell 102) with ProTherm; not a valid ProTherm correlation metric. |
+
+- *Governance Standard:* Current authority strictly distinguishes raw REU, normalized REU, Cartesian $\Delta\Delta G$, and monomer $\Delta\Delta G$, forbidding their collapse into an ambiguous "Rosetta $\Delta\Delta G$" statistic.
 
 ### 6.2 EXP006: Rocklin De Novo Protein Stability Reproduction
 - **Evidence Classification:** `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS`
 - **Scientific Subject:** Main Figure 2E (single-point mutation stability, $N = 9,912$) and Figure 2F (*de novo* designed protein stability across 4 structural topologies: $\alpha\alpha\alpha$, $\beta\alpha\beta\beta$, $\alpha\beta\beta\alpha$, and $\beta\beta\alpha\beta\beta$ across design rounds 1–4).
-- **Round 4 ProteinSolver Correlations:**
-  - $\alpha\alpha\alpha$ (HHH): $\rho = 0.422$
-  - $\alpha\beta\beta\alpha$ (HEEH): $\rho = 0.313$
-  - $\beta\alpha\beta\beta$ (EHEE): $\rho = 0.245$
-  - $\beta\beta\alpha\beta\beta$ (EEHEE): $\rho = -0.1421$
+
+#### EXP006 Numeric Provenance by Topology and Selection Round
+The exact numerical values for all design topologies across selection rounds are source-traced from author notebooks (`06_global_analysis_of_protein_folding_stability.ipynb` Cell 53 and `07_protein_analysis_figures.ipynb` Cell 102):
+
+| Topology | Selection Round | Metric / Feature | Value ($\rho$) | Source Cell / Artifact | Reconstruction Type | Interpretation |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **$\alpha\alpha\alpha$ (HHH)** | Round 4 | ProteinSolver (`network_score`) | 0.422 (0.4215) | Notebook 06 Cell 53 / Notebook 07 Cell 102 | `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | Strong positive correlation with protease stability for all-$\alpha$ fold. |
+| **$\alpha\beta\beta\alpha$ (HEEH)** | Round 4 | ProteinSolver (`network_score`) | 0.313 (0.3125) | Notebook 06 Cell 53 / Notebook 07 Cell 102 | `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | Moderate positive correlation with protease stability. |
+| **$\beta\alpha\beta\beta$ (EHEE)** | Round 4 | ProteinSolver (`network_score`) | 0.245 (0.2451) | Notebook 06 Cell 53 / Notebook 07 Cell 102 | `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | Moderate positive correlation with protease stability. |
+| **$\beta\beta\alpha\beta\beta$ (EEHEE)** | Round 4 | ProteinSolver (`network_score`) | -0.1421 | Notebook 06 Cell 53 / Notebook 07 Cell 102 | `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | Inverted correlation for complex fold in Round 4; earlier rounds exhibited positive correlations (Round 2: 0.112, Round 3: 0.145). |
+| **$\beta\beta\alpha\beta\beta$ (EEHEE)** | Round 4 | Rosetta (`talaris2013_score`) | -0.4012 | Notebook 06 Cell 53 / Notebook 07 Cell 102 | `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | Stronger negative correlation for Rosetta baseline on same fold in Round 4. |
+
 - **EEHEE Round 4 Exception:** Preserved evidence confirms that for the complex $\beta\beta\alpha\beta\beta$ (EEHEE) topology in Round 4, Rosetta talaris2013 scores yielded $\rho \approx -0.4012$ while ProteinSolver yielded $\rho \approx -0.1421$.
-- **Governance Standard:** Conflicting summaries (e.g. 0.145 representing Round 2 peak vs. ungrounded draft artifact 0.185) are removed or qualified. Universal claims that ProteinSolver "always outperforms Rosetta" are prohibited and eliminated.
+- **Governance Standard:** Discarded draft artifacts such as 0.185 (ungrounded artifact) are excised from current authority. Value 0.145 correctly represents Round 3 peak performance for EEHEE. Universal claims that ProteinSolver "always outperforms Rosetta" are strictly prohibited and eliminated.
 
 ### 6.3 EXP007: BeStSel Secondary Structure Reconstruction
 - **Evidence Classification:** `RECONSTRUCTION_FROM_PRESERVED_BESTSEL_OUTPUTS`
@@ -241,12 +256,12 @@ All copies of `.state` checkpoint files in the workspace were located and crypto
 
 | File Path | File Size (Bytes) | Cryptographic SHA-256 Checksum | Status |
 | :--- | :---: | :--- | :--- |
-| `external/proteinsolver-original/data/e53-s1952148-d93703104.state` | 2,278,071 | `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727` | **PRIMARY PUBLISHED CHECKPOINT** |
+| `external/proteinsolver-original/data/e53-s1952148-d93703104.state` | 2,278,071 | `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727` | **PRIMARY UPSTREAM REPRODUCTION CHECKPOINT** |
 | `external/proteinsolver-original/notebooks/protein_4xEdgeConv_bs4/e12-s1652709-d6610836.state` | 2,278,037 | `AAA242C96A7DD6AB69DF2E260455BD8B6661481BD10BA3B1AFB3E68FE1792C06` | Historical intermediate checkpoint |
 | `d:\Projects\ProteinSolver\data\e53-s1952148-d93703104.state` | 2,278,071 | `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727` | Cleanroom replica (identical) |
 | `d:\Projects\ProteinSolver\notebooks\protein_4xEdgeConv_bs4/e12-s1652709-d6610836.state` | 2,278,037 | `AAA242C96A7DD6AB69DF2E260455BD8B6661481BD10BA3B1AFB3E68FE1792C06` | Cleanroom replica (identical) |
 
-*Correction Record:* Prior draft reports introduced a hallucinated hash string (`c830026e...`). The true cryptographic hash for the published ProteinSolver model weights is confirmed as `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727`.
+*Provenance Clarification:* The checkpoint file `e53-s1952148-d93703104.state` is the canonical pretrained model weight file distributed in the authors' official upstream repository and release artifacts for reproduction. The journal publication describes the model architecture and training procedure, but does not print filenames or cryptographic hashes; the SHA-256 hash was independently computed directly from the official repository artifact. Prior draft reports introduced a hallucinated hash string (`c830026e...`), which has been completely excised.
 
 ---
 
@@ -260,7 +275,7 @@ To preserve epistemic hygiene, the independent sources verifying the model and d
 | **Research Repo Verification Basis** | `d961ef0b865f03d05a3df339b9f84b8f20c9ea56` | Parent research-repo commit grounding all audits |
 | **Pretrained Checkpoint** | `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727` | Verified cryptographic model weights SHA-256 |
 | **Modern Implementation Reference** | `58255bc67323f5fd009ac85ae02fbf69c152c457` | Verified cleanroom implementation reference |
-| **Final Closure Commit** | Pending single bounded commit | Packaging and freezing verified current authority |
+| **Final Closure Commit** | `65e6d92b0f5f24a3a56db1acf652e9e25a2df050` (baseline; micro-closure finalized in current HEAD) | Packaging and freezing verified current authority |
 
 ---
 
