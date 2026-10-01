@@ -1020,5 +1020,30 @@
     "origin_event": "",
     "applicability": {},
     "keywords": []
+  },
+  {
+    "id": "L-029",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Current-authority regression sweeps must test both factual claims and status/authorization language",
+    "what_happened": "In the completed Phase R2.1 report, while scientific claims, target crosswalks, and mathematical metrics were rigorously reconciled, the final recommendations section retained a stale sentence stating to proceed to downstream scientific campaigns, inadvertently implying automatic downstream phase authorization when Phase R2 evidence was strictly frozen at R2_PARTIAL.",
+    "lesson": "Current-authority regression sweeps must test both factual claims and status/authorization language. A technically correct report can still become operationally misleading if it implies a downstream phase is authorized when it is not. Next-step recommendations in closure reports must enforce strict project decision boundaries.",
+    "type": "PROCESS_TEAM",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Phase R2.1 Final Closure Integrity Gate",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-01T14:43:59.401289",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": []
   }
 ]

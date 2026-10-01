@@ -1,38 +1,30 @@
 {
   "state": "COMPLETE",
-  "current_stage": "[4/5] Final verification + stop gate",
+  "current_stage": "[5/5] Final closure decision + STOP",
   "progress_percentage": 100,
-  "task_id": "PROTEINSOLVER-R2.1-FINAL-MICRO-STOP-LEGACY-DATA-ROUTE-AND-EPISTEMIC-CORRECTION",
+  "task_id": "PROTEINSOLVER-FINAL-CLOSURE-INTEGRITY-GATE",
   "agent": "Gemini 3.8 Flash High",
   "branch": "main",
-  "start_time": "2026-10-01T12:04:02+05:30",
-  "last_update": "2026-10-01T12:18:00+05:30",
-  "stage": "[4/5] Final verification + stop gate",
+  "start_time": "2026-10-01T14:38:11+05:30",
+  "last_update": "2026-10-01T14:45:00+05:30",
+  "stage": "[5/5] Final closure decision + STOP",
   "status": "COMPLETE",
-  "confirmed_issues": 6,
-  "repaired_issues": 6,
+  "confirmed_issues": 3,
+  "repaired_issues": 3,
   "unresolved_issues": 0,
   "blocked_issues": 0,
-  "current_hypothesis": "Legacy author distribution route http://deep-protein-gen.data.proteinsolver.org/ is active (with expired TLS cert SEC_E_CERT_EXPIRED). In processed/validation_data/, candidate partition has 1,331 rows yielding exactly 1,283 valid records matching notebook 06 Cell 35-36! Candidate processed/test_data/ has 1,461 rows (1,420 valid), and root /test_data/ has 172 unbundled superfamily directories without documented sampling seeds. Full 10k dataset is resource-bounded; epistemic corrections applied; R2_PARTIAL confirmed.",
+  "current_hypothesis": "Final closure integrity pass confirmed all primary specifications (567,060 params, 2 edge channels, no self-loops, ReLU, checkpoint SHA-256 1E8272F0...). Stale next-step recommendation in R2 report Section 18 repaired to enforce frozen decision boundary; Identity_all clarification added; REPORT_INDEX updated; DEC-020 recorded; L-029 registered in governance store.",
   "population_status": "NOT_RECONSTRUCTIBLE_WITH_CURRENT_ARTIFACTS",
   "legacy_data_route_status": "LEGACY_DATA_ROUTE_REACHABLE_BUT_FULL_RECOVERY_RESOURCE-BOUNDED",
-  "current_conclusion": "R2_PARTIAL_VERIFIED_ON_AUXILIARY_POPULATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION",
+  "current_conclusion": "CLOSURE_INTEGRITY_CORRECTED",
   "final_status": "R2_PARTIAL",
   "repository_heads": {
-    "research_repo_baseline": "f839925b29ecb0eb9da9e7d3806af131b51f62d1",
+    "research_repo_baseline": "d658fa682458a5fba456b920fa8cb119921c7292",
     "historical_upstream": "69ef0965a3fc3bf191804035b539720a06e58ba6",
     "modern_impl": "58255bc67323f5fd009ac85ae02fbf69c152c457",
     "independent_verification_basis": "d961ef0b865f03d05a3df339b9f84b8f20c9ea56"
   },
-  "durable_lessons_added": [
-    "L-027",
-    "L-028"
-  ],
-  "test_results": {
-    "pytest_passed": 81,
-    "governance_preflight_conflicts": 0,
-    "git_diff_whitespace_errors": 0
-  },
+  "durable_lessons_added": ["L-027", "L-028", "L-029"],
   "completed": [
     "STAGE 0: Verified audit-start Git state",
     "STAGE 1: Audited & implemented Wilcoxon statistical contract",
@@ -42,10 +34,16 @@
     "STAGE 5: Verified full test suite and preflight",
     "STAGE 6: Finalized pre-E1 readiness",
     "STAGE 7: Authored readiness closure report",
-    "STAGE [0/5]: Safety verification and git baseline state capture",
-    "STAGE [1/5]: Official legacy dataset route verification (DNS, TCP 80/443, HTTP 301, HTTPS expired cert, 1,461 test rows, 1,283 valid validation records)",
-    "STAGE [2/5]: Epistemic and scientific documentation correction (Main Fig 2G-N, Supp Figs S3-S5, fold descriptions, metric definitions, lessons L-027 and L-028)",
-    "STAGE [3/5]: Resource-bounded classification for published 10k dataset across 172 unbundled superfamilies; R2_PARTIAL confirmed",
-    "STAGE [4/5]: Final verification and stop gate"
-  ]
+    "STAGE [0/5]: Safety verification and live repository baseline capture",
+    "STAGE [1/5]: Current-authority inventory across docs, science, reports, experiments, governance",
+    "STAGE [2/5]: Known-error sweep and targeted source verification (detected stale recommendation in Section 18)",
+    "STAGE [3/5]: Batch repair of current-authority defects (Section 18 frozen boundary, Identity_all note, REPORT_INDEX, DEC-020, L-029)",
+    "STAGE [4/5]: Verification and one-commit gate (preflight, pytest, diff-check)",
+    "STAGE [5/5]: Final closure decision and permanent stop"
+  ],
+  "test_results": {
+    "pytest_passed": 81,
+    "governance_preflight_conflicts": 0,
+    "git_diff_whitespace_errors": 0
+  }
 }

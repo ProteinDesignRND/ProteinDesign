@@ -155,7 +155,7 @@ All scientific evaluations adhere strictly to the project evidence hierarchy:
 
 *Scientific Interpretation:*
 - As the fraction of known reference residues increases from 0% to 80%, the recovery on the *remaining missing residues* systematically increases from **39.77% $\to$ 40.93% $\to$ 41.67%**.
-- Simultaneously, the total sequence identity to the native sequence increases monotonically from **39.77% $\to$ 70.25% $\to$ 88.14%**.
+- Simultaneously, the total sequence identity to the native sequence increases monotonically from **39.77% $\to$ 70.25% $\to$ 88.14%** (as context residues are provided). *(Note: Total sequence identity $\text{Identity}_{\text{all}}$ includes the provided reference residues and is reported strictly for completeness; it must never be used as evidence that masked-residue reconstruction improved).*
 - This directly confirms the physical mechanism described in *Cell Systems*: conditioning on partial sequence provides spatial structural constraints that guide the network to reconstruct remaining unmasked positions with higher fidelity, while retaining significant sequence diversity.
 
 ---
@@ -292,7 +292,7 @@ EXPLICIT_CLASSIFICATION = R2_PARTIAL_VERIFIED_ON_AUXILIARY_POPULATION_WITH_HISTO
 
 ---
 
-## 18. Recommended Next Project Step
+## 18. Frozen Status & Project Decision Boundary
 
-1. **Permanently Freeze Phase R2 Evidence:** Commit the reproduction harness, manifests, and reports into the main branch.
-2. **Proceed to Downstream Scientific Campaign:** With the exact capabilities, failure modes, conditioning dynamics, and historical bounds of ProteinSolver fully quantified, proceed to hybrid inverse-folding design (combining ProteinSolver CSP scoring with modern equivariant models such as ProteinMPNN/ESMFold) as outlined in the project roadmap.
+1. **Permanently Freeze Phase R2 Evidence:** The reproduction harness, manifests, and reports remain permanently frozen at `R2_PARTIAL` (`R2_PARTIAL_VERIFIED_ON_AUXILIARY_POPULATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION`).
+2. **Project Decision Boundary:** Phase R2/R2.1 evidence is frozen at R2_PARTIAL. Any downstream scientific campaign requires a separate explicit project decision and is not authorized by this closure artifact.

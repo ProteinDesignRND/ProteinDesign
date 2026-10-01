@@ -276,10 +276,17 @@ This document chronologically logs all major architectural, methodological, and 
 - **Rationale:** Reproducibility requires explicit, frozen execution configuration, seeds, software versions, and documented hardware limitations, exact alignment between code and documentation, and elimination of every hidden researcher degree of freedom before experimental benchmark data is collected.
 - **Consequences:** All unit and governance tests passing. No remaining deterministic defects were identified in the audited current-state scope.
 
-
-
-
-
-
-
-
+## [DEC-020] Phase R2.1 Final Micro-Stop & Closure Integrity Gate: Legacy Data Route Verification, Epistemic Calibration, and Authorization Boundary Enforcement
+- **Date:** 2026-10-01
+- **Status:** FROZEN ON MAIN
+- **Decider:** Lead Scientific Reproducibility Engineer + Evidence-Governance Agent
+- **Decision:**
+  1. **Legacy Data Route Verification:** Tested official author legacy URL `http://deep-protein-gen.data.proteinsolver.org/` (DNS 206.12.89.143, TCP 80/443 connect, HTTP 301 redirects to HTTPS, HTTPS returns expired certificate `SEC_E_CERT_EXPIRED`, server active under TLS bypass `HTTP 200 OK`). Confirmed candidate validation partition contains 1,331 rows yielding exactly 1,283 valid records matching notebook 06 Cell 35-36! Confirmed candidate test partition contains 1,461 rows (1,420 valid), and root `/test_data/` contains 172 unbundled superfamily directories without documented sampling seeds. Full 10,000-instance dataset recovery classified as `LEGACY_DATA_ROUTE_REACHABLE_BUT_FULL_RECOVERY_RESOURCE-BOUNDED`. Maintained `FIG2B_POPULATION_STATUS = NOT_RECONSTRUCTIBLE_WITH_CURRENT_ARTIFACTS`.
+  2. **Epistemic Language & Target Crosswalk Calibration:** Excised "100% functionally verified" and "functional proof" overclaims, replaced with source-grounded auxiliary implementation wording. Excised fold misnomers (Rossmann fold for 4unuA00, two-layer sandwich for 4z8jA00) and wrong "Cell Systems Figure 3" attributions across R2 reports, manifests, and code. Formalized exact paper crosswalk: 1n5uA03 (Main Figure 2G–N), 4beuA02 (Supplementary Figure S3), 4unuA00 (Supplementary Figure S4), 4z8jA00 (Supplementary Figure S5).
+  3. **Strict Metric Separation:** Explicitly separated missing-residue recovery $	ext{Identity}_{	ext{missing}}$ from total sequence identity $	ext{Identity}_{	ext{all}}$, forbidding the use of $	ext{Identity}_{	ext{all}}$ as evidence of reconstruction quality. Labeled SVG visible counts (653/649) as `GRAPHICAL_HISTORICAL_EVIDENCE_EXTRACTION` (not a complete population distribution).
+  4. **Authorization Boundary Enforcement:** Replaced stale next-step recommendations implying automatic progression to ProteinMPNN/ESMFold with explicit project decision boundaries: Phase R2/R2.1 evidence is permanently frozen at `R2_PARTIAL`; any downstream scientific campaign requires a separate explicit human project decision and is not authorized by this closure artifact.
+  5. **Governance Learning:** Registered durable lessons `L-027` (cloud dataset persistence), `L-028` (legacy data-route invariant), and `L-029` (authorization boundary invariant) in governance store.
+- **Context:** Final micro-closure and integrity pass over Phase R2 and the ProteinSolver research repository, eliminating residual overclaims, verifying legacy distribution channels, and freezing evidence at R2_PARTIAL.
+- **Alternatives Considered:** Attempting full 10,000-instance scrape across 172 unbundled remote directories under expired TLS without sampling documentation (rejected: resource-bounded, underspecified); claiming complete reproduction from 7 auxiliary targets (rejected: violates population qualification standards); auto-authorizing downstream phases (rejected: violates governance boundaries).
+- **Rationale:** Scientific reproducibility demands strict adherence to empirical truth, precise population separation, and explicit operational boundaries.
+- **Consequences:** All 81 pytest tests passing; governance preflight passing with 0 conflicts; git diff clean; repository frozen cleanly.

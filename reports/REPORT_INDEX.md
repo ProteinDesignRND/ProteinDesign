@@ -6,6 +6,7 @@
 | **Project Truth** | `docs/PROJECT_TRUTH.md` | Single source of truth for verified facts, limitations, and hypotheses | **Global Project Authority** |
 | **Original ProteinSolver Specification** | `science/original_proteinsolver.md` | Authoritative, source-grounded model architecture, featurization, and dataset specifications | **Original Model Specification Authority** |
 | **ProteinSolver R1 Final Evidence Closure Report** | `reports/PROTEINSOLVER_R1_2_2_FINAL_EVIDENCE_CLOSURE.md` | Final authoritative reconciliation closing Phase R1 (evidence graph, figure crosswalk, experiment classifications, R2 gate) | **Phase R1 Authoritative Closure Gate** |
+| **ProteinSolver R2 Figure 2B & 2C Computational Reproduction Report** | `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md` | Authoritative computational reproduction of Figure 2B & 2C decoding, legacy data-route verification, and auxiliary evaluation | **Phase R2 Authoritative Closure Gate** |
 
 ## 2. Transition & Evaluation Authorities
 | Document | Path | Purpose | Authority Scope |
@@ -35,10 +36,15 @@
 | **EXP000** | `experiments/EXP000_PROTEINSOLVER_SMOKETEST/` | COMPLETE | `INTEGRATION_FIXTURE_VERIFIED` | Initial checkpoint loading and forward pass verification |
 | **EXP001** | `experiments/EXP001_PROTEINSOLVER_INFERENCE/` | COMPLETE | `INTEGRATION_FIXTURE_VERIFIED` | 1n5uA03 all-masked design: 41.30% recovery (38/92) |
 | **EXP004** | `experiments/EXP004_MASK_INVARIANCE/` | COMPLETE | `RAW_DATA_RECOMPUTED` | In tested all-masked setup, max logit diff = 0.0; information leak documented |
-| **EXP005** | `experiments/EXP005_PROTHERM_REPRODUCTION/` | COMPLETE | `PARTIAL_RECOMPUTATION / RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | ProTherm mutation stability (Fig 2D): Rosetta recomputed ($N=3,471$, 10k bootstrap $ho=-0.008$); PS preserved ($ho=0.444$) |
-| **EXP006** | `experiments/EXP006_ROCKLIN_STABILITY_REPRODUCTION/` | COMPLETE | `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | De novo protein stability (Fig 2F) across 4 topologies & rounds 1-4; EEHEE Rd 4 exception documented ($ho_{PS}=-0.14, ho_{Rosetta}=-0.40$) |
+| **EXP005** | `experiments/EXP005_PROTHERM_REPRODUCTION/` | COMPLETE | `PARTIAL_RECOMPUTATION / RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | ProTherm mutation stability (Fig 2D): Rosetta recomputed ($N=3,471$, 10k bootstrap $
+ho=-0.008$); PS preserved ($
+ho=0.444$) |
+| **EXP006** | `experiments/EXP006_ROCKLIN_STABILITY_REPRODUCTION/` | COMPLETE | `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | De novo protein stability (Fig 2F) across 4 topologies & rounds 1-4; EEHEE Rd 4 exception documented ($
+ho_{PS}=-0.14,
+ho_{Rosetta}=-0.40$) |
 | **EXP007** | `experiments/EXP007_BESTSEL_CD_REPRODUCTION/` | COMPLETE | `RECONSTRUCTION_FROM_PRESERVED_BESTSEL_OUTPUTS` | BeStSel CD secondary structure deconvolution (STAR Step 19); 1n5u $p > 0.05$ (no difference detected); 4beu $N=1$ descriptive only |
 | **EXP008** | `experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/` | COMPLETE | `INTEGRATION_FIXTURE_VERIFIED` | Multi-target inverse folding design fixture on 4 folds (92, 217, 109, 96 AA); full 2.4M generation cost unbenchmarked |
+| **R2_FIG2BC_REPRODUCTION** | `experiments/R2_FIG2BC_REPRODUCTION/` | COMPLETE | `AUXILIARY_EVALUATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION` | Figure 2B single-pass (38.59%) vs iterative MAP (39.77%); Figure 2C conditioning (0% -> 39.77%, 50% -> 40.93%, 80% -> 41.67%); legacy host active with expired TLS cert; full 10k dataset resource-bounded across 172 superfamilies |
 
 ## 5. Governance Architecture & Tools
 | Document | Path | Purpose |
