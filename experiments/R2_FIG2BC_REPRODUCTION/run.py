@@ -37,9 +37,9 @@ EXPECTED_PARAMS = 567060
 
 TARGETS = [
     ("1n5uA03", "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/1n5uA03.pdb", "A", "Serum albumin domain 3 (4-helix bundle)"),
-    ("4beuA02", "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/4beuA02.pdb", "A", "Racemase domain (alpha/beta)"),
-    ("4unuA00", "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/4unuA00.pdb", "A", "Rossmann fold"),
-    ("4z8jA00", "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/4z8jA00.pdb", "A", "Two-layer alpha/beta sandwich"),
+    ("4beuA02", "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/4beuA02.pdb", "A", "Alanine racemase domain"),
+    ("4unuA00", "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/4unuA00.pdb", "A", "Immunoglobulin / lambda variable domain (mainly beta)"),
+    ("4z8jA00", "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/4z8jA00.pdb", "A", "SNX27 PDZ3 domain (mainly beta)"),
     ("3fndA02", "external/proteinsolver-original/proteinsolver/data/inputs/3fndA02.pdb", "A", "Historical author test input"),
     ("5vli02", "external/proteinsolver-original/proteinsolver/data/inputs/5vli02.pdb", "A", "Historical author test input"),
     ("1UBQ", "1UBQ.pdb", "A", "Ubiquitin validation benchmark")

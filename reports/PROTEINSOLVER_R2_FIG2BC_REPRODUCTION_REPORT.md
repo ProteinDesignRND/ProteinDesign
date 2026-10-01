@@ -15,11 +15,11 @@
 - **Final Classification:** `R2_PARTIAL_VERIFIED_ON_AUXILIARY_POPULATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION`
 - **Binary Gate Status:** `R2_PARTIAL`
 - **Core Scientific Determination:**
-  1. **Figure 2B & 2C Mathematical Algorithms are 100% Functionally Verified:** The single-pass argmax and iterative most-confident MAP unmasking procedures, as well as the partial sequence conditioning mechanism, were implemented and executed in a dedicated cleanroom harness on GPU with strict adherence to primary source definitions.
+  1. **Decoding & Conditioning Procedures Implemented and Internally Verified:** The decoding and conditioning procedures were implemented and internally verified on the evaluated auxiliary targets in a dedicated cleanroom harness on GPU with strict adherence to primary source definitions.
   2. **Model & Checkpoint Invariants Match Exactly:** The canonical author checkpoint (`e53-s1952148-d93703104.state`, 567,060 parameters) loads under `strict=True` with zero key mismatches and zero shape discrepancies.
-  3. **Paper-Level 10,000-Instance Population is NOT Reconstructible:** The published 10,000 sequence/adjacency-matrix test dataset was hosted on Google Cloud Storage (`gs://deep-protein-gen`), which is inaccessible (`HTTP 403: Forbidden`). No local copy exists in the repository, on disk, or in surviving archives. Per governance rules, the 10k paper reproduction cannot be claimed without the actual dataset.
-  4. **Historical Author Notebook Evidence Cryptographically Reconstructed:** The author's notebook 06 evaluation (`06_protein_analysis.ipynb`) evaluated a single 1,283-record test partition yielding `oneshot = 27.29%` and `incremental = 26.80%`. These exact bin distributions and headline accuracies were successfully extracted from the author's preserved SVG artifact (`docs/images/protein_analysis/191f05de-test-oneshot-incremental.svg`).
-  5. **Auxiliary Reproduction on Primary Target Structures Complete:** Evaluated across 7 verified structural targets (including all 4 primary targets from *Cell Systems* Figure 3: 1n5uA03, 4beuA02, 4unuA00, 4z8jA00, plus 3fndA02, 5vli02, 1UBQ; 673 residues total):
+  3. **Paper-Level 10,000-Instance Population Not Reconstructible with Current Artifacts:** The published 10,000 sequence/adjacency-matrix test dataset was stored across remote storage. The underlying GCS endpoint (`gs://deep-protein-gen`) is CURRENTLY INACCESSIBLE (`HTTP 403: Forbidden`). Testing the official author-documented legacy route (`http://deep-protein-gen.data.proteinsolver.org/`) established that the server is online (HTTP port 80 redirects 301 to HTTPS; HTTPS port 443 returns TLS certificate expired `SEC_E_CERT_EXPIRED`, responding `HTTP 200 OK` under TLS bypass). Inspection of remote directories showed candidate partition `/processed/test_data/` contains 1,461 rows (1,420 valid), while root `/test_data/` contains 172 unbundled superfamily directories without documented sampling seeds. Full recovery of the published 10k population is resource-bounded (`LEGACY_DATA_ROUTE_REACHABLE_BUT_FULL_RECOVERY_RESOURCE-BOUNDED`). Therefore, `FIG2B_POPULATION_STATUS = NOT_RECONSTRUCTIBLE_WITH_CURRENT_ARTIFACTS` is maintained.
+  4. **Historical Author Notebook Evidence Reconstructed:** The author's notebook 06 evaluation (`06_protein_analysis.ipynb`) evaluated a single validation partition from `processed/validation_data/part-00000-4f535e50-cdf4-4275-b6b3-a3038f24a1a9-c000.snappy.parquet` (1,331 rows yielding exactly 1,283 valid records under `row_to_data`), producing a `HISTORICAL_NOTEBOOK_AGGREGATE` of `27.29%` (`0.2728685383656129`). The preserved author SVG artifact (`docs/images/protein_analysis/191f05de-test-oneshot-incremental.svg`) reports headline accuracies of `oneshot = 27.29%` and `incremental = 26.80%`. Graphical extraction yielded visible bar counts of 653 (oneshot) and 649 (incremental), classified as `GRAPHICAL_HISTORICAL_EVIDENCE_EXTRACTION` (not a complete population distribution).
+  5. **Auxiliary Reproduction on Primary Target Structures Complete:** Evaluated across 7 verified structural targets (including 4 primary published targets: 1n5uA03 [Main Figure 2G–N, serum albumin domain 3], 4beuA02 [Supplementary Figure S3, Alanine racemase domain], 4unuA00 [Supplementary Figure S4, Immunoglobulin / lambda variable domain, mainly beta], 4z8jA00 [Supplementary Figure S5, SNX27 PDZ3 domain, mainly beta], plus 3fndA02, 5vli02, 1UBQ; 673 residues total):
      - Single-pass recovery: 38.59% macro-mean / 39.82% micro-aggregate
      - Iterative MAP recovery: 39.77% macro-mean / 41.31% micro-aggregate (+1.18% iterative advantage)
      - Conditioning missing-residue recovery: 39.77% (0% context) $\to$ 40.93% (50% context) $\to$ 41.67% (80% context)
@@ -54,7 +54,7 @@ All scientific evaluations adhere strictly to the project evidence hierarchy:
 | Item | Published Paper Definition | Historical Implementation Definition | Current Implementation Definition | Evidence Path | Qualification Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Figure 2B Population** | 10,000 sequence/adjacency instances from Gene3D test superfamilies | 1,283 records from `validation_data/part-00000...parquet` | 7 primary target structures (673 AA) + SVG distribution extraction | `06_protein_analysis.ipynb` Cell 16, 35 | `NOT_RECONSTRUCTIBLE_WITH_CURRENT_ARTIFACTS` (10k); `AUXILIARY_VERIFIED` (7 targets) |
-| **Figure 2C Conditioning** | 0%, 50%, 80% reference sequence context | 0.0, 0.5, 0.8 Bernoulli mask in `06_protein_analysis.ipynb` | Identical Bernoulli mask with deterministic seeds (25 reps/condition) | `06_protein_analysis.ipynb` Cell 40 | `VERIFIED_REPRODUCTION` |
+| **Figure 2C Conditioning** | 0%, 50%, 80% reference sequence context | 0.0, 0.5, 0.8 Bernoulli mask in `06_protein_analysis.ipynb` | Identical Bernoulli mask with deterministic seeds (25 reps/condition) | `06_protein_analysis.ipynb` Cell 40 | `METHOD-CONSISTENT_AUXILIARY_EVALUATION` |
 | **Mask Token** | Residue missing token | Token index 20 | Token index 20 (`MASK_TOKEN_IDX = 20`) | `proteinsolver/utils/` | `VERIFIED_EXACT_MATCH` |
 | **Single-Pass Decoding** | All positions masked at once, argmax across 20 amino acids | `x_in = 20; output = net(x_in); output.max(dim=1)` | Same forward pass & argmax | `06_protein_analysis.ipynb` Cell 35 | `VERIFIED_EXACT_MATCH` |
 | **Iterative Decoding** | Iterative unmasking of most-confident residue | `design_protein`: unmasks highest marginal probability at each step | Same greedy MAP priority selection | `06_protein_analysis.ipynb` Cell 38; `sampler.py` | `VERIFIED_EXACT_MATCH` |
@@ -65,7 +65,7 @@ All scientific evaluations adhere strictly to the project evidence hierarchy:
 ### B. Adjudication of Section 6 Questions
 
 1. **Can the actual published 10,000-instance population be recovered?**  
-   **No.** The raw 10,000-instance dataset was hosted on Google Cloud Storage (`gs://deep-protein-gen/processed/test_data/part-00000-ba92a066-6ee2-47dc-883c-fd2044ecaa00-c000.snappy.parquet`), which returns `HTTP 403 Forbidden`. No local archive exists.
+   **No.** The raw 10,000-instance dataset was hosted on Google Cloud Storage (`gs://deep-protein-gen`), which returns `HTTP 403 Forbidden` (CURRENTLY INACCESSIBLE). The officially documented author legacy distribution host `http://deep-protein-gen.data.proteinsolver.org/` is active (HTTP 301 to HTTPS with expired TLS certificate `SEC_E_CERT_EXPIRED`, HTTP 200 OK under TLS bypass); candidate partition `/processed/test_data/` has 1,461 rows, while root `/test_data/` contains 172 unbundled superfamily directories without published sampling seeds. Full recovery is resource-bounded (`LEGACY_DATA_ROUTE_REACHABLE_BUT_FULL_RECOVERY_RESOURCE-BOUNDED`). No local copy of the 10,000 instances exists.
 2. **Is there an exact local artifact containing the 10,000 instances?**  
    **No.** Exhaustive disk search confirmed zero matching parquet partitions or binary caches.
 3. **Does the historical notebook construct the 10,000 instances from another source?**  
@@ -111,10 +111,10 @@ All scientific evaluations adhere strictly to the project evidence hierarchy:
 
 | Target ID | PDB Path | Length (AA) | Fold Description | Single-Pass (Oneshot) Recovery | Iterative MAP Recovery | Delta (Iter − Oneshot) | Iterative Mean Confidence |
 | :--- | :--- | :---: | :--- | :---: | :---: | :---: | :---: |
-| **1n5uA03** | `EXP008/input/1n5uA03.pdb` | 92 | 4-helix bundle (albumin domain 3) | 40.22% (37/92) | **41.30%** (38/92) | +1.09% | 0.812 |
-| **4beuA02** | `EXP008/input/4beuA02.pdb` | 217 | $\alpha/\beta$ racemase domain | 41.01% (89/217) | **41.94%** (91/217) | +0.92% | 0.771 |
-| **4unuA00** | `EXP008/input/4unuA00.pdb` | 109 | Rossmann fold | 40.37% (44/109) | **43.12%** (47/109) | +2.75% | 0.785 |
-| **4z8jA00** | `EXP008/input/4z8jA00.pdb` | 96 | 2-layer $\alpha/\beta$ sandwich | 42.71% (41/96) | **46.88%** (45/96) | +4.17% | 0.789 |
+| **1n5uA03** | `EXP008/input/1n5uA03.pdb` | 92 | Main Figure 2G–N (serum albumin domain 3, 4-helix bundle) | 40.22% (37/92) | **41.30%** (38/92) | +1.09% | 0.812 |
+| **4beuA02** | `EXP008/input/4beuA02.pdb` | 217 | Supplementary Figure S3 (Alanine racemase domain) | 41.01% (89/217) | **41.94%** (91/217) | +0.92% | 0.771 |
+| **4unuA00** | `EXP008/input/4unuA00.pdb` | 109 | Supplementary Figure S4 (Immunoglobulin / lambda variable domain, 109 AA, mainly $\beta$) | 40.37% (44/109) | **43.12%** (47/109) | +2.75% | 0.785 |
+| **4z8jA00** | `EXP008/input/4z8jA00.pdb` | 96 | Supplementary Figure S5 (SNX27 PDZ3 domain, 96 AA, mainly $\beta$) | 42.71% (41/96) | **46.88%** (45/96) | +4.17% | 0.789 |
 | **3fndA02** | `proteinsolver/data/inputs/` | 44 | Historical author test target | 22.73% (10/44) | 18.18% (8/44) | −4.55% | 0.698 |
 | **5vli02** | `proteinsolver/data/inputs/` | 39 | Historical author test target | 43.59% (17/39) | **46.15%** (18/39) | +2.56% | 0.842 |
 | **1UBQ** | `1UBQ.pdb` | 76 | Ubiquitin validation fold | 39.47% (30/76) | **40.79%** (31/76) | +1.32% | 0.784 |
@@ -138,7 +138,7 @@ All scientific evaluations adhere strictly to the project evidence hierarchy:
 - Sequence generation: Iterative MAP decoding fills all positions in $\mathcal{U}$.
 - **Accuracy Evaluation (Strictly Reconstructed Residues):**
   $$\text{Identity}_{\text{missing}} = \frac{1}{\sum_{i=1}^L (1 - m_i)} \sum_{i: m_i = 0} \mathbb{I}(\hat{s}_i = s_i^{\text{wt}})$$
-  *Note:* Ground-truth context residues ($m_i = 1$) are strictly excluded from both the numerator and denominator of this metric, reproducing the exact calculation in author notebook `06_protein_analysis.ipynb` Cell 40.
+  *Note:* Ground-truth context residues ($m_i = 1$) are strictly excluded from both the numerator and denominator of this metric, reproducing the calculation in author notebook `06_protein_analysis.ipynb` Cell 40 for missing positions. This was the exact metric used by our auxiliary evaluation; we do not imply that it is automatically identical to the published Figure 2C aggregation unless direct primary source evidence demonstrates that. Furthermore, $\text{Identity}_{\text{missing}}$ must be clearly distinguished from total sequence identity $\text{Identity}_{\text{all}}$: because provided context residues contribute directly to $\text{Identity}_{\text{all}}$, total sequence identity cannot be used as evidence of reconstruction quality on masked positions.
 - Replicates: 25 independent random Bernoulli mask realizations per target for $f = 0.5$ and $f = 0.8$ (seeds 42 to 66); 1 deterministic evaluation for $f = 0.0$ (total 357 evaluations).
 
 ---
@@ -164,19 +164,20 @@ All scientific evaluations adhere strictly to the project evidence hierarchy:
 
 Although the 10,000-instance raw dataset was inaccessible on GCS, the author's own execution statistics from `06_protein_analysis.ipynb` and preserved vector graphics were cryptographically parsed and reconstructed:
 
-1. **Author Notebook Output (Cell 36):**
+1. **Historical Notebook Aggregate (Cell 36):**
    ```python
    fraction_correct_oneshot = (oneshot_results_df["num_correct"] / oneshot_results_df["num_total"]).mean()
    # Output: 0.2728685383656129 (~27.29%)
    ```
-2. **Author SVG Artifact (`docs/images/protein_analysis/191f05de-test-oneshot-incremental.svg`):**
-   - Oneshot Legend: `oneshot (accuracy: 27.29%)`
-   - Incremental Legend: `incremental (accuracy: 26.80%)`
-   - Extracted Bin Distribution: Exactly 100 bins across range $[-0.025, 0.625]$. Sum of visible counts: $N = 653$ (oneshot), $N = 649$ (incremental).
-3. **Comparison with Auxiliary Fixture:**
-   - General Gene3D domain population (historical notebook): ~27% recovery.
-   - Core structural targets (1n5uA03, 4beuA02, 4unuA00, 4z8jA00): ~40–47% recovery.
-   - This difference is expected: the broad Gene3D test set includes diverse domains of varying quality and disorder, whereas the 4 primary targets were curated for high expression and structural cooperativity.
+   The direct notebook output of 0.2728685383656129 (~27.29%) across 1,283 records is classified as `HISTORICAL_NOTEBOOK_AGGREGATE`.
+2. **Graphical Historical Evidence Extraction (`docs/images/protein_analysis/191f05de-test-oneshot-incremental.svg`):**
+   - Preserved SVG Legend: `oneshot (accuracy: 27.29%)`, `incremental (accuracy: 26.80%)`.
+   - Extracted Bin Distribution: Exactly 100 bins across range $[-0.025, 0.625]$. Sum of visible bar counts: $N = 653$ (oneshot), $N = 649$ (incremental).
+   - Classification: `GRAPHICAL_HISTORICAL_EVIDENCE_EXTRACTION`. These extracted visible bar counts must not be overstated as a complete population distribution.
+3. **Comparison with Auxiliary Population:**
+   - General Gene3D domain population (historical notebook aggregate): ~27% recovery.
+   - Auxiliary structural targets (1n5uA03, 4beuA02, 4unuA00, 4z8jA00): ~40–47% recovery.
+   - Population-composition differences may contribute to the observed numerical difference; the current evidence does not isolate the causal contribution of any single structural property.
 
 ---
 
@@ -184,7 +185,7 @@ Although the 10,000-instance raw dataset was inaccessible on GCS, the author's o
 
 1. **Population Size Discrepancy:**
    - *Paper Claim:* Figure 2B test dataset comprises 10,000 sequence and adjacency-matrix instances.
-   - *Surviving Evidence:* 10,000 instances are not tracked in the git repository and were hosted on a private/expired GCS bucket (`gs://deep-protein-gen`, HTTP 403). The author notebook evaluated 1,283 records; our auxiliary evaluation executed on 7 curated targets (673 residues).
+   - *Surviving Evidence:* 10,000 instances are not tracked in the git repository. The GCS storage endpoint (`gs://deep-protein-gen`) is CURRENTLY INACCESSIBLE (HTTP 403 Forbidden). The author's documented legacy HTTP distribution server (`http://deep-protein-gen.data.proteinsolver.org/`) was verified to be online (HTTP 301 redirect to HTTPS; HTTPS returns expired TLS certificate `SEC_E_CERT_EXPIRED`, responding HTTP 200 OK under TLS bypass); candidate partition `/processed/test_data/` contains 1,461 rows (1,420 valid), and root `/test_data/` contains 172 unbundled superfamily directories without documented sampling seeds. Full 10k recovery is resource-bounded (`LEGACY_DATA_ROUTE_REACHABLE_BUT_FULL_RECOVERY_RESOURCE-BOUNDED`). The author notebook evaluated a 1,283-record validation partition; our auxiliary evaluation executed on 7 structural targets (673 residues). These three populations are preserved as distinct.
 2. **Recovery Magnitude Discrepancy:**
    - The paper text highlights sequence recovery of ~30–40% on specific folds, but the overall Gene3D notebook aggregate is 27.29% (oneshot) and 26.80% (incremental). On curated targets, recovery is 39.77%–41.31%.
    - Both numbers are scientifically valid in their respective populations and must not be conflated.
@@ -193,8 +194,8 @@ Although the 10,000-instance raw dataset was inaccessible on GCS, the author's o
 
 ## 10. Root Causes of Discrepancies
 
-1. **Inaccessible Remote Data Hosting:** The author chose to host the large Gene3D parquet datasets on Google Cloud Storage rather than committing them to the git repository or a permanent open repository (e.g., Zenodo). Over time, access permissions on `gs://deep-protein-gen` expired or were restricted.
-2. **Biological Heterogeneity Across Populations:** Gene3D comprises over a thousand diverse superfamilies with widely varying secondary structure content, length, and packing density. Curated targets (e.g., 4-helix bundle 1n5uA03) possess dense, ideal contact topologies where ProteinSolver performs substantially better than average.
+1. **Remote Data Distribution Architecture:** The GCS backend `gs://deep-protein-gen` is currently inaccessible (HTTP 403 Forbidden). The author-documented legacy HTTP distribution server (`http://deep-protein-gen.data.proteinsolver.org/`) is online but serves under an expired TLS certificate, and the test partition is organized into 172 separate superfamily subdirectories rather than a single 10,000-instance file, with no documented sampling seed in the repository.
+2. **Population-Composition Variance:** Population-composition differences may contribute to the observed numerical difference; the current evidence does not isolate the causal contribution of any single structural property.
 
 ---
 
@@ -210,7 +211,7 @@ Although the 10,000-instance raw dataset was inaccessible on GCS, the author's o
 
 - Full 10,000-instance paper-level reproduction cannot be achieved without the original Gene3D test partition parquet files.
 - Regeneration of the full 72M Gene3D dataset from UniParc and PDB is a multi-month cluster campaign that is out of scope for Phase R2.
-- The auxiliary 7-target reproduction provides source-grounded functional proof of the algorithms, model weights, and conditioning trends.
+- The auxiliary 7-target evaluation provides source-grounded evidence of functional behavior on the evaluated targets, model weights, and conditioning trends.
 
 ---
 

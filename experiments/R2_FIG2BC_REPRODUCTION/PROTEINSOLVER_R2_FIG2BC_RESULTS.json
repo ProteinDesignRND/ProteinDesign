@@ -8,15 +8,20 @@
   },
   "population_qualification": {
     "status": "NOT_RECONSTRUCTIBLE_WITH_CURRENT_ARTIFACTS",
-    "reason": "The published 10,000-instance Gene3D test dataset was stored on GCS bucket gs://deep-protein-gen (HTTP 403 Forbidden). No local copy of the 10k population or 1,283-record test partition exists on disk.",
-    "evaluated_auxiliary_population": "Primary Cell Systems target structures (1n5uA03, 4beuA02, 4unuA00, 4z8jA00, 3fndA02, 5vli02, 1UBQ; 7 targets, 673 residues total).",
+    "reason": "Official legacy URL http://deep-protein-gen.data.proteinsolver.org/ redirects to HTTPS; HTTPS certificate is expired (SEC_E_CERT_EXPIRED), but server is active under TLS bypass. The 10,000-instance population is not packaged as a single test partition (remote test_data/ contains 172 unbundled superfamily directories without documented sampling seeds), making paper-level 10k recovery resource-bounded. GCS backend gs://deep-protein-gen is CURRENTLY INACCESSIBLE (HTTP 403 Forbidden).",
+    "evaluated_auxiliary_population": "Auxiliary primary target structures (1n5uA03: Main Fig 2G-N; 4beuA02: Supp Fig S3; 4unuA00: Supp Fig S4; 4z8jA00: Supp Fig S5; plus 3fndA02, 5vli02, 1UBQ; 7 targets, 673 residues total).",
     "preserved_historical_notebook_evidence": {
       "source": "06_protein_analysis.ipynb Cell 35-36 & 191f05de-test-oneshot-incremental.svg",
-      "notebook_oneshot_accuracy": 0.2728685383656129,
-      "svg_oneshot_accuracy": 0.2729,
-      "svg_incremental_accuracy": 0.268,
+      "historical_notebook_aggregate": 0.2728685383656129,
+      "graphical_historical_evidence_extraction": {
+        "svg_oneshot_accuracy": 0.2729,
+        "svg_incremental_accuracy": 0.268,
+        "svg_oneshot_visible_counts": 653,
+        "svg_incremental_visible_counts": 649
+      },
       "n_records_notebook": 1283
-    }
+    },
+    "legacy_data_route_status": "LEGACY_DATA_ROUTE_REACHABLE_BUT_FULL_RECOVERY_RESOURCE-BOUNDED"
   },
   "figure_2b_results": {
     "n_targets": 7,

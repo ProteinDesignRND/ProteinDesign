@@ -4,7 +4,11 @@
   "checkpoint_path": "external/proteinsolver-original/data/e53-s1952148-d93703104.state",
   "expected_sha256": "1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727",
   "expected_parameters": 567060,
-  "conditioning_levels": [0.0, 0.5, 0.8],
+  "conditioning_levels": [
+    0.0,
+    0.5,
+    0.8
+  ],
   "n_replicates_per_condition": 25,
   "random_seed_base": 42,
   "targets": [
@@ -13,28 +17,28 @@
       "path": "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/1n5uA03.pdb",
       "chain": "A",
       "length": 92,
-      "description": "Serum albumin domain 3 (4-helix bundle)"
+      "description": "Serum albumin domain 3 (4-helix bundle; Main Figure 2G-N)"
     },
     {
       "name": "4beuA02",
       "path": "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/4beuA02.pdb",
       "chain": "A",
       "length": 217,
-      "description": "Racemase domain (alpha/beta)"
+      "description": "Alanine racemase domain (Supplementary Figure S3)"
     },
     {
       "name": "4unuA00",
       "path": "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/4unuA00.pdb",
       "chain": "A",
       "length": 109,
-      "description": "Rossmann fold"
+      "description": "Immunoglobulin / lambda variable domain (109 residues, mainly beta; Supplementary Figure S4)"
     },
     {
       "name": "4z8jA00",
       "path": "experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/input/4z8jA00.pdb",
       "chain": "A",
       "length": 96,
-      "description": "Two-layer alpha/beta sandwich"
+      "description": "SNX27 PDZ3 domain (96 residues, mainly beta; Supplementary Figure S5)"
     },
     {
       "name": "3fndA02",

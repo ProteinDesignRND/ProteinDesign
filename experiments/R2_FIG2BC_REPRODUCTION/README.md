@@ -4,7 +4,7 @@
 ### Executive Status
 - **Phase Outcome:** `R2_PARTIAL_VERIFIED_ON_AUXILIARY_POPULATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION`
 - **Population Qualification (Fig 2B):** `NOT_RECONSTRUCTIBLE_WITH_CURRENT_ARTIFACTS` (10,000-instance paper dataset was stored on remote Google Cloud Storage `gs://deep-protein-gen`, which returns `HTTP 403 Forbidden`; no local copy exists).
-- **Auxiliary Verification:** Executed on 7 primary target structures (including all 4 primary targets from *Cell Systems* Figure 3: 1n5uA03, 4beuA02, 4unuA00, 4z8jA00, plus 3fndA02, 5vli02, 1UBQ; 673 residues total) using canonical pretrained checkpoint `e53-s1952148-d93703104.state` (SHA-256: `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727`).
+- **Auxiliary Verification:** Executed on 7 primary target structures (including the 4 primary published targets: 1n5uA03 (Main Figure 2G–N), 4beuA02 (Supplementary Figure S3, Alanine racemase domain), 4unuA00 (Supplementary Figure S4, Immunoglobulin / lambda variable domain, mainly beta), 4z8jA00 (Supplementary Figure S5, SNX27 PDZ3 domain, mainly beta), plus 3fndA02, 5vli02, 1UBQ; 673 residues total) using canonical pretrained checkpoint `e53-s1952148-d93703104.state` (SHA-256: `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727`).
 - **Historical Evidence Reconstruction:** Extracted exact numerical distributions from author notebook `06_protein_analysis.ipynb` and preserved artifact `docs/images/protein_analysis/191f05de-test-oneshot-incremental.svg`, confirming historical notebook aggregate performance of 27.29% oneshot and 26.80% incremental recovery.
 
 ### Mathematical Procedures

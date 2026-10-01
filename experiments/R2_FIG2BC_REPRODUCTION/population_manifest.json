@@ -1,22 +1,27 @@
 {
   "experiment_id": "R2_FIG2BC_REPRODUCTION",
   "fig2b_population_status": "NOT_RECONSTRUCTIBLE_WITH_CURRENT_ARTIFACTS",
+  "legacy_data_route_status": "LEGACY_DATA_ROUTE_REACHABLE_BUT_FULL_RECOVERY_RESOURCE-BOUNDED",
   "qualification_rationale": {
     "published_paper_10k_population": {
       "definition": "10,000 sequence and adjacency-matrix instances sampled from 172 Gene3D test superfamilies (Strokach et al., Cell Systems 2020 Figure 2B caption and Methods).",
-      "storage_location": "Google Cloud Storage gs://deep-protein-gen/processed/test_data/part-00000-ba92a066-6ee2-47dc-883c-fd2044ecaa00-c000.snappy.parquet",
-      "accessibility": "HTTP 403 Forbidden (private/expired GCS bucket).",
+      "gcs_storage_location": "gs://deep-protein-gen/processed/test_data/part-00000-ba92a066-6ee2-47dc-883c-fd2044ecaa00-c000.snappy.parquet",
+      "gcs_accessibility": "CURRENTLY INACCESSIBLE (HTTP 403 Forbidden).",
+      "legacy_distribution_url": "http://deep-protein-gen.data.proteinsolver.org/",
+      "legacy_distribution_route_details": "DNS resolves to 206.12.89.143. Port 80 redirects (301) to HTTPS. HTTPS port 443 returns TLS certificate expired (SEC_E_CERT_EXPIRED). Under TLS bypass (-k / verify=False), nginx returns HTTP 200 OK with directory listing. Candidate partition processed/test_data/ has 1,461 rows (1,420 valid). Root /test_data/ contains 172 unbundled superfamily directories without documented sampling seeds. Full 10,000-instance recovery is resource-bounded.",
       "local_availability": false,
       "reconstructibility": false
     },
     "historical_notebook_population": {
       "definition": "1,283 test domain graphs evaluated in author notebook 06_protein_analysis.ipynb Cell 35-36 from validation_data/part-00000-4f535e50-cdf4-4275-b6b3-a3038f24a1a9-c000.snappy.parquet.",
-      "storage_location": "Google Cloud Storage gs://deep-protein-gen/processed/validation_data/...",
-      "accessibility": "HTTP 403 Forbidden.",
-      "local_availability": false,
+      "legacy_route_file": "processed/validation_data/part-00000-4f535e50-cdf4-4275-b6b3-a3038f24a1a9-c000.snappy.parquet (33,565,963 bytes, SHA-256: 082A87137EE3D058C7CA6AF594D6B96129EE437106F7522712988B3D2343531E). 1,331 rows yielding exactly 1,283 valid records under row_to_data.",
+      "accessibility": "CURRENTLY INACCESSIBLE via GCS (HTTP 403); retrieved and verified via legacy HTTP/HTTPS distribution route with TLS bypass.",
+      "local_availability": true,
       "preserved_notebook_evidence": {
+        "evidence_classification": "HISTORICAL_NOTEBOOK_AGGREGATE",
         "cell_36_output_float": 0.2728685383656129,
         "svg_artifact": "external/proteinsolver-original/docs/images/protein_analysis/191f05de-test-oneshot-incremental.svg",
+        "svg_extraction_classification": "GRAPHICAL_HISTORICAL_EVIDENCE_EXTRACTION",
         "svg_legend_oneshot": "oneshot (accuracy: 27.29%)",
         "svg_legend_incremental": "incremental (accuracy: 26.80%)",
         "svg_oneshot_reconstructed_n": 653,
@@ -25,14 +30,22 @@
     },
     "evaluated_auxiliary_population": {
       "type": "AUXILIARY_PRIMARY_TARGET_STRUCTURES",
-      "rationale": "High-confidence structural targets from Cell Systems Figure 3 and upstream author PDB repository.",
+      "rationale": "High-confidence structural targets from published paper (1n5uA03: Main Figure 2G-N; 4beuA02: Supplementary Figure S3; 4unuA00: Supplementary Figure S4; 4z8jA00: Supplementary Figure S5; plus 3fndA02, 5vli02, 1UBQ) and upstream author PDB repository.",
       "sample_count": 7,
       "total_residues": 673,
-      "targets": ["1n5uA03", "4beuA02", "4unuA00", "4z8jA00", "3fndA02", "5vli02", "1UBQ"]
+      "targets": [
+        "1n5uA03",
+        "4beuA02",
+        "4unuA00",
+        "4z8jA00",
+        "3fndA02",
+        "5vli02",
+        "1UBQ"
+      ]
     }
   },
   "governance_compliance": {
     "conflation_prevention": "Strictly separated: 10,000 paper population is NOT conflated with 1,283 notebook aggregate, nor with the 7-target auxiliary structural evaluation.",
-    "claim_level": "AUXILIARY_REPRODUCTION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION"
+    "claim_level": "AUXILIARY_EVALUATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION"
   }
 }
