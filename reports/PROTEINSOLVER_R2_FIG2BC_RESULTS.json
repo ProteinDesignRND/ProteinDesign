@@ -1,0 +1,100 @@
+{
+  "execution_timestamp": "2026-10-01T11:46:33.829457",
+  "device": "cuda:0",
+  "checkpoint": {
+    "path": "external/proteinsolver-original/data/e53-s1952148-d93703104.state",
+    "sha256": "1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727",
+    "parameters": 567060
+  },
+  "population_qualification": {
+    "status": "NOT_RECONSTRUCTIBLE_WITH_CURRENT_ARTIFACTS",
+    "reason": "The published 10,000-instance Gene3D test dataset was stored on GCS bucket gs://deep-protein-gen (HTTP 403 Forbidden). No local copy of the 10k population or 1,283-record test partition exists on disk.",
+    "evaluated_auxiliary_population": "Primary Cell Systems target structures (1n5uA03, 4beuA02, 4unuA00, 4z8jA00, 3fndA02, 5vli02, 1UBQ; 7 targets, 673 residues total).",
+    "preserved_historical_notebook_evidence": {
+      "source": "06_protein_analysis.ipynb Cell 35-36 & 191f05de-test-oneshot-incremental.svg",
+      "notebook_oneshot_accuracy": 0.2728685383656129,
+      "svg_oneshot_accuracy": 0.2729,
+      "svg_incremental_accuracy": 0.268,
+      "n_records_notebook": 1283
+    }
+  },
+  "figure_2b_results": {
+    "n_targets": 7,
+    "total_residues": 673,
+    "oneshot_macro_mean": 0.3858531750386866,
+    "oneshot_micro_aggregate": 0.39821693907875183,
+    "iterative_macro_mean": 0.39765605110282204,
+    "iterative_micro_aggregate": 0.413075780089153,
+    "mean_delta_iterative_minus_oneshot": 0.011802876064135425,
+    "target_details": [
+      {
+        "target": "1n5uA03",
+        "length": 92,
+        "oneshot_recovery": 0.40217391304347827,
+        "iterative_recovery": 0.41304347826086957,
+        "delta": 0.010869565217391297
+      },
+      {
+        "target": "4beuA02",
+        "length": 217,
+        "oneshot_recovery": 0.41013824884792627,
+        "iterative_recovery": 0.41935483870967744,
+        "delta": 0.009216589861751168
+      },
+      {
+        "target": "4unuA00",
+        "length": 109,
+        "oneshot_recovery": 0.4036697247706422,
+        "iterative_recovery": 0.43119266055045874,
+        "delta": 0.027522935779816515
+      },
+      {
+        "target": "4z8jA00",
+        "length": 96,
+        "oneshot_recovery": 0.4270833333333333,
+        "iterative_recovery": 0.46875,
+        "delta": 0.041666666666666685
+      },
+      {
+        "target": "3fndA02",
+        "length": 44,
+        "oneshot_recovery": 0.22727272727272727,
+        "iterative_recovery": 0.18181818181818182,
+        "delta": -0.04545454545454544
+      },
+      {
+        "target": "5vli02",
+        "length": 39,
+        "oneshot_recovery": 0.4358974358974359,
+        "iterative_recovery": 0.46153846153846156,
+        "delta": 0.02564102564102566
+      },
+      {
+        "target": "1UBQ",
+        "length": 76,
+        "oneshot_recovery": 0.39473684210526316,
+        "iterative_recovery": 0.40789473684210525,
+        "delta": 0.01315789473684209
+      }
+    ]
+  },
+  "figure_2c_results": {
+    "0%_residues_present": {
+      "mean_identity_missing": 0.39765605110282204,
+      "std_identity_missing": 0.09802928381123184
+    },
+    "50%_residues_present": {
+      "mean_identity_missing": 0.4093102816635766,
+      "std_identity_missing": 0.08715929246242171
+    },
+    "80%_residues_present": {
+      "mean_identity_missing": 0.41672839300578046,
+      "std_identity_missing": 0.13059443559635794
+    }
+  },
+  "verification_status": {
+    "independent_dual_checks_passed": true,
+    "discrepancies": 0
+  },
+  "final_classification": "R2_PARTIAL_VERIFIED_ON_AUXILIARY_POPULATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION"
+}

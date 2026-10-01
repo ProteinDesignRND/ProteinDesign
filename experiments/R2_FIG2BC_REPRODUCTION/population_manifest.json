@@ -1,0 +1,38 @@
+{
+  "experiment_id": "R2_FIG2BC_REPRODUCTION",
+  "fig2b_population_status": "NOT_RECONSTRUCTIBLE_WITH_CURRENT_ARTIFACTS",
+  "qualification_rationale": {
+    "published_paper_10k_population": {
+      "definition": "10,000 sequence and adjacency-matrix instances sampled from 172 Gene3D test superfamilies (Strokach et al., Cell Systems 2020 Figure 2B caption and Methods).",
+      "storage_location": "Google Cloud Storage gs://deep-protein-gen/processed/test_data/part-00000-ba92a066-6ee2-47dc-883c-fd2044ecaa00-c000.snappy.parquet",
+      "accessibility": "HTTP 403 Forbidden (private/expired GCS bucket).",
+      "local_availability": false,
+      "reconstructibility": false
+    },
+    "historical_notebook_population": {
+      "definition": "1,283 test domain graphs evaluated in author notebook 06_protein_analysis.ipynb Cell 35-36 from validation_data/part-00000-4f535e50-cdf4-4275-b6b3-a3038f24a1a9-c000.snappy.parquet.",
+      "storage_location": "Google Cloud Storage gs://deep-protein-gen/processed/validation_data/...",
+      "accessibility": "HTTP 403 Forbidden.",
+      "local_availability": false,
+      "preserved_notebook_evidence": {
+        "cell_36_output_float": 0.2728685383656129,
+        "svg_artifact": "external/proteinsolver-original/docs/images/protein_analysis/191f05de-test-oneshot-incremental.svg",
+        "svg_legend_oneshot": "oneshot (accuracy: 27.29%)",
+        "svg_legend_incremental": "incremental (accuracy: 26.80%)",
+        "svg_oneshot_reconstructed_n": 653,
+        "svg_incremental_reconstructed_n": 649
+      }
+    },
+    "evaluated_auxiliary_population": {
+      "type": "AUXILIARY_PRIMARY_TARGET_STRUCTURES",
+      "rationale": "High-confidence structural targets from Cell Systems Figure 3 and upstream author PDB repository.",
+      "sample_count": 7,
+      "total_residues": 673,
+      "targets": ["1n5uA03", "4beuA02", "4unuA00", "4z8jA00", "3fndA02", "5vli02", "1UBQ"]
+    }
+  },
+  "governance_compliance": {
+    "conflation_prevention": "Strictly separated: 10,000 paper population is NOT conflated with 1,283 notebook aggregate, nor with the 7-target auxiliary structural evaluation.",
+    "claim_level": "AUXILIARY_REPRODUCTION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION"
+  }
+}

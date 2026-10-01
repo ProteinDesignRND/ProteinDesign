@@ -1,0 +1,37 @@
+{
+  "experiment_id": "R2_FIG2BC_REPRODUCTION",
+  "timestamp": "2026-10-01T11:44:00+05:30",
+  "source_repositories": {
+    "research_repo": {
+      "path": "D:\\Projects\\Protein Design",
+      "baseline_head": "39f3daf70179aba3d9cc09cd056bc868f795fa9b",
+      "independent_verification_basis": "d961ef0b865f03d05a3df339b9f84b8f20c9ea56"
+    },
+    "historical_upstream_repo": {
+      "path": "D:\\Projects\\Protein Design\\external\\proteinsolver-original",
+      "head": "69ef0965a3fc3bf191804035b539720a06e58ba6",
+      "read_only": true
+    },
+    "modern_implementation_repo": {
+      "path": "D:\\Projects\\ProteinSolver",
+      "head": "58255bc67323f5fd009ac85ae02fbf69c152c457",
+      "read_only": true
+    }
+  },
+  "checkpoint": {
+    "filename": "e53-s1952148-d93703104.state",
+    "path": "external/proteinsolver-original/data/e53-s1952148-d93703104.state",
+    "size_bytes": 2278071,
+    "sha256": "1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727",
+    "verified": true,
+    "architecture": "ProteinSolverNet (4 residual EdgeConv blocks, 128 hidden, 2 edge features, 21 in, 20 out)",
+    "parameter_count": 567060
+  },
+  "software_environment": {
+    "python": "3.11.9",
+    "torch": "2.6.0+cu124",
+    "torch_geometric": "2.8.0.post1",
+    "cuda_available": true,
+    "device": "cuda:0 (NVIDIA GeForce RTX 3050 Laptop GPU)"
+  }
+}
