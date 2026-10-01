@@ -50,7 +50,9 @@ Direct inspection of the final published Figure 2A confirms that its y-axis disp
 - **Correction Record:** All references in current-authority documents describing Figure 2A as "training loss", "validation loss", or "loss trajectory" have been eliminated, and imprecise generic statements (e.g. "plateauing at approximately 30–40%") have been replaced with the exact published panel values (training ≈ 22%, validation ≈ 32% under 50% masking). Where historical loss trajectories are referenced, they are explicitly qualified as non-paper training artifacts from `04_protein_train.ipynb`.
 
 ### 2.4 Final Published Figure 2B–2F Semantics
-- **Figure 2B:** Native sequence recovery distributions on independent Gene3D test domains (one-shot generation achieving 27.29% mean native recovery across 1,283 test domains from notebook 06 Cell 36, compared to ~33–35% for incremental CSP decoding).
+- **Figure 2B:** Native sequence recovery distributions on independent Gene3D test dataset:
+  - **Published Figure 2B Population:** Test dataset comprising 10,000 sequence and adjacency-matrix instances; evaluates single-pass predictions (blue) vs. repeated prediction committing the most-confident prediction at each iteration (red).
+  - **Historical Notebook Auxiliary Aggregate:** 27.29% mean one-shot native sequence recovery across 1,283 test records in `06_protein_analysis.ipynb` Cell 35–36. (This 1,283-record subset is an auxiliary diagnostic aggregate and is not to be conflated with the published 10,000-instance test population). The broader paper narrative discusses ~30–40% reconstruction accuracy, which also must not be confused with the specific Figure 2B test population.
 - **Figure 2C:** Sequence recovery distributions under partial sequence availability / conditioning (0%, 50%, 80% unmasked).
 - **Figure 2D:** ProTherm single-point mutation stability ($\Delta\Delta G$) correlation (published ProteinSolver $\rho \approx 0.444$).
 - **Figure 2E:** Rocklin single-point mutation stability dataset ($N = 9,912$).
@@ -271,11 +273,12 @@ To preserve epistemic hygiene, the independent sources verifying the model and d
 
 | Entity | Identifier / Commit / Hash | Epistemic Role |
 | :--- | :--- | :--- |
+| **Independent Verification Basis** | `d961ef0b865f03d05a3df339b9f84b8f20c9ea56` | Parent research-repo commit grounding all audits |
 | **Historical Upstream Source** | `69ef0965a3fc3bf191804035b539720a06e58ba6` | Independent primary implementation ground truth |
-| **Research Repo Verification Basis** | `d961ef0b865f03d05a3df339b9f84b8f20c9ea56` | Parent research-repo commit grounding all audits |
 | **Pretrained Checkpoint** | `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727` | Verified cryptographic model weights SHA-256 |
 | **Modern Implementation Reference** | `58255bc67323f5fd009ac85ae02fbf69c152c457` | Verified cleanroom implementation reference |
-| **Final Closure Commit** | `65e6d92b0f5f24a3a56db1acf652e9e25a2df050` (baseline; micro-closure finalized in current HEAD) | Packaging and freezing verified current authority |
+| **Baseline Closure Commit** | `65e6d92b0f5f24a3a56db1acf652e9e25a2df050` | Verified closure baseline prior to micro-closure pass |
+| **Final Closure Artifact** | Current repository HEAD | This closure document is finalized in the current repository HEAD; see final Git verification output for the exact containing commit. |
 
 ---
 
@@ -308,7 +311,7 @@ Evaluation of the 25 release criteria:
 - [x] **W. Modern implementation untouched?** Clean at `58255bc67323f5fd009ac85ae02fbf69c152c457`.
 - [x] **X. Tests/preflight pass?** Verified via preflight CLI and test suite.
 - [x] **Y. R2 scope remains strictly bounded?** Yes. Strictly scoped to:
-  *Figure 2B and Figure 2C computational reproduction using the published pretrained checkpoint, with procedure/data definitions taken directly from the final Cell Systems paper and validated against historical notebooks before execution.*
+  *Figure 2B (targeting the published 10,000 sequence/adjacency-matrix test population/procedure, with the 1,283-record notebook aggregate available as an auxiliary diagnostic) and Figure 2C computational reproduction using the published pretrained checkpoint, with procedure/data definitions taken directly from the final Cell Systems paper and validated against historical notebooks before execution.*
 
 ### Final Binary Release Determination
 **R2_READY**

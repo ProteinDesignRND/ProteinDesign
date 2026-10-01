@@ -91,8 +91,8 @@ To resolve past descriptive contradictions, the training corpus is reconciled ac
 ## 5. Inference Algorithms & Scoring
 
 - **Inference Modes:**
-  1. **One-Shot Generation:** All unassigned positions unmasked in a single forward pass ($x 	o 	ext{logits} 	o 	ext{argmax}$). Achieves 27.29% mean native sequence recovery across 1,283 test domains.
-  2. **Incremental CSP Generation (Canonical Paper Method):** Iterative single-residue unmasking: at each step, the network identifies the unassigned node with highest prediction confidence, commits that amino acid, re-evaluates the graph, and repeats until all positions are filled. Achieves ~33-35% native sequence recovery.
+  1. **One-Shot Generation:** All unassigned positions unmasked in a single forward pass ($x \to \text{logits} \to \text{argmax}$). (Historical notebook aggregate achieves 27.29% mean one-shot recovery across 1,283 test records in `06_protein_analysis.ipynb` Cell 35–36; published Figure 2B evaluates single-pass vs. repeated most-confident predictions on a test dataset of 10,000 sequence/adjacency-matrix instances).
+  2. **Incremental CSP Generation (Canonical Paper Method):** Iterative single-residue unmasking: at each step, the network identifies the unassigned node with highest prediction confidence, commits that amino acid, re-evaluates the graph, and repeats until all positions are filled. (Compares against single-pass decoding on the published 10,000 sequence/adjacency test dataset in Figure 2B).
   3. **Stochastic Sampling:** At each unmasking step, sample residues from softmax distributions scaled by temperature $T$: $P(s_i = c) \propto \exp(z_{ic} / T)$.
   4. **Exploratory Search (Notebook Extensions):** Priority-queue A* / best-first search over partial assignments (`design_protein`). This is an implementation extension, not a canonical main-paper method.
 - **Sequence Scoring & Pseudo-Log-Likelihood:**
@@ -114,7 +114,7 @@ The published peer-reviewed article (*Cell Systems* 11(4): 402–411.e4) contain
   *(Note: Figure 1 contains strictly panels 1A, 1B, and 1C; it does not contain panels 1D or 1E).*
 - **Figure 2: Empirical Performance, Biophysical Correlations, and De Novo Design (Panels A–N)**
   - **Figure 2A:** Training and validation accuracy trajectory across epochs (at ~100M training examples, training accuracy reaches ~22% and validation accuracy ~32% under 50% random masking).
-  - **Figure 2B:** Native sequence recovery distributions on independent Gene3D test domains (one-shot generation achieving 27.29% mean native recovery across 1,283 test domains vs. incremental ~33–35%).
+  - **Figure 2B:** Native sequence recovery distributions on independent Gene3D test dataset (published paper evaluates 10,000 sequence and adjacency matrix instances comparing single-pass predictions [blue] vs. repeated prediction committing the most-confident residue [red]; historical notebook aggregate in `06_protein_analysis.ipynb` Cell 35–36 reports 27.29% mean one-shot recovery across 1,283 records as an auxiliary diagnostic).
   - **Figure 2C:** Sequence identity distributions under partial sequence availability (0%, 50%, 80% unmasked).
   - **Figure 2D:** ProTherm single-point mutation stability ($\Delta\Delta G$) correlation (Spearman $
 ho = 0.444$).
