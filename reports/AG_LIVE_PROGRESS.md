@@ -1,62 +1,52 @@
-# Antigravity Live Progress — Final Pre-E1 Residual Integrity & Source-of-Truth Gate
+# Antigravity Live Progress — ProteinMPNN Leakage-Scope Integrity Gate
 
-**Task:** PROTEINSOLVER — FINAL PRE-E1 RESIDUAL INTEGRITY & SOURCE-OF-TRUTH GATE
+**Task:** PROTEINSOLVER — FINAL PROTEINMPNN LEAKAGE-SCOPE INTEGRITY GATE
 **Role:** Lead Scientific Reproducibility Engineer + Evidence-Governance Agent
-**Started:** 2026-10-06T10:10:20+05:30
-**Updated:** 2026-10-06T10:27:30+05:30
+**Started:** 2026-10-06T10:38:05+05:30
+**Updated:** 2026-10-06T10:46:30+05:30
 **Status:** COMPLETE
-**Current Stage:** [6/6] Readiness decision + STOP
-**Final Decision:** PRE_E1_CORRECTED_PENDING_HUMAN_AUTHORIZATION
+**Current Stage:** [5/5] Decision + STOP
+**Final Decision:** PRE_E1_LEAKAGE_AUTHORITY_CORRECTED
 **Branch:** main
-**Baseline HEAD:** d2189a91f08c759a958ed6bb179c3a6f374ed4fc
+**Baseline HEAD:** dde6289f0bfeaee7917cdd7454de18ede5e8ef06
 **Compute Mode:** Local Cleanroom Execution (RTX 3050 6GB Laptop GPU, CUDA 12.4, PyTorch 2.6.0, PyG 2.8.0.post1)
 
 ---
 
 ## Metric Tracking
-- **Current Stage:** [6/6] Readiness decision + STOP
-- **Elapsed Time:** ~18m
-- **Baseline Repository HEAD:** d2189a91f08c759a958ed6bb179c3a6f374ed4fc (descended from 7dce5d22e3ab1f19721de73a7861b2226f709e20)
+- **Current Stage:** [5/5] Decision + STOP
+- **Elapsed Time:** ~8m
+- **Baseline Repository HEAD:** dde6289f0bfeaee7917cdd7454de18ede5e8ef06
 - **Current Branch:** main
-- **Research Repo Clean:** Ready for single ordinary commit
+- **Research Repo Clean:** Ready for single commit
 - **Historical Upstream Clean:** Yes (`69ef0965a3fc3bf191804035b539720a06e58ba6`)
 - **Modern Implementation Clean:** Yes (`58255bc67323f5fd009ac85ae02fbf69c152c457`)
-- **ProteinSolver Checkpoint SHA-256:** `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727` (Verified Match)
-- **ProteinMPNN Checkpoints:** All 4 vanilla checkpoints verified match
-- **Confirmed Issues:** 5
-  1. DEC-020 Item 1 claimed candidate validation partition records are "matching notebook 06", which was too strong since only the 1,283 valid-record count was verified.
-  2. R2 reproduction report Line 246 listed GPU memory as "4096 MB VRAM" without distinguishing runtime allocation boundary from physical 6GB capacity (6144 MiB physical, 6143.5 MiB CUDA runtime visible).
-  3. REPORT_INDEX.md Section 4 lacked explicit distinction between local experiment script completion ("COMPLETE") and paper-level reproduction completion (`R2_PARTIAL`).
-  4. FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md retained stale PR #1 review/merge text in Table Row 22 and Section P despite PR #1 being merged at commit `3c0639c`.
-  5. Governance lacked explicit encoding for 4 newly isolated failure patterns (population count vs identity, physical vs runtime hardware limits, lexical vs semantic sweeps, decision chronology vs current policy).
-- **Repaired Issues:** 5
-  1. Reconciled DEC-020 Item 1 in DECISION_LOG.md: calibrated to state "yielding the same 1,283 valid-record count reported by the preserved notebook evaluation (`06_protein_analysis.ipynb` Cell 35–36)". Added chronological supersession notes to DEC-016 (ESMFold confirmatory path GPU CUDA fp16 chunk_size=128) and DEC-017 (PR #1 merged on main, E1 execution pending human authorization).
-  2. Reconciled Line 246 of reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md to distinguish physical 6GB hardware specification from runtime-visible CUDA allocation.
-  3. Reconciled reports/REPORT_INDEX.md: added explicit note under Section 4 table that "COMPLETE" denotes experiment script completion, not full paper reproduction, and explicitly noted Phase R2 closure status is `R2_PARTIAL`.
-  4. Reconciled Table Row 20, 22 and Section P of reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md: removed stale pre-merge PR #1 text and stated that PR #1 was merged at `3c0639c` and E1 benchmark execution requires explicit human authorization.
-  5. Registered durable governance lessons L-030, L-031, L-032, and L-033 in governance/data/lessons.json with lifecycle PROPOSED and clean event trail in events.jsonl.
+- **ProteinMPNN External Clean:** Yes (`8907e6671bfbfc92303b5f79c4b5e6ce47cdef57`)
+- **Confirmed Issues:** 3
+  1. Overbroad universal claims in `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` (Lines 14-16 claiming universal "100% counterfactual native-sequence invariance" and "No label leakage exists. The integration is verified mathematically and empirically clean").
+  2. Technically indefensible claim in Line 45 asserting "absolute protection against label leakage regardless of mask configuration", overlooking that upstream ProteinMPNN fixed-position masks (`chain_mask = 0`) consume tokens directly from `S_true`.
+  3. Governance knowledge base lacked durable encoding for the failure pattern of extrapolating fully-designed mask invariance to arbitrary fixed-position masks.
+- **Repaired Issues:** 3
+  1. Calibrated `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` executive summary, cleanroom isolation and mask semantics, exact test repetitions, generation vs scoring boundary, and explicit scope limitations.
+  2. Documented exact fixed-position vs fully-designed mask semantics in Section 2.C.
+  3. Registered governance lesson `L-034` in `governance/data/lessons.json` and logged creation event in `governance/data/events.jsonl`.
 - **Unresolved Issues:** 0
 - **Blocked Issues:** 0
 - **Exact Files Touched:**
-  - DECISION_LOG.md
-  - PROJECT_STATE.md
-  - governance/data/events.jsonl
+  - reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md
   - governance/data/lessons.json
+  - governance/data/events.jsonl
   - reports/AG_LIVE_PROGRESS.md
   - reports/AG_RUN_STATE.json
-  - reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md
-  - reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md
-  - reports/REPORT_INDEX.md
-- **Next Action:** Single ordinary commit, capture final HEAD, output final decision brief, STOP.
-- **Stop Condition:** Bounded readiness decision [6/6] reached; no E1 execution; permanent stop.
+- **Next Action:** Single ordinary commit and STOP
+- **Stop Condition:** Bounded readiness decision [5/5] reached; no E1 execution; permanent stop.
 
 ---
 
 ## Stages Progress
-- [x] **[0/6] Safety + baseline**: Verified working directory (`D:\Projects\Protein Design`), clean baseline HEAD (`d2189a9...`), external upstream untouched (`69ef0965...`), modern implementation untouched (`58255bc6...`), hardware inventory (RTX 3050 6GB Laptop GPU, 6144 MiB physical, 6143.5 MiB CUDA runtime visible), baseline tests (81/81 pass), governance preflight (clean).
-- [x] **[1/6] Current-authority inventory**: Audited all authority documents across Tier A, Tier B, Tier C, and cleanroom code/tests in `src/` and `tests/`.
-- [x] **[2/6] Decision chronology + authority reconciliation**: Audited DEC-012 through DEC-020. Traced evolution of ESMFold execution path (DEC-016 -> DEC-018/019), PR #1 merge on `main`, and E1 authorization requirement.
-- [x] **[3/6] Code/test/protocol integrity verification**: Verified all 25 invariants (A through Y) across code, manifests, and tests. Verified ProteinMPNN zero native sequence leakage and counterfactual invariance.
-- [x] **[4/6] Targeted correction if required**: Applied single consolidated correction pass across 7 tracked project files.
-- [x] **[5/6] Final verification**: Automated verification passed: `git diff --check` (0 errors), governance preflight (0 conflicts), full test suite (81/81 tests passed in 30.24s).
-- [x] **[6/6] Readiness decision + STOP**: Decision reached: `PRE_E1_CORRECTED_PENDING_HUMAN_AUTHORIZATION`. Single commit and stop.
+- [x] **[0/5] Safety + baseline**: Verified repository boundaries, clean working tree, clean external clones (`proteinsolver-original`, `ProteinSolver`, `proteinmpnn`).
+- [x] **[1/5] Leakage report semantic audit**: Classified report claims into code-level, empirically tested, scoped conclusions, and overbroad universal claims.
+- [x] **[2/5] Wrapper/mask/scoring path verification**: Traced `coords.py`, `wrapper.py`, and upstream `protein_mpnn_utils.py`. Confirmed E1 uses `chain_mask = 1.0` everywhere, verified `S_blank` zero-filling, and analyzed fixed-mask semantics.
+- [x] **[3/5] Targeted correction if required**: Applied scoped calibrations to `PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` and registered `L-034`.
+- [x] **[4/5] Final verification**: Ran test suite (81/81 passed), preflight CLI (0 conflicts), diff check (clean), and verified checkpoint hashes.
+- [x] **[5/5] Decision + STOP**: Decision `PRE_E1_LEAKAGE_AUTHORITY_CORRECTED` finalized.

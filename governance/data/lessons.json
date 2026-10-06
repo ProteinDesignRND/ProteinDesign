@@ -1178,5 +1178,40 @@
       "chronology",
       "operative-policy"
     ]
+  },
+  {
+    "id": "L-034",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Counterfactual invariance on fully-designed masks does not establish label invariance under arbitrary fixed-position masks",
+    "what_happened": "The cleanroom ProteinMPNN leakage audit demonstrated 100% counterfactual native-sequence invariance under fully-designed de novo masks (chain_mask=1.0), but overgeneralized this finding to an unverified universal claim of absolute protection regardless of mask configuration. In reality, upstream autoregressive decoding preserves S_true tokens at fixed positions (chain_mask=0.0), where zero-filling S_true fixes an Alanine token that conditions subsequent autoregression rather than providing arbitrary-label invariance.",
+    "lesson": "Empirical counterfactual invariance demonstrated under fully-designed masks does not establish label invariance under arbitrary fixed-position masks. When upstream model architectures conditionally multiplex sampled tokens with reference tokens, the mathematical guarantee must be strictly scoped to the mask configuration exercised.",
+    "type": "METHOD_SCIENCE",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "",
+    "governance_lifecycle": "PROPOSED",
+    "source": "ProteinMPNN Leakage-Scope Integrity Gate",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-06T10:43:56.327964",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md",
+      "src/proteinmpnn/wrapper.py",
+      "external/proteinmpnn/protein_mpnn_utils.py"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": [
+      "proteinmpnn",
+      "counterfactual-invariance",
+      "mask-semantics",
+      "fixed-positions",
+      "leakage-audit"
+    ]
   }
 ]

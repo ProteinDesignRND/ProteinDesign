@@ -1,50 +1,39 @@
 {
   "state": "COMPLETE",
-  "current_stage": "[6/6] Readiness decision + STOP",
-  "task_id": "PROTEINSOLVER-FINAL-PRE-E1-RESIDUAL-INTEGRITY-GATE",
+  "current_stage": "[5/5] Decision + STOP",
+  "task_id": "PROTEINMPNN-LEAKAGE-SCOPE-INTEGRITY-GATE",
   "agent": "Gemini 3.8 Flash High",
   "branch": "main",
-  "start_time": "2026-10-06T10:10:20+05:30",
-  "last_update": "2026-10-06T10:27:30+05:30",
-  "elapsed_time": "~18m",
-  "final_decision": "PRE_E1_CORRECTED_PENDING_HUMAN_AUTHORIZATION",
+  "start_time": "2026-10-06T10:38:05+05:30",
+  "last_update": "2026-10-06T10:46:30+05:30",
+  "elapsed_time": "~8m",
+  "final_decision": "PRE_E1_LEAKAGE_AUTHORITY_CORRECTED",
   "repository_heads": {
-    "research_repo_baseline": "d2189a91f08c759a958ed6bb179c3a6f374ed4fc",
-    "ancestor_baseline": "7dce5d22e3ab1f19721de73a7861b2226f709e20",
+    "research_repo_baseline": "dde6289f0bfeaee7917cdd7454de18ede5e8ef06",
     "historical_upstream": "69ef0965a3fc3bf191804035b539720a06e58ba6",
-    "modern_impl": "58255bc67323f5fd009ac85ae02fbf69c152c457"
+    "modern_impl": "58255bc67323f5fd009ac85ae02fbf69c152c457",
+    "proteinmpnn_external": "8907e6671bfbfc92303b5f79c4b5e6ce47cdef57"
   },
-  "hardware": {
-    "gpu_name": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-    "physical_vram_mib": 6144,
-    "cuda_runtime_visible_mib": 6143.5,
-    "cuda_available": true
-  },
-  "confirmed_issues": 5,
-  "repaired_issues": 5,
+  "confirmed_issues": 3,
+  "repaired_issues": 3,
   "unresolved_issues": 0,
   "blocked_issues": 0,
   "exact_files_touched": [
-    "DECISION_LOG.md",
-    "PROJECT_STATE.md",
-    "governance/data/events.jsonl",
+    "reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md",
     "governance/data/lessons.json",
+    "governance/data/events.jsonl",
     "reports/AG_LIVE_PROGRESS.md",
-    "reports/AG_RUN_STATE.json",
-    "reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md",
-    "reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md",
-    "reports/REPORT_INDEX.md"
+    "reports/AG_RUN_STATE.json"
   ],
-  "next_action": "Single ordinary commit, capture final HEAD, output final decision brief, STOP",
-  "stop_condition": "Bounded readiness decision [6/6] reached; no E1 execution; permanent stop",
+  "next_action": "Single ordinary commit and STOP",
+  "stop_condition": "Bounded readiness decision [5/5] reached; no E1 execution; permanent stop",
   "completed": [
-    "STAGE [0/6]: Safety verification and repository baseline capture",
-    "STAGE [1/6]: Current authority inventory across Tier A, Tier B, Tier C",
-    "STAGE [2/6]: Decision chronology and effective-policy reconciliation",
-    "STAGE [3/6]: Code, test, and protocol integrity verification (invariants A-Y)",
-    "STAGE [4/6]: Single consolidated correction pass applied",
-    "STAGE [5/6]: Final verification passed (git diff --check, governance preflight, 81 pytest tests)",
-    "STAGE [6/6]: Readiness decision finalized (PRE_E1_CORRECTED_PENDING_HUMAN_AUTHORIZATION); stop gate enforced"
+    "STAGE [0/5]: Safety verification and repository baseline capture",
+    "STAGE [1/5]: Leakage report semantic audit and claim classification",
+    "STAGE [2/5]: Cleanroom wrapper, mask, and scoring path verification",
+    "STAGE [3/5]: Targeted calibration of leakage report claims and lesson L-034 registration",
+    "STAGE [4/5]: Final verification (diff check clean, preflight CLI 0 conflicts, 81/81 pytest passed, checkpoints verified)",
+    "STAGE [5/5]: Decision PRE_E1_LEAKAGE_AUTHORITY_CORRECTED finalized"
   ],
   "test_results": {
     "pytest_passed": 81,
