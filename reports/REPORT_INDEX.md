@@ -14,7 +14,7 @@
 | **Final Pre-E1 Scientific Readiness Reconciliation Report (V2)** | `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md` | Final pre-E1 surgical reconciliation pass: manifest verification, LF hash canonicalization, scTM boundary, hydrophobic core formalization, and AI authorization clarification | **Current Pre-E1 Protocol & Readiness Authority** |
 | **Final Pre-E1 Scientific Readiness Closure Report** | `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_CLOSURE_REPORT.md` | Pre-E1 scientific readiness, manifest freeze, infeasibility rule, and consistency closure report | **Pre-E1 Closure Baseline Authority** |
 | **Development Hyperparameter Selection Freeze Report** | `reports/DEVELOPMENT_HYPERPARAMETER_SELECTION_FREEZE_REPORT.md` | Freeze of development objective $J$, Cartesian grids, freezing order, and tie breaking | **Development Hyperparameter Selection Authority** |
-| **ProteinMPNN Counterfactual Leakage Audit Report** | `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` | Verification of 100% native-sequence invariance under counterfactual inputs | **Cleanroom Integration Leakage Authority** |
+| **ProteinMPNN Counterfactual Leakage Audit Report** | `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` | Verification of native-sequence invariance under counterfactual inputs in tested fully-designed mask configuration | **Cleanroom Integration Leakage Authority** |
 | **Transition Gate Report** | `reports/FINAL_FOUNDATION_INTEGRITY_AND_TRANSITION_GATE_REPORT.md` | Final foundation integrity and transition-gate report | **Historical Foundation Transition Authority** |
 | **Protocol Freeze & Readiness Gate Report** | `reports/FINAL_SCIENTIFIC_PROTOCOL_FREEZE_AND_READINESS_GATE_REPORT.md` | Authoritative protocol freeze, Claude 2.0 audit disposition, and final readiness gate report | **Historical Protocol Freeze Authority** |
 | **Study Pre-Registration** | `science/PREREGISTRATION.md` | Pre-registered freeze of all currently registered protocol elements under Amendment A1 prior to experimentation | **Study Pre-Registration Authority** |
@@ -36,12 +36,8 @@
 | **EXP000** | `experiments/EXP000_PROTEINSOLVER_SMOKETEST/` | COMPLETE | `INTEGRATION_FIXTURE_VERIFIED` | Initial checkpoint loading and forward pass verification |
 | **EXP001** | `experiments/EXP001_PROTEINSOLVER_INFERENCE/` | COMPLETE | `INTEGRATION_FIXTURE_VERIFIED` | 1n5uA03 all-masked design: 41.30% recovery (38/92) |
 | **EXP004** | `experiments/EXP004_MASK_INVARIANCE/` | COMPLETE | `RAW_DATA_RECOMPUTED` | In tested all-masked setup, max logit diff = 0.0; information leak documented |
-| **EXP005** | `experiments/EXP005_PROTHERM_REPRODUCTION/` | COMPLETE | `PARTIAL_RECOMPUTATION / RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | ProTherm mutation stability (Fig 2D): Rosetta recomputed ($N=3,471$, 10k bootstrap $
-ho=-0.008$); PS preserved ($
-ho=0.444$) |
-| **EXP006** | `experiments/EXP006_ROCKLIN_STABILITY_REPRODUCTION/` | COMPLETE | `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | De novo protein stability (Fig 2F) across 4 topologies & rounds 1-4; EEHEE Rd 4 exception documented ($
-ho_{PS}=-0.14,
-ho_{Rosetta}=-0.40$) |
+| **EXP005** | `experiments/EXP005_PROTHERM_REPRODUCTION/` | COMPLETE | `PARTIAL_RECOMPUTATION / RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | ProTherm mutation stability (Fig 2D): Rosetta recomputed ($N=3,471$, 10k bootstrap $\rho=-0.008$); PS preserved ($\rho=0.444$) |
+| **EXP006** | `experiments/EXP006_ROCKLIN_STABILITY_REPRODUCTION/` | COMPLETE | `RECONSTRUCTION_FROM_PRESERVED_NOTEBOOK_STATISTICS` | De novo protein stability (Fig 2F) across 4 topologies & rounds 1-4; EEHEE Rd 4 exception documented ($\rho_{PS}=-0.14, \rho_{Rosetta}=-0.40$) |
 | **EXP007** | `experiments/EXP007_BESTSEL_CD_REPRODUCTION/` | COMPLETE | `RECONSTRUCTION_FROM_PRESERVED_BESTSEL_OUTPUTS` | BeStSel CD secondary structure deconvolution (STAR Step 19); 1n5u $p > 0.05$ (no difference detected); 4beu $N=1$ descriptive only |
 | **EXP008** | `experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/` | COMPLETE | `INTEGRATION_FIXTURE_VERIFIED` | Multi-target inverse folding design fixture on 4 folds (92, 217, 109, 96 AA); full 2.4M generation cost unbenchmarked |
 | **R2_FIG2BC_REPRODUCTION** | `experiments/R2_FIG2BC_REPRODUCTION/` | COMPLETE | `AUXILIARY_EVALUATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION` | Figure 2B single-pass (38.59%) vs iterative MAP (39.77%); Figure 2C conditioning (0% -> 39.77%, 50% -> 40.93%, 80% -> 41.67%); legacy host active with expired TLS cert; full 10k dataset resource-bounded across 172 superfamilies |

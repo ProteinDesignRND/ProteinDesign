@@ -290,3 +290,18 @@ This document chronologically logs all major architectural, methodological, and 
 - **Alternatives Considered:** Attempting full 10,000-instance scrape across 172 unbundled remote directories under expired TLS without sampling documentation (rejected: resource-bounded, underspecified); claiming complete reproduction from 7 auxiliary targets (rejected: violates population qualification standards); auto-authorizing downstream phases (rejected: violates governance boundaries).
 - **Rationale:** Scientific reproducibility demands strict adherence to empirical truth, precise population separation, and explicit operational boundaries.
 - **Consequences:** All 81 pytest tests passing; governance preflight passing with 0 conflicts; git diff clean; repository frozen cleanly.
+
+---
+
+## [DEC-021] ProteinMPNN Counterfactual Leakage Scope Calibration and Mask-Semantics Boundary
+- **Date:** 2026-10-06
+- **Status:** APPROVED AND MERGED ON MAIN
+- **Decider:** Lead Scientific Reproducibility Engineer + Evidence-Governance Agent
+- **Decision:**
+  1. **Calibration of Counterfactual Invariance Scope:** Formally calibrate the scope of the ProteinMPNN counterfactual leakage audit in `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md`. Empirical tests demonstrating 100% identical sequence candidates and 0.00e+00 score difference across counterfactual inputs (Native vs. Poly-Ala vs. Poly-Gly on 1n5uA03) apply strictly to the tested cleanroom wrapper under the fully-designed inverse-folding configuration (`chain_mask = 1.0`). Universal claims of "absolute protection against label leakage regardless of mask configuration" are excised.
+  2. **Mathematical Distinction for Fixed-Position Masks:** Explicitly document the architectural boundary in upstream ProteinMPNN (`protein_mpnn_utils.py` lines 1143–1186): under fixed-position design masks (`chain_mask = 0.0`), upstream autoregression retains tokens from `S_true` ($S_t = S_{\text{true}}$), embedding them to condition subsequent decoding steps. In our cleanroom wrapper, zero-filling `S_true` (`S_blank = torch.zeros`) fixes token index 0 (Alanine), demonstrating why the invariance guarantee is strictly scoped to fully-designed de novo masks rather than holding universally across arbitrary mask configurations.
+  3. **Governance Learning:** Registered durable lesson `L-034` ("Counterfactual invariance on fully-designed masks does not establish label invariance under arbitrary fixed-position masks") in `governance/data/lessons.json` and logged creation event in `governance/data/events.jsonl`.
+- **Context:** Forensic inspection of `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` revealed that while the cleanroom code implementation is completely insulated from native sequence labels under the E1 fully-designed configuration (`chain_mask = 1.0`), executive summary prose overclaimed universal protection across arbitrary mask configurations, overlooking the token retention mechanism of upstream fixed-position masks.
+- **Alternatives Considered:** Leaving executive summary uncalibrated (rejected: overclaims universal mathematical invariance); asserting that zero-filling `S_true` provides universal mask invariance (rejected: false for fixed positions where token 0 conditions generation).
+- **Rationale:** Scientific reproducibility and epistemic calibration require that empirical findings are bounded strictly to the experimental configurations tested and that upstream architectural boundaries are truthfully documented.
+- **Consequences:** `PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md` calibrated; lesson `L-034` registered; all 81 pytest tests passing; preflight passing with 0 conflicts.

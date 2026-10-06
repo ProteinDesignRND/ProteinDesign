@@ -1,43 +1,45 @@
 {
   "state": "COMPLETE",
-  "current_stage": "[5/5] Decision + STOP",
-  "task_id": "PROTEINMPNN-LEAKAGE-SCOPE-INTEGRITY-GATE",
+  "current_stage": "[5/5] Final Decision & Verification Passed",
+  "task_id": "PROJECT-WIDE-COMPREHENSIVE-RECONCILIATION",
   "agent": "Gemini 3.8 Flash High",
   "branch": "main",
-  "start_time": "2026-10-06T10:38:05+05:30",
-  "last_update": "2026-10-06T10:46:30+05:30",
-  "elapsed_time": "~8m",
-  "final_decision": "PRE_E1_LEAKAGE_AUTHORITY_CORRECTED",
+  "start_time": "2026-10-06T14:41:38+05:30",
+  "last_update": "2026-10-06T14:53:00+05:30",
+  "elapsed_time": "~12m",
+  "final_decision": "GREEN_STOP_AND_MOVE_FORWARD",
   "repository_heads": {
-    "research_repo_baseline": "dde6289f0bfeaee7917cdd7454de18ede5e8ef06",
+    "research_repo_baseline": "813fa3525f329f9d3d3276993d59af14f0bf1cec",
     "historical_upstream": "69ef0965a3fc3bf191804035b539720a06e58ba6",
-    "modern_impl": "58255bc67323f5fd009ac85ae02fbf69c152c457",
     "proteinmpnn_external": "8907e6671bfbfc92303b5f79c4b5e6ce47cdef57"
   },
-  "confirmed_issues": 3,
-  "repaired_issues": 3,
+  "confirmed_issues": 5,
+  "repaired_issues": 5,
   "unresolved_issues": 0,
   "blocked_issues": 0,
   "exact_files_touched": [
-    "reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md",
-    "governance/data/lessons.json",
-    "governance/data/events.jsonl",
+    "reports/REPORT_INDEX.md",
+    "DECISION_LOG.md",
+    "CLAIMS_REGISTRY.md",
+    "science/PREREGISTRATION.md",
+    "PROJECT_STATE.md",
     "reports/AG_LIVE_PROGRESS.md",
     "reports/AG_RUN_STATE.json"
   ],
-  "next_action": "Single ordinary commit and STOP",
-  "stop_condition": "Bounded readiness decision [5/5] reached; no E1 execution; permanent stop",
+  "next_action": "Present final report and STOP auditing",
+  "stop_condition": "One broad audit -> one consolidated repair -> one verification pass -> permanent stop",
   "completed": [
-    "STAGE [0/5]: Safety verification and repository baseline capture",
-    "STAGE [1/5]: Leakage report semantic audit and claim classification",
-    "STAGE [2/5]: Cleanroom wrapper, mask, and scoring path verification",
-    "STAGE [3/5]: Targeted calibration of leakage report claims and lesson L-034 registration",
-    "STAGE [4/5]: Final verification (diff check clean, preflight CLI 0 conflicts, 81/81 pytest passed, checkpoints verified)",
-    "STAGE [5/5]: Decision PRE_E1_LEAKAGE_AUTHORITY_CORRECTED finalized"
+    "STAGE [1/5]: Baseline verification and safety checks (clean clones, checkpoint hashes, manifest hash)",
+    "STAGE [2/5]: Single repository-wide broad audit across git, reports, code, governance, and protocol",
+    "STAGE [3/5]: Consolidated repair pass addressing all 5 deterministic material inconsistencies",
+    "STAGE [4/5]: Verification pass (81/81 pytest passed, preflight 0 conflicts, diff clean, firewall intact)",
+    "STAGE [5/5]: Decision GREEN — STOP AND MOVE FORWARD finalized"
   ],
   "test_results": {
     "pytest_passed": 81,
     "governance_preflight_conflicts": 0,
-    "git_diff_whitespace_errors": 0
+    "firewall_intact": true,
+    "checkpoints_verified": true,
+    "manifest_verified": true
   }
 }

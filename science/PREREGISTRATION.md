@@ -3,7 +3,7 @@
 **Registration History:**
 - **Original Registration:** Frozen 2026-09-25 (Pre-Phase 2, prior to ProteinMPNN cleanroom integration and prior to any benchmark execution)
 - **Amendment A1 (Pre-E1 Closure & Surgical Reconciliation):** Frozen 2026-09-28 (Prior to any benchmark candidate generation; manifest, oracle, and protocol clarifications only; zero test-set outcomes used)
-**Status:** **FROZEN PRIOR TO EXPERIMENTATION — PENDING HUMAN REVIEW/MERGE**  
+**Status:** **MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)**
 **Study Phase:** Pre-Phase 2 / Milestone 3A Closure  
 **Lead Repository:** `Protein Design`  
 
