@@ -6,7 +6,7 @@
 | **Project Truth** | `docs/PROJECT_TRUTH.md` | Single source of truth for verified facts, limitations, and hypotheses | **Global Project Authority** |
 | **Original ProteinSolver Specification** | `science/original_proteinsolver.md` | Authoritative, source-grounded model architecture, featurization, and dataset specifications | **Original Model Specification Authority** |
 | **ProteinSolver R1 Final Evidence Closure Report** | `reports/PROTEINSOLVER_R1_2_2_FINAL_EVIDENCE_CLOSURE.md` | Final authoritative reconciliation closing Phase R1 (evidence graph, figure crosswalk, experiment classifications, R2 gate) | **Phase R1 Authoritative Closure Gate** |
-| **ProteinSolver R2 Figure 2B & 2C Computational Reproduction Report** | `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md` | Authoritative computational reproduction of Figure 2B & 2C decoding, legacy data-route verification, and auxiliary evaluation | **Phase R2 Authoritative Closure Gate** |
+| **ProteinSolver R2 Figure 2B & 2C Computational Reproduction Report** | `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md` | Authoritative computational reproduction of Figure 2B & 2C decoding, legacy data-route verification, and auxiliary evaluation (Phase R2 Closure Status: `R2_PARTIAL`) | **Phase R2 Authoritative Closure Gate** |
 
 ## 2. Transition & Evaluation Authorities
 | Document | Path | Purpose | Authority Scope |
@@ -45,6 +45,8 @@ ho_{Rosetta}=-0.40$) |
 | **EXP007** | `experiments/EXP007_BESTSEL_CD_REPRODUCTION/` | COMPLETE | `RECONSTRUCTION_FROM_PRESERVED_BESTSEL_OUTPUTS` | BeStSel CD secondary structure deconvolution (STAR Step 19); 1n5u $p > 0.05$ (no difference detected); 4beu $N=1$ descriptive only |
 | **EXP008** | `experiments/EXP008_FOUR_TARGET_INTEGRATION_FIXTURE/` | COMPLETE | `INTEGRATION_FIXTURE_VERIFIED` | Multi-target inverse folding design fixture on 4 folds (92, 217, 109, 96 AA); full 2.4M generation cost unbenchmarked |
 | **R2_FIG2BC_REPRODUCTION** | `experiments/R2_FIG2BC_REPRODUCTION/` | COMPLETE | `AUXILIARY_EVALUATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION` | Figure 2B single-pass (38.59%) vs iterative MAP (39.77%); Figure 2C conditioning (0% -> 39.77%, 50% -> 40.93%, 80% -> 41.67%); legacy host active with expired TLS cert; full 10k dataset resource-bounded across 172 superfamilies |
+
+*Note on Status Terminology:* "COMPLETE" in the table above denotes that the local computational execution of the experimental run finished. It does NOT imply full paper reproduction. In particular, for `R2_FIG2BC_REPRODUCTION`, the scientific reproduction status is `R2_PARTIAL_VERIFIED_ON_AUXILIARY_POPULATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION` due to the historical 10,000-instance Gene3D test dataset being unavailable on current artifacts.
 
 ## 5. Governance Architecture & Tools
 | Document | Path | Purpose |

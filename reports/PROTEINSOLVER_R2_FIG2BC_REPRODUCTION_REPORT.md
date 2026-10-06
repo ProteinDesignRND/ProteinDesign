@@ -243,7 +243,7 @@ All generated artifacts in `experiments/R2_FIG2BC_REPRODUCTION/` have been hashe
 - **Python Version:** 3.11.9 (64-bit)
 - **PyTorch Version:** 2.6.0+cu124
 - **PyG (torch_geometric) Version:** 2.8.0.post1
-- **CUDA Device:** `cuda:0` (NVIDIA GeForce RTX 3050 Laptop GPU, 4096 MB VRAM)
+- **CUDA Device:** `cuda:0` (NVIDIA GeForce RTX 3050 6GB Laptop GPU; physical capacity: 6144 MiB, runtime-visible CUDA memory: 6143.5 MiB; historical report notation of 4096 MB VRAM reflected a conservative runtime allocation boundary)
 - **CUDA Compute Capability:** 8.6
 
 ---

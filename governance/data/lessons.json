@@ -1045,5 +1045,138 @@
     "origin_event": "",
     "applicability": {},
     "keywords": []
+  },
+  {
+    "id": "L-030",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Agreement of summary statistics or record counts does not prove identity of underlying population",
+    "what_happened": "In DEC-020, verifying that candidate validation partition data contained 1,331 rows yielding 1,283 valid records was described as matching notebook 06, conflating agreement of a summary record count with proof of row-level population identity.",
+    "lesson": "Agreement of a summary count or aggregate metric across datasets is necessary but not sufficient to establish identity of individual population members. Unless row-level identity has been cryptographically or deterministically verified, claims must be precisely calibrated to state that the record counts agree rather than asserting population identity.",
+    "type": "DATA_PROVENANCE",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Residual Integrity & Source-of-Truth Gate",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-06T10:24:13.684619",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "DECISION_LOG.md",
+      "reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": [
+      "population",
+      "record-count",
+      "identity",
+      "notebook-06"
+    ]
+  },
+  {
+    "id": "L-031",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Physical hardware device capacity must be distinguished from runtime-visible allocation limits",
+    "what_happened": "Prior reproduction documentation reported the GPU environment as RTX 3050 Laptop GPU, 4096 MB VRAM based on an apparent runtime allocation limit, whereas the physical hardware specification is an NVIDIA GeForce RTX 3050 6GB Laptop GPU (6144 MiB physical capacity, 6143.5 MiB runtime-visible CUDA memory).",
+    "lesson": "Hardware specifications must distinguish total physical device capacity from runtime-visible or execution-clamped memory allocations. Documenting a runtime allocation clamp as the physical hardware identity creates confusing contradictions across audit cycles.",
+    "type": "AI_TOOLING",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Residual Integrity & Source-of-Truth Gate",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-06T10:24:13.707352",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md",
+      "docs/PROJECT_TRUTH.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": [
+      "hardware",
+      "gpu",
+      "vram",
+      "allocation",
+      "physical-capacity"
+    ]
+  },
+  {
+    "id": "L-032",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Lexical search sweeps do not substitute for semantic claim verification",
+    "what_happened": "Earlier audit sweeps relied on lexical search (grep) for banned phrases to assert zero misleading occurrences, which failed to catch nuanced semantic overclaims or subtle phrasing divergences where prohibited concepts appeared under alternative wording.",
+    "lesson": "Lexical searches are helpful screening heuristics but cannot replace semantic review of operative claims. Governance audits must evaluate semantic meaning and context in current-authority documents, not merely report zero literal substring hits.",
+    "type": "PROCESS_TEAM",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Residual Integrity & Source-of-Truth Gate",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-06T10:24:13.728525",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "reports/REPORT_INDEX.md",
+      "CLAIMS_REGISTRY.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": [
+      "lexical-sweep",
+      "semantic-verification",
+      "claim-integrity",
+      "audit"
+    ]
+  },
+  {
+    "id": "L-033",
+    "version": 1,
+    "schema_version": "1.0.0",
+    "title": "Historical decision lineage and chronology must not be confused with current operative policy",
+    "what_happened": "Historical decisions (e.g. DEC-016 recording CPU fallback and chunk-size alternatives, or DEC-017 recording review-branch status) retained accurate historical context from their creation date, but without clear supersession and chronology notes, could be misread as current operative policy when later decisions (DEC-018, DEC-019, PR #1 merge) established different current execution invariants.",
+    "lesson": "Decision logs are chronological records where historical entries should remain immutable, but clear supersession and chronology notes must prevent earlier historical positions from being mistaken for current operative policy.",
+    "type": "PROCESS_TEAM",
+    "scope": "global",
+    "trigger": "AUDIT",
+    "evidence_status": "OBSERVED",
+    "evidence_scope": "",
+    "governance_lifecycle": "PROPOSED",
+    "source": "Pre-E1 Residual Integrity & Source-of-Truth Gate",
+    "owner": "lead-scientific-auditor",
+    "created_at": "2026-10-06T10:24:13.743721",
+    "last_reviewed": "",
+    "related_experiments": [],
+    "related_files": [
+      "DECISION_LOG.md",
+      "reports/REPORT_INDEX.md"
+    ],
+    "related_claims": [],
+    "related_rules": [],
+    "origin_event": "",
+    "applicability": {},
+    "keywords": [
+      "decision-log",
+      "supersession",
+      "chronology",
+      "operative-policy"
+    ]
   }
 ]

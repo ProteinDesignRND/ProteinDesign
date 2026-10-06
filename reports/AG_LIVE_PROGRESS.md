@@ -1,48 +1,62 @@
-# Antigravity Live Progress - Pre-E1 Current-State & Authorization Reconciliation
+# Antigravity Live Progress — Final Pre-E1 Residual Integrity & Source-of-Truth Gate
 
-**Task:** PROTEINSOLVER - PRE-E1 CURRENT-STATE & AUTHORIZATION RECONCILIATION
-**Agent:** Lead Scientific Reproducibility Engineer + Evidence-Governance Agent
-**Started:** 2026-10-01T15:37:48+05:30
-**Updated:** 2026-10-01T15:53:30+05:30
+**Task:** PROTEINSOLVER — FINAL PRE-E1 RESIDUAL INTEGRITY & SOURCE-OF-TRUTH GATE
+**Role:** Lead Scientific Reproducibility Engineer + Evidence-Governance Agent
+**Started:** 2026-10-06T10:10:20+05:30
+**Updated:** 2026-10-06T10:27:30+05:30
 **Status:** COMPLETE
 **Current Stage:** [6/6] Readiness decision + STOP
+**Final Decision:** PRE_E1_CORRECTED_PENDING_HUMAN_AUTHORIZATION
 **Branch:** main
-**Baseline HEAD:** 7dce5d22e3ab1f19721de73a7861b2226f709e20
-**Compute Mode:** Local Cleanroom Execution
+**Baseline HEAD:** d2189a91f08c759a958ed6bb179c3a6f374ed4fc
+**Compute Mode:** Local Cleanroom Execution (RTX 3050 6GB Laptop GPU, CUDA 12.4, PyTorch 2.6.0, PyG 2.8.0.post1)
 
 ---
 
 ## Metric Tracking
 - **Current Stage:** [6/6] Readiness decision + STOP
-- **Elapsed Time:** ~16m
-- **Baseline Repository HEAD:** 7dce5d22e3ab1f19721de73a7861b2226f709e20
+- **Elapsed Time:** ~18m
+- **Baseline Repository HEAD:** d2189a91f08c759a958ed6bb179c3a6f374ed4fc (descended from 7dce5d22e3ab1f19721de73a7861b2226f709e20)
 - **Current Branch:** main
-- **Confirmed Issues:** 3
-  1. Stale review-branch and merge-pending status in `PROJECT_STATE.md` (claimed active branch was `governance/final-acceptance-redteam-v1` pending PR #1 merge, whereas PR #1 was already merged into `main` at commit `3c0639c`).
-  2. Stale status in `DECISION_LOG.md` DEC-016 through DEC-019 (described as "FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE", whereas content is merged on `main` while E1 execution remains pending human authorization).
-  3. Stale review branch / PR #1 authorization boundary phrasing in `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md`.
-- **Repaired Issues:** 3
-  1. Reconciled `PROJECT_STATE.md`: active branch is `main`, phase is Pre-E1 Scientific Readiness & Authorization Reconciliation Complete (E1 Benchmark Execution Pending Human Authorization), noted closure of Phase R1 (`R1_COMPLETE`) and Phase R2/R2.1 (`R2_PARTIAL`).
-  2. Reconciled `DECISION_LOG.md`: updated DEC-016 through DEC-019 to `MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)` with note of PR #1 merge.
-  3. Reconciled `reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md`: updated Authorization State to `MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)` and added reconciliation note in Section O.
+- **Research Repo Clean:** Ready for single ordinary commit
+- **Historical Upstream Clean:** Yes (`69ef0965a3fc3bf191804035b539720a06e58ba6`)
+- **Modern Implementation Clean:** Yes (`58255bc67323f5fd009ac85ae02fbf69c152c457`)
+- **ProteinSolver Checkpoint SHA-256:** `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727` (Verified Match)
+- **ProteinMPNN Checkpoints:** All 4 vanilla checkpoints verified match
+- **Confirmed Issues:** 5
+  1. DEC-020 Item 1 claimed candidate validation partition records are "matching notebook 06", which was too strong since only the 1,283 valid-record count was verified.
+  2. R2 reproduction report Line 246 listed GPU memory as "4096 MB VRAM" without distinguishing runtime allocation boundary from physical 6GB capacity (6144 MiB physical, 6143.5 MiB CUDA runtime visible).
+  3. REPORT_INDEX.md Section 4 lacked explicit distinction between local experiment script completion ("COMPLETE") and paper-level reproduction completion (`R2_PARTIAL`).
+  4. FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md retained stale PR #1 review/merge text in Table Row 22 and Section P despite PR #1 being merged at commit `3c0639c`.
+  5. Governance lacked explicit encoding for 4 newly isolated failure patterns (population count vs identity, physical vs runtime hardware limits, lexical vs semantic sweeps, decision chronology vs current policy).
+- **Repaired Issues:** 5
+  1. Reconciled DEC-020 Item 1 in DECISION_LOG.md: calibrated to state "yielding the same 1,283 valid-record count reported by the preserved notebook evaluation (`06_protein_analysis.ipynb` Cell 35–36)". Added chronological supersession notes to DEC-016 (ESMFold confirmatory path GPU CUDA fp16 chunk_size=128) and DEC-017 (PR #1 merged on main, E1 execution pending human authorization).
+  2. Reconciled Line 246 of reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md to distinguish physical 6GB hardware specification from runtime-visible CUDA allocation.
+  3. Reconciled reports/REPORT_INDEX.md: added explicit note under Section 4 table that "COMPLETE" denotes experiment script completion, not full paper reproduction, and explicitly noted Phase R2 closure status is `R2_PARTIAL`.
+  4. Reconciled Table Row 20, 22 and Section P of reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md: removed stale pre-merge PR #1 text and stated that PR #1 was merged at `3c0639c` and E1 benchmark execution requires explicit human authorization.
+  5. Registered durable governance lessons L-030, L-031, L-032, and L-033 in governance/data/lessons.json with lifecycle PROPOSED and clean event trail in events.jsonl.
 - **Unresolved Issues:** 0
 - **Blocked Issues:** 0
 - **Exact Files Touched:**
   - DECISION_LOG.md
   - PROJECT_STATE.md
-  - reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md
+  - governance/data/events.jsonl
+  - governance/data/lessons.json
   - reports/AG_LIVE_PROGRESS.md
   - reports/AG_RUN_STATE.json
+  - reports/FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md
+  - reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md
+  - reports/REPORT_INDEX.md
 - **Next Action:** Single ordinary commit, capture final HEAD, output final decision brief, STOP.
 - **Stop Condition:** Bounded readiness decision [6/6] reached; no E1 execution; permanent stop.
 
 ---
 
 ## Stages Progress
-- [x] **[0/6] Safety + repository baseline**: Verified working directory (`D:\Projects\Protein Design`), clean baseline HEAD (`7dce5d22...`), external upstream untouched (`69ef0965...`), modern implementation untouched (`58255bc6...`).
-- [x] **[1/6] Current authority inventory**: Audited all 19 Tier B authority documents across `docs/`, `science/`, `reports/`, `governance/`, and cleanroom code/tests in `src/` and `tests/`.
-- [x] **[2/6] Phase/authority/status reconciliation**: Verified historical closure of Phase R1 and R2 (`R2_PARTIAL`), identified stale review-branch status in DEC-016 through DEC-019 and `PROJECT_STATE.md` following PR #1 merge (`3c0639c`).
-- [x] **[3/6] Pre-E1 protocol/code/test reconciliation**: Verified all 20 protocol invariants (A through T), including $N_{\text{dev}}=20$, $N=50$, $N=15$ de novo, primary comparator (Hybrid vs MPNN-only), fixed-correspondence scTM, ESMFold confirmatory path (`chunk_size=128`, CUDA fp16), development infeasibility ($J=-\infty$), candidate budgets ($K=100$ dev, $K=500$ test), common candidate universe, and hydrophobic core fraction.
-- [x] **[4/6] Targeted correction if required**: Reconciled `PROJECT_STATE.md`, `DECISION_LOG.md` (DEC-016 through DEC-019), and `FINAL_PRE_E1_SCIENTIFIC_READINESS_RECONCILIATION_V2.md` to accurately state that protocol is merged on `main` and frozen, while E1 benchmark execution remains strictly pending human authorization.
-- [x] **[5/6] Final verification**: Verified `git diff --check` (0 errors), `governance.preflight_cli` (0 conflicts), and `pytest tests/ -q` (all 81 tests passed).
-- [x] **[6/6] Readiness decision + STOP**: Decision reached: `PRE_E1_CORRECTED_PENDING_HUMAN_AUTHORIZATION`. No E1 benchmark executed. Ready for single commit and stop.
+- [x] **[0/6] Safety + baseline**: Verified working directory (`D:\Projects\Protein Design`), clean baseline HEAD (`d2189a9...`), external upstream untouched (`69ef0965...`), modern implementation untouched (`58255bc6...`), hardware inventory (RTX 3050 6GB Laptop GPU, 6144 MiB physical, 6143.5 MiB CUDA runtime visible), baseline tests (81/81 pass), governance preflight (clean).
+- [x] **[1/6] Current-authority inventory**: Audited all authority documents across Tier A, Tier B, Tier C, and cleanroom code/tests in `src/` and `tests/`.
+- [x] **[2/6] Decision chronology + authority reconciliation**: Audited DEC-012 through DEC-020. Traced evolution of ESMFold execution path (DEC-016 -> DEC-018/019), PR #1 merge on `main`, and E1 authorization requirement.
+- [x] **[3/6] Code/test/protocol integrity verification**: Verified all 25 invariants (A through Y) across code, manifests, and tests. Verified ProteinMPNN zero native sequence leakage and counterfactual invariance.
+- [x] **[4/6] Targeted correction if required**: Applied single consolidated correction pass across 7 tracked project files.
+- [x] **[5/6] Final verification**: Automated verification passed: `git diff --check` (0 errors), governance preflight (0 conflicts), full test suite (81/81 tests passed in 30.24s).
+- [x] **[6/6] Readiness decision + STOP**: Decision reached: `PRE_E1_CORRECTED_PENDING_HUMAN_AUTHORIZATION`. Single commit and stop.
