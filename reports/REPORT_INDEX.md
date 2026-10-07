@@ -52,7 +52,7 @@
 | **Rules** | `governance/data/rules.json` | Governance rules (8 core rules) |
 | **Events** | `governance/data/events.jsonl` | Append-only audit trail |
 | **Preflight CLI** | `governance/preflight_cli.py` | Command-line preflight check tool |
-| **Tests** | `tests/test_governance.py` | Comprehensive test suite (81 pytest test cases passed) |
+| **Tests** | `tests/test_governance.py` | Governance test suite (25 test functions, 109 assertions; repository total: 81 tests passed across all modules) |
 
 ## 6. Historical / Superseded Documents (Supporting Evidence Only)
 *The following documents are preserved for historical provenance and auditability. They are superseded by the authorities above and must not be used as primary truth sources.*
