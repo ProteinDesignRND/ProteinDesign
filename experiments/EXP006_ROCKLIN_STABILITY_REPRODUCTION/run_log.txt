@@ -1,0 +1,9 @@
+======================================================================
+EXP006: Rocklin Miniprotein Protease Stability Correlation Reproduction
+Cell Systems 2020 Figure 2F / Notebook 06 Cell 53 & Notebook 07 Cell 102
+======================================================================
+Loaded GAPF designs: 9912 entries across topologies: {'hYAP65': 829, 'EEHEE_rd3_1498.pdb': 775, 'EEHEE_rd3_1702.pdb': 775, 'EEHEE_rd3_1716.pdb': 775, 'HEEH_rd2_0779.pdb': 775, 'HEEH_rd3_0223.pdb': 775, 'HEEH_rd3_0726.pdb': 775, 'HEEH_rd3_0872.pdb': 775, 'HHH_rd2_0134.pdb': 775, 'HHH_rd3_0138.pdb': 775, 'EEHEE_rd3_0037.pdb': 774, 'Pin1': 703, 'villin': 631}
+Saved reproduced correlations to: D:\Projects\Protein Design\experiments\EXP006_ROCKLIN_STABILITY_REPRODUCTION\output\rocklin_topology_correlations.csv
+Generated standalone SVG figure: D:\Projects\Protein Design\experiments\EXP006_ROCKLIN_STABILITY_REPRODUCTION\output\fig2f_rocklin_reproduction.svg
+Saved metrics to: D:\Projects\Protein Design\experiments\EXP006_ROCKLIN_STABILITY_REPRODUCTION\metrics.json
+EXP006 completed successfully.

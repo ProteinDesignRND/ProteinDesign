@@ -1,0 +1,12 @@
+======================================================================
+EXP007: BeStSel CD Secondary Structure Deconvolution Reproduction
+STAR Protocols 2021 Figure 2B (PMC8102803) / Notebook 07 BeStSel
+======================================================================
+Parsed 1n5u: 6 rows (3 ref, 3 des)
+Parsed 4beu: 2 rows (1 ref, 1 des)
+
+Saved secondary structure deconvolution summary: D:\Projects\Protein Design\experiments\EXP007_BESTSEL_CD_REPRODUCTION\output\bestsel_secondary_structure_summary.csv
+1n5u reference vs design t-test p-values (all > 0.05): True (min p = 0.1599)
+Generated standalone SVG figure: D:\Projects\Protein Design\experiments\EXP007_BESTSEL_CD_REPRODUCTION\output\star_fig2b_bestsel_reproduction.svg
+Saved metrics to: D:\Projects\Protein Design\experiments\EXP007_BESTSEL_CD_REPRODUCTION\metrics.json
+EXP007 completed successfully.

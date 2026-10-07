@@ -1,0 +1,20 @@
+{
+  "experiment_id": "EXP008_FOUR_TARGET_INTEGRATION_FIXTURE",
+  "date": "2026-09-30",
+  "description": "Multi-target integration design fixture for all 4 primary folds from Cell Systems 2020 Figure 3 (1n5uA03, 4beuA02, 4unuA00, 4z8jA00) using exact author PDB inputs.",
+  "status": "INTEGRATION_FIXTURE_VERIFIED",
+  "target_structures": [
+    {"id": "1n5uA03", "chain": "A", "residues": 92, "fold": "Serum albumin domain 3 (all-alpha)"},
+    {"id": "4beuA02", "chain": "A", "residues": 217, "fold": "Alanine racemase domain 2 (alpha/beta)"},
+    {"id": "4unuA00", "chain": "A", "residues": 109, "fold": "Formyl-CoA transferase domain (Rossmann fold)"},
+    {"id": "4z8jA00", "chain": "A", "residues": 96, "fold": "Translation initiation factor IF-3 (two-layer alpha/beta sandwich)"}
+  ],
+  "checkpoint_path": "external/proteinsolver-original/data/e53-s1952148-d93703104.state",
+  "sampling_strategy": "map",
+  "mask_fraction": 1.0,
+  "temperature": 1.0,
+  "seed": 42,
+  "scale_classification": "REGENERATION_REQUIRED_BUT_EXPENSIVE",
+  "full_paper_candidate_scale": ">2,400,000 sequences (>600k per fold across 4 folds)",
+  "regeneration_cost_status": "Exact current regeneration cost not yet benchmarked."
+}

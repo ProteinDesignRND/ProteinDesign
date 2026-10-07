@@ -3,11 +3,11 @@
 ## Project Identity
 - **Project Name:** Protein Design / ProteinSolver Research Extension
 - **Parent Foundational Work:** Strokach et al., 2020, *"Fast and Flexible Protein Design Using Deep Graph Neural Networks"*, Cell Systems 11(4): 402–411.e4.
-- **Current Phase:** Pre-E1 Scientific Readiness & Protocol Reconciliation Complete — Pending Human Review/Merge on PR #1
-- **Current Branch:** `governance/final-acceptance-redteam-v1`
+- **Current Phase:** Pre-E1 Scientific Readiness & Authorization Reconciliation Complete (E1 Benchmark Execution Pending Human Authorization)
+- **Current Branch:** `main`
 - **Integration Branch:** `main`
 - **Governance Freeze Status:** FOUNDATION_FROZEN_WITH_LIMITATIONS
-- **Date Created / Initialized:** 2026-09-24 (Last Updated: 2026-09-28)
+- **Date Created / Initialized:** 2026-09-24 (Last Updated: 2026-10-06)
 - **Milestone Labels:**
   - `E0-RUNTIME`: **COMPLETE**
   - `E0-SCIENTIFIC-HARDENING`: **COMPLETE**
@@ -18,7 +18,8 @@
   - `PRE-E1-INTEGRITY-GATE`: **PASSED**
   - `PRE-E1-SCIENTIFIC-READINESS-CLOSURE`: **COMPLETE**
   - `PRE-E1-SURGICAL-RECONCILIATION`: **COMPLETE**
-  - `AUTHORIZATION-STATUS`: **FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE**
+  - `PRE-E1-FINAL-RESIDUAL-INTEGRITY-GATE`: **PASSED**
+  - `AUTHORIZATION-STATUS`: **MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)**
 
 ---
 
@@ -33,6 +34,8 @@
   - Strict checkpoint integrity: Verified (`strict=True`, 0 missing, 0 unexpected, 567,060 params).
   - Mask-invariance: Verified (max logit diff = 0.00000000e+00).
   - Integration result: 41.30% on 1n5uA03 (single-target all-masked inverse-folding integration result).
+  - Historical Reproduction Phase R1: **CLOSED** (`R1_COMPLETE`, verified evidence graph in `reports/PROTEINSOLVER_R1_2_2_FINAL_EVIDENCE_CLOSURE.md`).
+  - Historical Reproduction Phase R2/R2.1: **CLOSED** (`R2_PARTIAL_VERIFIED_ON_AUXILIARY_POPULATION_WITH_HISTORICAL_EVIDENCE_RECONSTRUCTION`, authoritative reproduction report `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md`). Closure does NOT authorize downstream E1 execution.
   - ProteinMPNN cleanroom integration: **COMPLETE** (Official upstream Dauparas et al. 2022, commit `8907e66`, checkpoint `v_48_020.pt` SHA-256 verified, wrapper & tests passing).
   - ProteinMPNN benchmark: **NOT STARTED** (No E1 or TS50 benchmark runs executed).
 - **Literature Audit Status:** INITIAL PASS COMPLETE / CONTINUOUS MONITORING ACTIVE.
@@ -113,7 +116,7 @@
   - Verified end-to-end interface compatibility with `src/hybrid` scoring, normalization, and diversity selection.
   - 63/63 pytest test suites passing (25 governance + 27 scientific protocol + 11 ProteinMPNN).
   - Published provenance manifest: `reports/PROTEINMPNN_PROVENANCE_MANIFEST.md`.
-  - Passed Pre-E1 counterfactual native-sequence leakage gate (100% invariance, max diff 0.00e+00): `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md`.
+  - Passed Pre-E1 counterfactual native-sequence leakage gate (100% invariance under tested fully-designed mask configuration, max diff 0.00e+00): `reports/PROTEINMPNN_COUNTERFACTUAL_LEAKAGE_AUDIT_REPORT.md`.
 - [x] **Milestone 3A.1: Development Hyperparameter Selection Protocol Freeze: COMPLETE**
   - Codified exact scalar development objective $J = (1/N_{\text{dev}}) \sum_t \overline{\text{scTM}}_{\text{val}}(t)$ evaluated with AlphaFold2.
   - Codified Cartesian product optimization grids: MPNN-only (25 pairs), PS E0-B (15 pairs), Hybrid $\lambda \times \gamma$ (35 pairs with $T^*_{\text{hybrid}} = T^*_{\text{MPNN}}$ on Common Candidate Universe $U_t$).
@@ -137,7 +140,7 @@
   - Frozen ProteinMPNN scoring permutation (generation-time decoding permutation retained and reused during scoring).
   - Frozen statistical reproducibility details: SciPy v1.17.1, two-sided paired Wilcoxon (`zero_method='wilcox'`, `correction=True`, `method='asymptotic'`), 10,000 target-level paired bootstrap resamples with seed 42, percentile method, Hodges-Lehmann effect size.
   - Replaced "submodule" with "independent nested Git repository clone" throughout.
-  - Authorization status: `FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE` on PR #1.
+  - Authorization status: **MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)** (PR #1 merged in commit 3c0639c).
 - [x] **Milestone 3A.4: Final Pre-E1 Scientific Readiness & Anti-Loop Closure V5: COMPLETE**
   - Confirmed primary comparator invariant: strictly $d_t = \overline{\text{scTM}}_{\text{hybrid}}(t) - \overline{\text{scTM}}_{\text{MPNN-only}}(t)$ (guarded by automated invariant test; single-best-model comparator strictly prohibited as primary comparator).
   - Confirmed sample size hierarchy: strictly $N=50$ for confirmatory TS50 benchmark; $N_{\text{dev}}=20$ strictly for development/tuning.
@@ -149,7 +152,15 @@
   - Excised bitwise determinism overclaims.
   - Recorded proposed governance lessons L-007 through L-016 and logged DEC-018 and DEC-019.
   - Verification: 80+ collected tests passing across 4 modules; governance preflight passing; historical clone untouched.
-  - Authorization status: `FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE` on PR #1.
+  - Authorization status: **MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)** (PR #1 merged in commit 3c0639c).
+- [x] **Milestone R1: Historical Reproduction & Paper-to-Code Reconciliation (Phase R1): COMPLETE**
+  - Systematic source-first audit of Strokach et al. (2020) Cell Systems claims, code, and checkpoints.
+  - Reconciled panel crosswalks, model parameters (567,060), edge featurization (2 channels: distance and sequence separation), and experiment classifications.
+  - Authoritative closure report: `reports/PROTEINSOLVER_R1_2_2_FINAL_EVIDENCE_CLOSURE.md` (commit `d961ef0`).
+- [x] **Milestone R2 / R2.1: Computational Reproduction of Figure 2B & 2C (Phase R2/R2.1): COMPLETE (R2_PARTIAL)**
+  - Recomputed Figure 2B & 2C decoding on auxiliary evaluation targets; verified legacy data route reachable under expired TLS certificate; classified full 10k dataset recovery as resource-bounded across 172 unbundled superfamilies.
+  - Formalized strict separation between missing-residue recovery and total sequence identity; enforced authorization boundary in Section 18.
+  - Authoritative closure report: `reports/PROTEINSOLVER_R2_FIG2BC_REPRODUCTION_REPORT.md` (commit `7dce5d2`). Closure does NOT authorize downstream E1 execution.
 - [ ] **Milestone 3B: ProteinMPNN Baseline Benchmark Execution (E1 / TS50): NOT STARTED**
   - Execute controlled benchmark baselines under frozen protocol (`science/evaluation_protocol.md`).
 

@@ -11,9 +11,9 @@
 
 This report documents the forensic conditioning-leakage audit of the cleanroom ProteinMPNN integration before authorizing the first E1 development benchmark.
 
-The audit verified that the cleanroom ProteinMPNN integration exhibits **100% counterfactual native-sequence invariance**: altering or mutating the residue identity labels of the input structure (Native sequence vs. Poly-Alanine vs. Poly-Glycine) while maintaining identical backbone Cartesian 3D coordinates yields **100% identical sequence candidates** and **0.00e+00 numerical score difference**.
+The audit verified that the cleanroom ProteinMPNN integration exhibits counterfactual native-sequence invariance under the tested fully designed inverse folding configuration: altering or mutating the residue identity labels of the input structure (Native sequence vs. Poly-Alanine vs. Poly-Glycine) while maintaining identical backbone Cartesian 3D coordinates yielded **100% identical sequence candidates** and **0.00e+00 numerical score difference**.
 
-No label leakage exists. The integration is verified mathematically and empirically clean.
+No native-sequence conditioning leakage was detected in the tested cleanroom ProteinMPNN generation path. Counterfactual Native/Poly-Ala/Poly-Gly tests produced invariant candidates and scores under the tested fully-designed configuration (`chain_mask = 1.0`). This result is scoped to the tested wrapper path and mask configuration and does not constitute universal proof for all possible ProteinMPNN mask configurations.
 
 ---
 
@@ -41,14 +41,16 @@ S_t = (S_t * chain_mask_gathered + S_true_gathered * (1.0 - chain_mask_gathered)
 - **If `chain_mask_gathered == 0.0` (Fixed Position):** $S_t$ takes the label from `S_true_gathered` ($1.0 - 0.0 = 1.0$), and embeds it via `self.W_s(S_t)` into sequence context $h_S$, which conditions all subsequent autoregressive decoding steps.
 - **If `chain_mask_gathered == 1.0` (Designed Position):** $S_t$ takes the newly sampled token ($S_t \times 1.0 + S_{\text{true}} \times 0.0 = S_t$).
 
-### C. Cleanroom Isolation Guarantee
-To guarantee absolute protection against label leakage regardless of mask configuration:
-1. **In `src/proteinmpnn/coords.py` (`coords_to_proteinmpnn_batch`):** Native sequence strings from PDB metadata are discarded; only backbone coordinates are retained. The batch dictionary is populated with a dummy sequence (`"A" * L`) purely for dimensional padding.
+### C. Cleanroom Isolation and Mask Semantics
+1. **In `src/proteinmpnn/coords.py` (`coords_to_proteinmpnn_batch`):** Native sequence strings from PDB metadata are discarded; only backbone Cartesian coordinates are retained. The batch dictionary is populated with a dummy sequence (`"A" * L`) purely for dimensional padding.
 2. **In `src/proteinmpnn/wrapper.py` (`ProteinMPNNWrapper.sample_candidates`):** The tensor supplied as `S_true` is explicitly initialized as all zeros:
    ```python
    S_blank = torch.zeros((1, seq_len), dtype=torch.long, device=self.device)
    ```
-   Native sequence tokens NEVER enter `S`, NEVER enter `model.sample`, and NEVER condition generation.
+   Native sequence tokens are never passed into `S_blank`, never enter `model.sample`, and never condition candidate generation.
+3. **Fixed-Position vs. Fully-Designed Mask Semantics:**
+   - In E1 de novo inverse folding, `chain_mask = 1.0` across all positions. Because $(1.0 - \text{chain\_mask}) = 0.0$, the `S_true` tensor is zeroed out during decoding (line 1183 of `protein_mpnn_utils.py`), completely insulating candidate generation from `S_true`.
+   - If fixed-position masks (`chain_mask = 0.0`) were used, upstream ProteinMPNN logic would retain tokens from `S_true`. Under fixed-position masks, a zero-filled `S_true` corresponds to a fixed token (index 0, Alanine) rather than arbitrary-label invariance. While native PDB sequences are discarded and cannot leak, this boundary demonstrates why the guarantee is strictly scoped to the fully-designed configuration rather than holding universally across all arbitrary mask configurations.
 
 ---
 
@@ -61,8 +63,8 @@ To guarantee absolute protection against label leakage regardless of mask config
   1. **Variant A (Native):** Original PDB containing native sequence labels (`KFGERAFKAWAVARLSQRFPKAEFA...`).
   2. **Variant B (Poly-Ala):** Every residue name in the PDB ATOM records mutated to `ALA` (`AAAAAAAAAAAAAAAAAAAAAAAAA...`).
   3. **Variant C (Poly-Gly):** Every residue name in the PDB ATOM records mutated to `GLY` (`GGGGGGGGGGGGGGGGGGGGGGGGG...`).
-- **Inference Configuration:** Checkpoint `v_48_020` (0.20 Å noise, 48 edges), temperature $T = 0.2$, seed $S = 42$, device CPU, 3 candidates per condition.
-- **Repetition:** Complete test repeated across multiple execution passes.
+- **Inference Configuration:** Checkpoint `v_48_020` (0.20 Å noise, 48 edges), temperature $T = 0.2$, seed $S = 42$, device CPU, 3 candidates per condition, under fully-designed mask (`chain_mask = 1.0`).
+- **Repetition:** Complete test verified across 2 repeated execution passes on CPU.
 
 ### B. Results & Numerical Differences
 
@@ -88,8 +90,8 @@ Supplying raw numpy coordinate arrays directly to `sample_candidates(coords, ...
    $$S_{\text{MPNN}}(u) = \frac{1}{L} \sum_{i=1}^L \log p(u_{\pi_i} \mid u_{\pi_{<i}}, \text{backbone})$$
    - Higher is better ($S_{\text{MPNN}}(u) \le 0.0$).
    - Perplexity is computed as $\text{PPL}_{\text{MPNN}}(u) = \exp(-S_{\text{MPNN}}(u)) \ge 1.0$.
-2. **Separation from Generation:**
-   Candidate generation samples $u$ from the generative model; sequence scoring subsequently evaluates $u$ conditionally. Native labels are never supplied as targets during candidate evaluation.
+2. **Generation vs. Scoring Boundary:**
+   Candidate generation samples $u$ from backbone geometry without conditioning on the native sequence. Sequence scoring (`score_sequence`) subsequently evaluates candidate $u$ autoregressively using candidate $u$ itself as the target sequence. Supplying $u$ to evaluate the likelihood of $u$ is standard autoregressive evaluation and is decoupled from reference-sequence leakage; the native sequence is never supplied as a scoring target or hidden reference input.
 3. **Decoupling from ProteinSolver:**
    ProteinMPNN autoregressive perplexity is mathematically distinct from ProteinSolver single-site pseudo-perplexity. Both are retained strictly as model-specific internal diagnostics.
 
@@ -108,6 +110,7 @@ The complete repository regression suite was executed:
 
 ## 6. Limitations & Scientific Firewall
 
+- **Scope of Invariance:** The counterfactual invariance audit is scoped to the cleanroom wrapper execution path and fully-designed inverse folding mask configuration (`chain_mask = 1.0`). It does not exercise arbitrary fixed-position masks, nor does this finite single-target (1n5uA03) test constitute a universal mathematical proof for all hypothetical ProteinMPNN configurations.
 - **Non-Benchmark Nature:** This audit is an integration verification test. It does NOT evaluate sequence recovery across benchmarks, scTM foldability, or design quality.
 - **Scientific Firewall Compliance:**
   - **NO E1 benchmark was executed.**

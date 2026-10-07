@@ -5,7 +5,7 @@
 **Repository:** Protein Design / ProteinSolver Research Extension  
 **Branch:** `governance/final-acceptance-redteam-v1`  
 **Target Pull Request:** PR #1 (targeting `main`)  
-**Authorization State:** FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE  
+**Authorization State:** MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)
 **Operational Status:** `PROTOCOL_FROZEN`, `IMPLEMENTATION_VERIFIED`, `EXPERIMENTS_NOT_RUN`  
 
 ---
@@ -17,9 +17,9 @@
 | **Scientific Protocol** | **PROTOCOL_FROZEN** | Pre-registration Amendment A1 frozen; all 24 study parameters locked |
 | **Code Implementation** | **IMPLEMENTATION_VERIFIED** | Cleanroom ProteinMPNN, hybrid optimization, caching, and evaluation utilities verified |
 | **Experimental Execution** | **EXPERIMENTS_NOT_RUN** | Zero benchmark sequences generated; zero ESMFold/AF2 benchmark evaluations run |
-| **Development Benchmark (E1)**| **E1 NOT STARTED** | Awaiting human review and merge of PR #1 |
+| **Development Benchmark (E1)**| **E1 NOT STARTED** | Awaiting human authorization for E1 execution (PR #1 merged on main) |
 | **Primary Benchmark (TS50)** | **TS50 NOT STARTED** | Strictly firewalled; TS50 target manifest is a pre-test dependency |
-| **Authorization Boundary** | **PENDING HUMAN REVIEW/MERGE** | AI cannot grant scientific approval; human review/merge on PR #1 is mandatory |
+| **Authorization Boundary** | **E1 EXECUTION PENDING HUMAN AUTHORIZATION** | Protocol merged on main at `3c0639c`; AI cannot grant execution approval; explicit human authorization for E1 is mandatory |
 
 ---
 
@@ -252,14 +252,14 @@ The hard scientific firewall remains 100% active and unbreached:
 ## O. Human Authorization Boundary
 
 This report, all associated protocol amendments, and code integrations are:
-**FROZEN ON REVIEW BRANCH — PENDING HUMAN REVIEW/MERGE**
+**MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)**
 
-The autonomous AI agent operates strictly under technical verification and audit authority. The agent cannot grant scientific approval or merge changes into `main`. Formal scientific authorization and transition to experimental execution require human review and merge of PR #1.
+The autonomous AI agent operates strictly under technical verification and audit authority. The agent cannot grant scientific approval or merge changes into `main`. PR #1 was reviewed and merged into `main` by human authorization at commit `3c0639c` (2026-09-29). Transition to experimental E1 candidate generation and execution remains strictly pending explicit human authorization.
 
 ---
 
 ## P. Exact Next Authorized Action
 
-1. Human review of Pull Request #1 on branch `governance/final-acceptance-redteam-v1`.
-2. Human approval and merge of PR #1 into `main`.
-3. Following human merge, authorize Phase 3 Milestone 3A (Development Hyperparameter Selection E1) according to frozen protocol DEC-015, DEC-016, and DEC-017.
+1. Protocol and reconciliation artifacts are merged and frozen on `main` (commit `3c0639c`).
+2. Await explicit human project authorization before initiating Phase 3 Milestone 3A (Development Hyperparameter Selection E1).
+3. Following human authorization, execute development hyperparameter selection strictly according to frozen protocol DEC-015, DEC-016, DEC-017, DEC-018, and DEC-019.

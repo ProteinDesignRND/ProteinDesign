@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="420" viewBox="0 0 700 420">
+<rect width="700" height="420" fill="#ffffff"/>
+<text x="350" y="30" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#111111">ProteinSolver Figure 2C: Reference Sequence Conditioning</text>
+<text x="350" y="52" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" fill="#555555">Sequence Recovery on Missing Residues under 0%, 50%, and 80% Context</text>
+<line x1="80" y1="350" x2="650" y2="350" stroke="#4a5568" stroke-width="1.5"/>
+<line x1="80" y1="80" x2="80" y2="350" stroke="#4a5568" stroke-width="1.5"/>
+<rect x="110.0" y="250.58598722429448" width="100" height="99.41401277570552" fill="#3182ce" opacity="0.85" rx="3"/>
+<text x="160" y="240.58598722429448" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#3182ce">39.8%</text>
+<text x="160" y="224.58598722429448" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#718096">± 9.8%</text>
+<text x="160" y="375" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#2d3748">0% Context</text>
+<text x="160" y="392" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#718096">(7 evaluations)</text>
+<rect x="290.0" y="247.67242958410586" width="100" height="102.32757041589414" fill="#dd6b20" opacity="0.85" rx="3"/>
+<text x="340" y="237.67242958410586" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#dd6b20">40.9%</text>
+<text x="340" y="221.67242958410586" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#718096">± 8.7%</text>
+<text x="340" y="375" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#2d3748">50% Context</text>
+<text x="340" y="392" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#718096">(175 evaluations)</text>
+<rect x="470.0" y="245.8179017485549" width="100" height="104.18209825144511" fill="#38a169" opacity="0.85" rx="3"/>
+<text x="520" y="235.8179017485549" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#38a169">41.7%</text>
+<text x="520" y="219.8179017485549" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#718096">± 13.1%</text>
+<text x="520" y="375" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#2d3748">80% Context</text>
+<text x="520" y="392" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#718096">(175 evaluations)</text>
+</svg>

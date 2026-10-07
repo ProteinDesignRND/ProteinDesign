@@ -1,7 +1,7 @@
 # Project Truth — Record of Verified Facts and Limitations
 
-**Last Updated:** 2026-09-29  
-**Maintained By:** Project Lead  
+**Last Updated:** 2026-10-01
+**Maintained By:** Project Lead
 
 This document is the authoritative record of verified implementation facts, evidence status, known limitations, untested status, and current implementation truth. Scientific protocol authority is strictly governed by `science/PREREGISTRATION.md`, and chronological historical decision provenance is governed by `DECISION_LOG.md`.
 
@@ -14,13 +14,16 @@ These claims are supported by direct inspection, execution, or primary literatur
 ### ProteinSolver Architecture
 - ProteinSolver is a 4-block residual EdgeConv GNN with 567,060 parameters. `[VERIFIED]`
 - Node vocabulary: 20 amino acids + 1 mask token (index 20). Embedding: `nn.Embedding(21, 128)`. `[VERIFIED]`
-- Edge features: 2-channel normalized float vector `[(d - 6.0)/12.0, (|j-i| - 0.0)/68.1319]`. `[VERIFIED]`
-- Edge connectivity: all residue pairs with minimum heavy-atom distance < 12.0 Å. `[VERIFIED]`
+- Output logits: 20 amino acid logits (linear classifier `Linear(128, 20)`, mask token index 20 never predicted as target). `[VERIFIED]`
+- Edge features: 2-channel normalized float vector `[(d - 6.0)/12.0, (j - i)/68.1319]`. Sequence separation is strictly signed: `(j - i) / 68.1319`, preserving sequence-direction information (no absolute value is applied). The constant 68.1319 is a fixed historical scaling constant. `[VERIFIED]`
+- Edge connectivity: all residue pairs with shortest heavy-atom distance < 12.0 Å. `[VERIFIED]`
+- Graph self-loops: strictly excluded (`row_index != col_index` during edge extraction, asserted absent in datasets, and stripped via `remove_self_loops` in the model forward pass). `[VERIFIED]`
+- Training recipe & batching: Adam optimizer with learning rate 1e-4 and ReduceLROnPlateau scheduler. Primary training batch size is 4 graphs; validation/evaluation batch size is 1 graph. `[VERIFIED]`
 
 ### Checkpoint & Repository
 - Historical repository: `external/proteinsolver-original`, commit `69ef0965a3fc3bf191804035b539720a06e58ba6`, branch `master`, working tree clean (zero modifications). Independent nested Git repository clone, NOT a git submodule (no `.gitmodules` exists). `[VERIFIED]`
 - This commit is **the upstream repository revision tested in this study**. It is NOT confirmed to be the exact source state at the time of the 2020 Cell Systems publication. `[VERIFIED — with limitation]`
-- Published checkpoint: `e53-s1952148-d93703104.state` (SHA-256: `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727`). `[VERIFIED]`
+- Checkpoint artifact: historical checkpoint file `e53-s1952148-d93703104.state` distributed in the official upstream repository/release (SHA-256: `1E8272F05EC19041394568C949BBDBF012EE72C1595BE7157C4BB0324D0B5727`). Note: Provided in official upstream release repository, not published in journal print text. `[VERIFIED]`
 - Checkpoint loads under `strict=True` with 0 missing keys, 0 unexpected keys, 45/45 tensor shapes matching, 567,060 parameters. `[VERIFIED]`
 - Layer naming divergence between checkpoint (`graph_conv_0`, `graph_conv.0..2`) and packaged class (`graph_conv_1..4`) is explained by training-time use of `nn.ModuleList`. Resolved by 1-to-1 prefix mapping outside the historical repo. `[VERIFIED]`
 
@@ -87,7 +90,7 @@ These claims are supported by direct inspection, execution, or primary literatur
 2. **H-02:** A diversity-aware, multi-objective candidate selection framework can exploit model complementarity to improve the quality-diversity trade-off.
 3. **H-03:** Rescoring ProteinMPNN-generated candidates using ProteinSolver CSP metrics enriches for candidates with higher AlphaFold self-consistency.
 
-**Research question (two-sided):**  
+**Research question (two-sided):**
 *"Does ProteinSolver's distance-graph constraint-satisfaction scoring provide orthogonal structural signal that improves modern inverse-folding candidate selection, or does modern inverse folding combined with structural validation dominate hybrid selection?"*
 
 ---
