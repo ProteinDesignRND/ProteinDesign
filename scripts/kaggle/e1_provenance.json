@@ -1,0 +1,10 @@
+{
+  "protocol": "PROTEIN_DESIGN_E1_DEVELOPMENT_BENCHMARK",
+  "authorized_commit": "0c7ea3cae6e2e03385c9b2115af95dee64d80683",
+  "expected_canonical_runner_sha": "3eb086760baba5e6b74a11b4528f066986713d5bd89b9aea820b828f77b7332a",
+  "target_manifest": "data/manifests/development_20_cath42.txt",
+  "manifest_sha256": "47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069",
+  "hardware_target": "Kaggle dual Tesla T4 (T4 x2)",
+  "preregistration_amendment": "A2 (RATIFIED)",
+  "fail_closed_gate": true
+}
