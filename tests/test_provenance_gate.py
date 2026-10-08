@@ -127,3 +127,37 @@ def test_frozen_scientific_protocol_integrity():
     assert "PROTEINSOLVER_TEMPERATURE_GRID = (0.1, 0.5, 1.0)" in runner_content
     assert "GAMMA_SEARCH_GRID = (0.0, 0.25, 0.5, 1.0, 2.0)" in runner_content
     assert "LAMBDA_SEARCH_GRID = (0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0)" in runner_content
+
+
+def test_isolated_deployment_provenance_manifest_resolution(tmp_path):
+    """Verifies that an isolated runner environment can resolve e1_provenance.json from git if absent from release tree."""
+    import subprocess
+
+    # Clone local repo to a temporary directory without checking out working tree
+    clone_dir = tmp_path / "cloned_repo"
+    subprocess.run(["git", "clone", str(REPO_ROOT), str(clone_dir)], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(clone_dir), "checkout", AUTHORIZED_COMMIT], check=True, capture_output=True)
+
+    prov_rel = Path("scripts") / "kaggle" / "e1_provenance.json"
+    # In authorized commit 0c7ea3c, e1_provenance.json is absent on disk
+    assert not (clone_dir / prov_rel).exists()
+
+    # Verify fallback checkout from origin/main or main
+    res = None
+    for ref in ["origin/main", "main"]:
+        res = subprocess.run(
+            ["git", "-C", str(clone_dir), "checkout", ref, "--", str(prov_rel)],
+            capture_output=True,
+            text=True,
+        )
+        if res.returncode == 0:
+            break
+    assert res is not None and res.returncode == 0, f"Git checkout of {prov_rel} failed: {res.stderr if res else 'no ref matched'}"
+    assert (clone_dir / prov_rel).exists(), "Provenance manifest must exist after fallback checkout"
+
+    with open(clone_dir / prov_rel, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    assert data["authorized_commit"] == AUTHORIZED_COMMIT
+    assert "expected_canonical_runner_sha" in data
+    assert len(data["expected_canonical_runner_sha"]) == 64
+
