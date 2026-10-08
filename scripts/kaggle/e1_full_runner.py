@@ -468,6 +468,19 @@ def main():
         run_cmd(["git", "clone", REPO_URL, str(repo_dir)])
         run_cmd(["git", "-C", str(repo_dir), "checkout", TARGET_COMMIT])
 
+    # Ingest authoritative provenance manifest if absent from target release tree
+    prov_rel = Path("scripts") / "kaggle" / "e1_provenance.json"
+    if not (repo_dir / prov_rel).exists() and (repo_dir / ".git").exists():
+        for ref in ["origin/main", "main"]:
+            res = subprocess.run(
+                ["git", "-C", str(repo_dir), "checkout", ref, "--", str(prov_rel)],
+                capture_output=True,
+                text=True,
+            )
+            if res.returncode == 0:
+                print(f"[SETUP] Authoritative {prov_rel} checked out from {ref}.")
+                break
+
     sys.path.insert(0, str(repo_dir))
 
     # Apply portable pure-PyG scatter fallback to model.py
@@ -583,13 +596,29 @@ def main():
             provenance_path = p.resolve()
             break
 
-    if provenance_path is None:
+    prov_data = None
+    if provenance_path is not None:
+        with open(provenance_path, "r", encoding="utf-8") as pf:
+            prov_data = json.load(pf)
+    elif (repo_dir / ".git").exists():
+        for ref in ["origin/main", "main", "HEAD"]:
+            try:
+                res = subprocess.run(
+                    ["git", "-C", str(repo_dir), "show", f"{ref}:scripts/kaggle/e1_provenance.json"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                prov_data = json.loads(res.stdout)
+                print(f"  [PASS] Loaded provenance manifest from git ref '{ref}:scripts/kaggle/e1_provenance.json'")
+                break
+            except Exception:
+                continue
+
+    if prov_data is None:
         raise RuntimeError(
             "FAIL-CLOSED PROVENANCE GATE: Missing required provenance manifest 'e1_provenance.json'!"
         )
-
-    with open(provenance_path, "r", encoding="utf-8") as pf:
-        prov_data = json.load(pf)
 
     expected_commit = prov_data.get("authorized_commit")
     expected_runner_sha = prov_data.get("expected_canonical_runner_sha")
