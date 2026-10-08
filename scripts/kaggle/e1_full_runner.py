@@ -47,7 +47,8 @@ import torch.nn.functional as F
 # Configuration Constants
 # -----------------------------------------------------------------------------
 REPO_URL = "https://github.com/ProteinDesignRND/ProteinDesign.git"
-TARGET_COMMIT = "a466747cf833cf14f919902ab2dc1a6bc3c7a2ff"
+AUTHORIZED_RELEASE_COMMIT = "0c7ea3cae6e2e03385c9b2115af95dee64d80683"
+TARGET_COMMIT = AUTHORIZED_RELEASE_COMMIT
 MANIFEST_REL_PATH = "data/manifests/development_20_cath42.txt"
 EXPECTED_MANIFEST_SHA = "47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069"
 
@@ -139,6 +140,14 @@ def sha256_file(filepath: Path) -> str:
         while chunk := f.read(65536):
             h.update(chunk)
     return h.hexdigest()
+
+
+def compute_canonical_sha256(filepath: Path) -> str:
+    """Computes SHA-256 over raw content with line endings normalized to canonical Unix LF (\n)."""
+    raw_bytes = filepath.read_bytes()
+    canonical_bytes = raw_bytes.replace(b"\r\n", b"\n")
+    return hashlib.sha256(canonical_bytes).hexdigest()
+
 
 
 class VRAMMonitor:
@@ -548,9 +557,58 @@ def main():
     assert len(manifest_targets) == DEVELOPMENT_TARGET_COUNT, f"Expected 20 targets, got {len(manifest_targets)}"
     print(f"[PASS] Development manifest verified: {len(manifest_targets)} targets, SHA={actual_manifest_sha[:10]}...")
 
+    # Preflight Provenance & Release Integrity Gate (Strict Fail-Closed)
+    print("\n--- [PREFLIGHT] Provenance & Release Integrity Gate ---")
+    actual_commit = run_cmd(["git", "-C", str(repo_dir), "rev-parse", "HEAD"]).stdout.strip()
+    if actual_commit != AUTHORIZED_RELEASE_COMMIT:
+        raise RuntimeError(
+            f"FAIL-CLOSED PROVENANCE GATE: Cloned commit '{actual_commit}' "
+            f"does not match authorized production release commit '{AUTHORIZED_RELEASE_COMMIT}'!"
+        )
+    print(f"  [PASS] Cloned Git commit strictly matches authorized release: {actual_commit}")
+
+    # Canonical LF Runner SHA Verification against Provenance Manifest
+    runner_file = Path(__file__).resolve()
+    current_canonical_runner_sha = compute_canonical_sha256(runner_file)
+
+    provenance_candidates = [
+        runner_file.parent / "e1_provenance.json",
+        Path("/kaggle/working/e1_provenance.json"),
+        repo_dir / "scripts" / "kaggle" / "e1_provenance.json",
+        Path("scripts/kaggle/e1_provenance.json"),
+    ]
+    provenance_path = None
+    for p in provenance_candidates:
+        if p.exists():
+            provenance_path = p.resolve()
+            break
+
+    if provenance_path is None:
+        raise RuntimeError(
+            "FAIL-CLOSED PROVENANCE GATE: Missing required provenance manifest 'e1_provenance.json'!"
+        )
+
+    with open(provenance_path, "r", encoding="utf-8") as pf:
+        prov_data = json.load(pf)
+
+    expected_commit = prov_data.get("authorized_commit")
+    expected_runner_sha = prov_data.get("expected_canonical_runner_sha")
+
+    if expected_commit != AUTHORIZED_RELEASE_COMMIT:
+        raise RuntimeError(
+            f"FAIL-CLOSED PROVENANCE GATE: Provenance manifest authorized_commit '{expected_commit}' "
+            f"diverges from runner constant '{AUTHORIZED_RELEASE_COMMIT}'!"
+        )
+
+    if current_canonical_runner_sha != expected_runner_sha:
+        raise RuntimeError(
+            f"FAIL-CLOSED PROVENANCE GATE: Running script canonical LF SHA256 '{current_canonical_runner_sha}' "
+            f"does not match authorized expected runner SHA256 '{expected_runner_sha}'!"
+        )
+    print(f"  [PASS] Runner canonical LF SHA256 strictly matches authorized release: {current_canonical_runner_sha}")
+
     # Startup / Deployment Fingerprint
     print("\n--- Startup / Deployment Fingerprint ---")
-    runner_file = Path(__file__).resolve()
     runner_sha = sha256_file(runner_file) if runner_file.exists() else "UNKNOWN"
     proto_file = repo_dir / "science" / "PREREGISTRATION.md"
     proto_sha = sha256_file(proto_file) if proto_file.exists() else "UNKNOWN"
@@ -559,7 +617,10 @@ def main():
         "run_mode": args.run_mode,
         "runner_filename": runner_file.name,
         "runner_sha256": runner_sha,
-        "git_commit_sha": TARGET_COMMIT,
+        "canonical_runner_sha256": current_canonical_runner_sha,
+        "git_commit_sha": actual_commit,
+        "authorized_release_commit": AUTHORIZED_RELEASE_COMMIT,
+        "provenance_preflight_passed": True,
         "protocol_preregistration_sha": proto_sha,
         "target_id": args.certify_target_id if args.run_mode == "certify-target" else "ALL_20",
         "model_checkpoint_identifiers": {
