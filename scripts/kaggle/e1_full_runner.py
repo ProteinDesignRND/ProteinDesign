@@ -373,7 +373,7 @@ def main():
     parser = argparse.ArgumentParser(description="Protein Design E1 Development Benchmark Runner.")
     parser.add_argument("--work-dir", type=str, default=None, help="Working directory path.")
     parser.add_argument("--repo-dir", type=str, default=None, help="Cloned repository path.")
-    parser.add_argument("--run-mode", type=str, default=os.environ.get("RUN_MODE", "certify-target"),
+    parser.add_argument("--run-mode", type=str, default=os.environ.get("RUN_MODE", "production"),
                         choices=["certify-target", "production"],
                         help="Execution mode: 'certify-target' for pre-experiment certification, or 'production' for full E1 benchmark.")
     parser.add_argument("--certify-target-id", type=str, default=os.environ.get("CERTIFY_TARGET_ID", "2e6i.A"),
