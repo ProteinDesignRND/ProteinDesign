@@ -1,0 +1,16 @@
+{
+  "id": "dheeraj12237/protein-design-e1-calibration",
+  "title": "Protein Design E1 Calibration",
+  "code_file": "e1_full_runner.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

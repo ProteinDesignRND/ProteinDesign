@@ -903,7 +903,73 @@ def test_project_truth_authority_scope():
 
 
 
+def test_esmfold_screening_plddt_scale_and_viability():
+    """Regression test: ESMFold output pLDDT in [0, 1] must be scaled to [0, 100] for viability threshold.
+    
+    If unscaled (e.g. 0.85), evaluating against plddt_threshold=80.0 causes 100% false-negative infeasibility.
+    With proper scaling (0.85 * 100 = 85.0), high-confidence predictions pass the viability gate.
+    """
+    raw_hf_esmfold_plddt = 0.85  # Typical high-confidence output from Hugging Face EsmForProteinFolding
+    scrmsd = 1.2  # Well within scRMSD <= 2.0 A
+
+    # Defective unscaled candidate
+    defective_cand = Candidate(
+        id="c_defective",
+        sequence="ACDEFGHIKL",
+        target_id="2e6i.A",
+        score=0.9,
+        scrmsd_screen=scrmsd,
+        plddt_screen=raw_hf_esmfold_plddt,  # 0.85 instead of 85.0
+    )
+    unscaled_viable = filter_viable_candidates([defective_cand], scrmsd_threshold=2.0, plddt_threshold=80.0)
+    assert len(unscaled_viable) == 0, "Unscaled candidate must fail when checked against 80.0"
+
+    # Properly rescaled candidate
+    scaled_plddt = raw_hf_esmfold_plddt * 100.0 if raw_hf_esmfold_plddt <= 1.0 else raw_hf_esmfold_plddt
+    fixed_cand = Candidate(
+        id="c_fixed",
+        sequence="ACDEFGHIKL",
+        target_id="2e6i.A",
+        score=0.9,
+        scrmsd_screen=scrmsd,
+        plddt_screen=scaled_plddt,  # 85.0
+    )
+    scaled_viable = filter_viable_candidates([fixed_cand], scrmsd_threshold=2.0, plddt_threshold=80.0)
+    assert len(scaled_viable) == 1, "Scaled candidate must pass when pLDDT >= 80.0"
+    assert scaled_viable[0].id == "c_fixed"
+
+
+def test_kabsch_alignment_invariance():
+    """Verifies that Kabsch superposition correctly aligns rotated and translated coordinates."""
+    # Synthetic target coordinates (L=10, 3)
+    np.random.seed(42)
+    coords_a = np.random.randn(10, 3)
+
+    # Apply known 3D rotation and translation
+    theta = np.pi / 4
+    r_z = np.array([
+        [np.cos(theta), -np.sin(theta), 0],
+        [np.sin(theta), np.cos(theta), 0],
+        [0, 0, 1],
+    ])
+    shift = np.array([12.5, -7.3, 4.2])
+    coords_b = (r_z @ coords_a.T).T + shift
+
+    # Kabsch alignment
+    p_c = coords_b - coords_b.mean(axis=0)
+    t_c = coords_a - coords_a.mean(axis=0)
+    h = p_c.T @ t_c
+    u, _, vt = np.linalg.svd(h)
+    d = np.linalg.det(vt.T @ u.T)
+    r = vt.T @ np.diag([1.0, 1.0, d]) @ u.T
+    p_rot = (r @ p_c.T).T
+    rmsd = float(np.sqrt(np.mean(np.sum((p_rot - t_c) ** 2, axis=1))))
+
+    assert rmsd < 1e-6, f"Exact rotated coordinates must have near-zero RMSD, got {rmsd}"
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
 
 

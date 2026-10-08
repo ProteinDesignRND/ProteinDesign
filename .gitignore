@@ -31,3 +31,7 @@ experiments/*/output/*.fasta
 
 # External repositories managed separately
 external/
+
+# Local diagnostic and experiment scratch directory
+scratch/
+

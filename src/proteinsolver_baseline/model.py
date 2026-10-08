@@ -1,13 +1,20 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch_scatter
 from torch_geometric.nn.inits import reset
 
+try:
+    import torch_scatter
 
-def scatter_(name, src, index, out=None, dim=0, dim_size=None):
-    """PyG-compatible scatter utility leveraging torch_scatter."""
-    return torch_scatter.scatter(src, index, out=out, dim=dim, dim_size=dim_size, reduce=name)
+    def scatter_(name, src, index, out=None, dim=0, dim_size=None):
+        """PyG-compatible scatter utility leveraging torch_scatter."""
+        return torch_scatter.scatter(src, index, out=out, dim=dim, dim_size=dim_size, reduce=name)
+except ImportError:
+    from torch_geometric.utils import scatter
+
+    def scatter_(name, src, index, out=None, dim=0, dim_size=None):
+        """Pure-PyG fallback scatter utility when torch_scatter binary is absent."""
+        return scatter(src, index, dim=dim, dim_size=dim_size, reduce=name)
 
 
 class EdgeConvMod(nn.Module):

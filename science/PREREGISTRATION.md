@@ -3,7 +3,8 @@
 **Registration History:**
 - **Original Registration:** Frozen 2026-09-25 (Pre-Phase 2, prior to ProteinMPNN cleanroom integration and prior to any benchmark execution)
 - **Amendment A1 (Pre-E1 Closure & Surgical Reconciliation):** Frozen 2026-09-28 (Prior to any benchmark candidate generation; manifest, oracle, and protocol clarifications only; zero test-set outcomes used)
-**Status:** **MERGED ON MAIN — PROTOCOL FROZEN (E1 BENCHMARK EXECUTION PENDING HUMAN AUTHORIZATION)**
+- **Amendment A2 (Kaggle Cloud Hardware Transition):** Ratified 2026-10-07 (Hardware transition to Kaggle Dual NVIDIA Tesla T4; explicitly authorized by Human Principal Investigator; all scientific parameters frozen and immutable)
+**Status:** **MERGED ON MAIN — PROTOCOL FROZEN (AMENDMENT A2 RATIFIED BY HUMAN PI AUTHORIZATION)**
 **Study Phase:** Pre-Phase 2 / Milestone 3A Closure  
 **Lead Repository:** `Protein Design`  
 
@@ -420,3 +421,37 @@ The benchmark run is classified as **INVALID** or **INCONCLUSIVE** if:
 3. Folding oracle screening outputs (ESMFold) are reported as the sole validation of candidate viability.
 4. Any historical ProteinSolver source file in `external/proteinsolver-original` is modified.
 5. More than 10% of test targets (e.g. > 5 of 50 TS50 targets) fail structural folding due to hardware or runtime infrastructure crashes (OOM, timeout, crash). In such case, evaluation is halted and the experiment is declared INVALID / INCONCLUSIVE.
+
+---
+
+## 25. Amendment A2: Cloud Hardware Transition from Local RTX 3050 to Kaggle T4 x2 (RATIFIED)
+
+**Status:** RATIFIED (Explicitly approved and authorized by human Principal Investigator on 2026-10-07 prior to official E1 benchmark execution)  
+**Date:** 2026-10-07  
+**Authorization:** Granted by Human Principal Investigator in CAO directive (Session 2026-10-07)  
+**Scope:** Execution Compute Platform and Hardware Environment for Milestone 3B (E1 Development Hyperparameter Optimization) and Primary Benchmark.
+
+### 1. Rationale for Amendment
+The initial pre-registration specified local workstation execution on a single NVIDIA RTX 3050 6GB Laptop GPU (CUDA). To prevent workstation exhaustion during multi-hour/multi-session benchmark runs, preserve reproducible execution under independent cloud infrastructure, and ensure adequate memory headroom for larger protein backbones, the compute platform is proposed to transition to dedicated Kaggle cloud environments provisioned with dual NVIDIA Tesla T4 GPUs (T4 x2, 16 GB VRAM each, 32 GB total accelerator memory).
+
+### 2. What Changes
+- **Compute Platform:** Transition from single local NVIDIA RTX 3050 6GB Laptop GPU to Kaggle Cloud Notebooks provisioned with dual NVIDIA Tesla T4 GPUs (T4 x2, 16 GB VRAM per accelerator, PCIe, Turing Architecture, sm_75).
+- **Execution Architecture:** Checkpointed, resumable execution blocks engineered to operate within Kaggle's 12-hour session limits and 30-hour weekly GPU allocation.
+- **Device Placement:** Multi-accelerator utilization where screening (ESMFold) and validation (AlphaFold2) or parallel target processing are assigned across GPU 0 and GPU 1.
+
+### 3. What Does NOT Change (Strictly Immutable Scientific Core)
+All scientific parameters and frozen protocol contracts remain 100% identical and immutable:
+- **Scientific Hypothesis:** Two-sided test of ProteinSolver distance-graph orthogonal signal vs. modern ProteinMPNN.
+- **Development Population:** Exactly $N_{\text{dev}} = 20$ CATH 4.2 validation backbones defined in immutable manifest `data/manifests/development_20_cath42.txt` (canonical LF SHA-256: `47ab5fec66017b455f7eabee143dc83e99ec740640e945ed96752abb59483069`).
+- **Primary Benchmark Population:** Exactly $N = 50$ TS50 targets (untouched).
+- **Candidate Budgets:** Exactly $K = 100$ per target during development, with the exact frozen integer allocation matrix across temperatures and seeds (42, 1337, 2026); exactly $K = 500$ at $T^*$ during primary test.
+- **Selected Library Size:** Exactly $M = 10$ candidates per target.
+- **Hyperparameter Grids:** Exactly 25 combinations for MPNN ($T \times \gamma$), 15 for ProteinSolver ($T \times \gamma$), 35 for Hybrid ($\lambda \times \gamma$ on common candidate universe $U_t$ at $T^*_{\text{MPNN}}$); total 75 configurations.
+- **Primary Development Objective ($J$):** Unchanged target-level mean fixed-correspondence scTM over selected $M=10$ library.
+- **Infeasibility Rule:** Unchanged $J = -\infty$ for any target with $<10$ viable candidates; zero imputation, zero $M$ reduction.
+- **Oracle Specifications:**
+  - ESMFold screening: `facebook/esmfold_v1`, 4 recycles, fp16, chunk size 128, sequence-only, max length 1024, fixed screening seed 42. Cutoffs $\text{scRMSD} \le 2.0$ Å and $\text{pLDDT} \ge 80.0$.
+  - AlphaFold2 validation: `model_1_ptm`, 3 recycles, fp16, single sequence mode, no templates, no MSA, Amber disabled, fixed inference seed 42.
+- **Failure Taxonomy & Retry Rules:** Unchanged. Infrastructure failure = exactly 1 retry; biological failure = scTM = 0.
+- **Statistical Invariants:** Target/backbone remains the sole statistical unit; paired Wilcoxon signed-rank and bootstrap estimands are strictly preserved.
+
