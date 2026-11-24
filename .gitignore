@@ -35,3 +35,10 @@ external/
 # Local diagnostic and experiment scratch directory
 scratch/
 
+# Node & Frontend
+node_modules/
+.pnp/
+.pnp.js
+frontend/dist/
+
+
